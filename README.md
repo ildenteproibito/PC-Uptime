@@ -3,7 +3,9 @@
 A lightweight Windows desktop application for operating-system uptime, stability
 diagnostics, and customizable analytics. Built with WPF on .NET 8.
 
-![App icon](app_icon_256.png)
+<p align="center">
+  <img src="Store_Assets/Halloween_Clean_256x256.png" alt="PC Uptime logo" width="128" />
+</p>
 
 ## Features
 
