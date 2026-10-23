@@ -29,6 +29,8 @@ All data stays on the user's machine — no telemetry is collected or transmitte
 The application is distributed through the **Microsoft Store** and is currently at
 version **5.1.0**.
 
+Website: https://uptime-pc.vercel.app/
+
 ## Features
 
 - **Accurate uptime tracking** — boot time and uptime duration computed from
