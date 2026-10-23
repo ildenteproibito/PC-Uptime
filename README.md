@@ -29,7 +29,11 @@ All data stays on the user's machine — no telemetry is collected or transmitte
 The application is distributed through the **Microsoft Store** and is currently at
 version **5.1.0**.
 
-Website: https://uptime-pc.vercel.app/
+## Website
+
+The official website is available at https://uptime-pc.vercel.app/ and provides an
+overview of the application, feature highlights, architecture notes, download
+links and legal information.
 
 ## Features
 
