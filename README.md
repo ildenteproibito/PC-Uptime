@@ -149,8 +149,8 @@ but every feature, test and release decision was reviewed and shipped manually.
 The commit history, test suite and Store release process reflect that.
 
 **Can I redistribute or sell this code?**
-No. The source is published for transparency and review only. See the
-[License](#license) section.
+No. The source is published for transparency and review only; all rights are
+reserved by the author.
 
 **Where is my data stored?**
 Locally, in the application's data folder. Nothing leaves the machine.
