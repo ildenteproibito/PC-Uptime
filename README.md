@@ -144,7 +144,7 @@ The suite covers:
 
 ### UX & features
 - [ ] Dark/light theme toggle beyond seasonal themes.
-- [ ] Additional language profiles (Spanish, French, German, Japanese).
+
 - [ ] System-tray mode with quick uptime tooltip.
 - [ ] Configurable alerts (e.g. notify after N hours of continuous uptime).
 - [ ] Per-process uptime breakdown (which apps kept the PC awake).
