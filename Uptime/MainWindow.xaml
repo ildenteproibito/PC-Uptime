@@ -320,7 +320,7 @@
 
   <Grid>
     <!-- Halloween Spooky Theme Background Art -->
-    <Image Source="pack://application:,,,/AwayUptime/halloween_bg.png"
+    <Image Source="pack://application:,,,/Uptime/halloween_bg.png"
            Stretch="Fill"
            SnapsToDevicePixels="True"
            IsHitTestVisible="False" />

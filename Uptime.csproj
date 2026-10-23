@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ApplicationDefinition Include="AwayUptime\App.xaml">
+    <ApplicationDefinition Include="Uptime\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
@@ -42,15 +42,15 @@
 
   <ItemGroup>
     <Resource Include="app.ico" />
-    <Resource Include="AwayUptime\app.ico" />
+    <Resource Include="Uptime\app.ico" />
     <Resource Include="app_icon_256.png" />
     <Resource Include="app_icon_color.png" />
-    <Resource Include="AwayUptime\halloween_bg.png" />
+    <Resource Include="Uptime\halloween_bg.png" />
     <None Include="app.ico" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="AwayUptime\app.ico" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Uptime\app.ico" CopyToOutputDirectory="PreserveNewest" />
     <None Include="app_icon_256.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="app_icon_color.png" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="AwayUptime\halloween_bg.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Uptime\halloween_bg.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
