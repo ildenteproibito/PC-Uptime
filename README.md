@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0">Microsoft Store</a> ·
+  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&gl=EN">Microsoft Store</a> ·
   <a href="#features">Features</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#build--run">Build</a> ·
