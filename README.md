@@ -135,11 +135,27 @@ The suite covers:
 
 ## Roadmap
 
+### Quality & engineering
 - [ ] Pin NuGet dependency versions (currently `WPF-UI` uses `*`).
 - [ ] Split `LocalizationEngine.cs` into per-language resource files.
 - [ ] Add CI pipeline (build + tests) on every push.
+- [ ] Add code coverage reporting and badge.
+- [ ] Introduce structured logging for diagnostics.
+
+### UX & features
 - [ ] Dark/light theme toggle beyond seasonal themes.
-- [ ] Additional language profiles.
+- [ ] Additional language profiles (Spanish, French, German, Japanese).
+- [ ] System-tray mode with quick uptime tooltip.
+- [ ] Configurable alerts (e.g. notify after N hours of continuous uptime).
+- [ ] Per-process uptime breakdown (which apps kept the PC awake).
+- [ ] Export to more formats (PDF report, image snapshot).
+- [ ] Historical charts for uptime/stability trends over weeks and months.
+- [ ] Multi-monitor aware HUD placement and snapping.
+
+### Platform
+- [ ] Auto-update mechanism integrated with the Store listing.
+- [ ] Windows 11 widgets integration.
+- [ ] Optional portable (non-Store) build.
 
 ## FAQ
 
