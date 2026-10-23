@@ -14,7 +14,8 @@
   <a href="#features">Features</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#build--run">Build</a> ·
-  <a href="#roadmap">Roadmap</a>
+  <a href="#roadmap">Roadmap</a> ·
+  <a href="#website">Website</a>
 </p>
 
 ---
