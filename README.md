@@ -31,22 +31,22 @@ version **5.1.0**.
 
 ## Features
 
-**Accurate uptime tracking** — boot time and uptime duration computed from
+- **Accurate uptime tracking** — boot time and uptime duration computed from
   `GetTickCount64`, with a primary/secondary formatted display
   (days, hours, minutes, seconds).
-**Stability diagnostics** — crash report comparing unexpected vs. clean
+- **Stability diagnostics** — crash report comparing unexpected vs. clean
   shutdowns over the last 30 days, a stability score, a confidence level, and a
   list of diagnostic incidents.
-**Session history** — per-session records (boot time, duration, active/idle
+- **Session history** — per-session records (boot time, duration, active/idle
   seconds, termination type) with active-vs-idle percentages.
-**System metrics tracker** — background tracking of machine resources.
-**Customizable dashboard** — persisted layout via `DashboardConfig`.
-**Compact HUD** — always-on-top overlay window for at-a-glance uptime.
-**Night prompt** — scheduled end-of-day review window.
-**Data export** — sessions and diagnostics exported to CSV/JSON.
-**Shareable badges** — uptime/stability badge generator.
-**Localization** — multi-language UI via `LocalizationEngine` and `LanguageProfile`.
-**Seasonal themes** — themed backgrounds (e.g. Halloween).
+- **System metrics tracker** — background tracking of machine resources.
+- **Customizable dashboard** — persisted layout via `DashboardConfig`.
+- **Compact HUD** — always-on-top overlay window for at-a-glance uptime.
+- **Night prompt** — scheduled end-of-day review window.
+- **Data export** — sessions and diagnostics exported to CSV/JSON.
+- **Shareable badges** — uptime/stability badge generator.
+- **Localization** — multi-language UI via `LocalizationEngine` and `LanguageProfile`.
+- **Seasonal themes** — themed backgrounds (e.g. Halloween).
 
 ## Architecture
 
@@ -76,14 +76,14 @@ PC_Uptime_Source/
 
 Key design points:
 
-**Models are plain POCOs** (`SessionRecord`, `UptimeStats`, `CrashReport`) with
+- **Models are plain POCOs** (`SessionRecord`, `UptimeStats`, `CrashReport`) with
   no UI dependency, which keeps them testable.
-**Helpers are static/stateless** where possible (`UptimeHelper`, `ExportHelper`),
+- **Helpers are static/stateless** where possible (`UptimeHelper`, `ExportHelper`),
   so logic can be exercised without instantiating windows.
-**Localization is data-driven**: `LanguageProfile` carries formatting rules and
+- **Localization is data-driven**: `LanguageProfile` carries formatting rules and
   `LocalizationEngine` resolves strings, so adding a language does not require
   code changes beyond a new profile.
-**WPF + WinForms interop** is enabled (`UseWindowsForms`) for system-tray and
+- **WPF + WinForms interop** is enabled (`UseWindowsForms`) for system-tray and
   notification scenarios.
 
 ## Tech stack
@@ -119,43 +119,43 @@ dotnet test tests/Uptime.Tests/Uptime.Tests.csproj
 
 The suite covers:
 
-Uptime monotonicity and positivity.
-Boot-time reconstruction from uptime + current time.
-Display formatting across day/hour/minute intervals.
-Active-vs-idle percentage calculation.
-A WPF initialization smoke test (STA thread) that instantiates `App` and
+- Uptime monotonicity and positivity.
+- Boot-time reconstruction from uptime + current time.
+- Display formatting across day/hour/minute intervals.
+- Active-vs-idle percentage calculation.
+- A WPF initialization smoke test (STA thread) that instantiates `App` and
   `MainWindow`.
 
 ## Data & privacy
 
-All session records, crash reports and dashboard configuration are stored
+- All session records, crash reports and dashboard configuration are stored
   **locally** on the user's machine.
-**No telemetry** is collected or transmitted.
-Stability data is derived from local Windows event logs and in-app tracking.
+- **No telemetry** is collected or transmitted.
+- Stability data is derived from local Windows event logs and in-app tracking.
 
 ## Roadmap
 
 ### Quality & engineering
-[ ] Pin NuGet dependency versions (currently `WPF-UI` uses `*`).
-[ ] Split `LocalizationEngine.cs` into per-language resource files.
-[ ] Add CI pipeline (build + tests) on every push.
-[ ] Add code coverage reporting and badge.
-[ ] Introduce structured logging for diagnostics.
+- [ ] Pin NuGet dependency versions (currently `WPF-UI` uses `*`).
+- [ ] Split `LocalizationEngine.cs` into per-language resource files.
+- [ ] Add CI pipeline (build + tests) on every push.
+- [ ] Add code coverage reporting and badge.
+- [ ] Introduce structured logging for diagnostics.
 
 ### UX & features
-[ ] Dark/light theme toggle beyond seasonal themes.
-[ ] Additional language profiles (Spanish, French, German, Japanese).
-[ ] System-tray mode with quick uptime tooltip.
-[ ] Configurable alerts (e.g. notify after N hours of continuous uptime).
-[ ] Per-process uptime breakdown (which apps kept the PC awake).
-[ ] Export to more formats (PDF report, image snapshot).
-[ ] Historical charts for uptime/stability trends over weeks and months.
-[ ] Multi-monitor aware HUD placement and snapping.
+- [ ] Dark/light theme toggle beyond seasonal themes.
+- [ ] Additional language profiles (Spanish, French, German, Japanese).
+- [ ] System-tray mode with quick uptime tooltip.
+- [ ] Configurable alerts (e.g. notify after N hours of continuous uptime).
+- [ ] Per-process uptime breakdown (which apps kept the PC awake).
+- [ ] Export to more formats (PDF report, image snapshot).
+- [ ] Historical charts for uptime/stability trends over weeks and months.
+- [ ] Multi-monitor aware HUD placement and snapping.
 
 ### Platform
-[ ] Auto-update mechanism integrated with the Store listing.
-[ ] Windows 11 widgets integration.
-[ ] Optional portable (non-Store) build.
+- [ ] Auto-update mechanism integrated with the Store listing.
+- [ ] Windows 11 widgets integration.
+- [ ] Optional portable (non-Store) build.
 
 ## FAQ
 
