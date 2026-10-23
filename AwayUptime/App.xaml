@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application x:Class="AwayUptime.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" ShutdownMode="OnExplicitShutdown" xmlns:awayuptime="clr-namespace:AwayUptime;assembly=Uptime">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ui:ThemesDictionary Theme="Dark" />
+        <ui:ControlsDictionary />
+      </ResourceDictionary.MergedDictionaries>
+      <Style x:Key="FluentTrayContextMenuStyle" TargetType="{x:Type ContextMenu}">
+        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+        <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+        <Setter Property="ContextMenu.HasDropShadow" Value="True" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ContextMenu}">
+              <Border Background="#F514121B" BorderBrush="#FF7518" BorderThickness="1.5" CornerRadius="12" Padding="6,7,6,7" MinWidth="220">
+                <UIElement.Effect>
+                  <DropShadowEffect BlurRadius="22" ShadowDepth="2" Direction="270" Opacity="0.55" Color="#FF5500" />
+                </UIElement.Effect>
+                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style x:Key="FluentTrayMenuItemStyle" TargetType="{x:Type MenuItem}">
+        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="#EEEEF4" />
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="FontFamily" Value="Segoe UI Variable Display, Segoe UI, Noto Sans KR, Malgun Gothic, Microsoft YaHei, Meiryo, sans-serif" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type MenuItem}">
+              <Border Name="BrdItem" Background="#00FFFFFF" CornerRadius="7" Margin="0,1" Padding="10,0,10,0">
+                <Grid VerticalAlignment="Center">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <ContentPresenter Grid.Column="0" ContentSource="Icon" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                  <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="False" VerticalAlignment="Center" Margin="6,0,12,0" />
+                  <Border Name="BrdCheck" Grid.Column="2" Width="18" Height="18" Visibility="Collapsed" VerticalAlignment="Center">
+                    <ui:SymbolIcon Symbol="Checkmark16" Foreground="#FF7518" FontSize="14" />
+                  </Border>
+                </Grid>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="MenuItem.IsChecked" Value="True">
+                  <Setter TargetName="BrdCheck" Property="Visibility" Value="Visible" />
+                </Trigger>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="BrdItem" Property="Border.Background" Value="#2D1C16" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="MenuItem.IsPressed" Value="True">
+                  <Setter TargetName="BrdItem" Property="Border.Background" Value="#1F1410" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter Property="Foreground" Value="#666677" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style x:Key="FluentTrayMenuItemDangerStyle" TargetType="{x:Type MenuItem}" BasedOn="{StaticResource FluentTrayMenuItemStyle}">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type MenuItem}">
+              <Border Name="BrdItem" Background="#00FFFFFF" CornerRadius="7" Margin="0,1" Padding="10,0,10,0">
+                <Grid VerticalAlignment="Center">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <ContentPresenter Grid.Column="0" ContentSource="Icon" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                  <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="False" VerticalAlignment="Center" Margin="6,0,12,0" />
+                </Grid>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="BrdItem" Property="Border.Background" Value="#3D1818" />
+                  <Setter Property="Foreground" Value="#FFA8A8" />
+                </Trigger>
+                <Trigger Property="MenuItem.IsPressed" Value="True">
+                  <Setter TargetName="BrdItem" Property="Border.Background" Value="#2E1212" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style x:Key="FluentTraySeparatorStyle" TargetType="{x:Type Separator}">
+        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Separator}">
+              <Border Height="1" Background="#3D281E" Margin="8,4,8,4" />
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

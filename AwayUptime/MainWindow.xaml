@@ -1,0 +1,918 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ui:FluentWindow x:Class="AwayUptime.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Title="Uptime"
+                 Width="495"
+                 Height="510"
+                 WindowStyle="None"
+                 AllowsTransparency="False"
+                 WindowBackdropType="Mica"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowCornerPreference="Round"
+                 ShowInTaskbar="False"
+                 Topmost="True"
+                 ResizeMode="NoResize"
+                 FontFamily="Segoe UI Variable Text, Segoe UI, Noto Sans KR, Malgun Gothic, Microsoft YaHei, Meiryo, sans-serif"
+                 Deactivated="Window_Deactivated">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="TabSegmentButton" TargetType="{x:Type RadioButton}">
+        <Setter Property="Background" Value="#00FFFFFF" />
+        <Setter Property="Foreground" Value="#9E9EA8" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type RadioButton}">
+              <Border Name="border" Background="{TemplateBinding Control.Background}" BorderBrush="#00FFFFFF" BorderThickness="1.5" CornerRadius="6" Padding="10,6">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#25212E" />
+                  <Setter Property="Foreground" Value="#F0F0F8" />
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#251C1A" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FF7518" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="FilterSegmentButton" TargetType="{x:Type RadioButton}">
+        <Setter Property="Background" Value="#00FFFFFF" />
+        <Setter Property="Foreground" Value="#8E8E98" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type RadioButton}">
+              <Border Name="border" Background="{TemplateBinding Control.Background}" BorderBrush="#00FFFFFF" BorderThickness="1" CornerRadius="5" Padding="8,4">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#221F2A" />
+                  <Setter Property="Foreground" Value="#D0D0D8" />
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#2A2234" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#4C5880" />
+                  <Setter Property="Foreground" Value="#85B3FF" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="HalloweenSecondaryButton" TargetType="{x:Type ui:Button}">
+        <Setter Property="Background" Value="#D0201A20" />
+        <Setter Property="BorderBrush" Value="#5E3A24" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="#EDEDED" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ui:Button}">
+              <Border Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#2D2128" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FF7518" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#1C1418" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FF5500" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="ModernScrollBarThumb" TargetType="{x:Type Thumb}">
+        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Thumb}">
+              <Rectangle Fill="#4A4A56" RadiusX="3" RadiusY="3" Margin="1,0" />
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style x:Key="ModernScrollBar" TargetType="{x:Type ScrollBar}">
+        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="true" />
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ScrollBar}">
+              <Grid Background="#00FFFFFF">
+                <Track Name="PART_Track" IsDirectionReversed="true">
+                  <Track.Thumb>
+                    <Thumb Style="{StaticResource ModernScrollBarThumb}" />
+                  </Track.Thumb>
+                </Track>
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+      <Style x:Key="ModernScrollViewer" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ScrollViewer}">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ScrollContentPresenter Grid.Column="0" />
+                <ScrollBar Name="PART_VerticalScrollBar" Grid.Column="1" Value="{TemplateBinding ScrollViewer.VerticalOffset}" Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}" ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}" Visibility="{TemplateBinding ScrollViewer.ComputedVerticalScrollBarVisibility}" Margin="4,0,0,0" Style="{StaticResource ModernScrollBar}" />
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="HudPinButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#00FFFFFF" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#00FFFFFF" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="7,4" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+              <Border Name="border" Background="{TemplateBinding Control.Background}" BorderBrush="{TemplateBinding Control.BorderBrush}" BorderThickness="{TemplateBinding Control.BorderThickness}" CornerRadius="6">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Control.Padding}" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#253545" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FFA24C" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#1A2836" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="ActionDangerButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#341414" />
+        <Setter Property="BorderBrush" Value="#622222" />
+        <Setter Property="Foreground" Value="#FFA8A8" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,7" />
+        <Setter Property="MinWidth" Value="112" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+              <Border Name="border" Background="{TemplateBinding Control.Background}" BorderBrush="{TemplateBinding Control.BorderBrush}" BorderThickness="{TemplateBinding Control.BorderThickness}" CornerRadius="6">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Control.Padding}" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#E53935" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FF8A80" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#B71C1C" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="ActionCleanRebootButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#162536" />
+        <Setter Property="BorderBrush" Value="#29486B" />
+        <Setter Property="Foreground" Value="#C2E2FE" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,7" />
+        <Setter Property="MinWidth" Value="112" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+              <Border Name="border" Background="{TemplateBinding Control.Background}" BorderBrush="{TemplateBinding Control.BorderBrush}" BorderThickness="{TemplateBinding Control.BorderThickness}" CornerRadius="6">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Control.Padding}" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#FF7518" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FFB866" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#004578" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style x:Key="ActionSafeShutdownButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#3D1016" />
+        <Setter Property="BorderBrush" Value="#FF3344" />
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="BorderThickness" Value="1.5" />
+        <Setter Property="Padding" Value="12,7" />
+        <Setter Property="MinWidth" Value="112" />
+        <Setter Property="FrameworkElement.Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+              <Border Name="border" Background="{TemplateBinding Control.Background}" BorderBrush="{TemplateBinding Control.BorderBrush}" BorderThickness="{TemplateBinding Control.BorderThickness}" CornerRadius="6">
+                <Border.Effect>
+                  <DropShadowEffect BlurRadius="14" ShadowDepth="0" Color="#FF2233" Opacity="0.65" />
+                </Border.Effect>
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Control.Padding}" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#E53935" />
+                  <Setter TargetName="border" Property="Border.BorderBrush" Value="#FF6677" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="border" Property="Border.Background" Value="#B71C1C" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground" Value="#CCCCCC" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type CheckBox}">
+              <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Name="BoxBorder" Width="17" Height="17" CornerRadius="4" Background="#261E24" BorderBrush="#553C34" BorderThickness="1.5" VerticalAlignment="Center" Margin="0,0,8,0">
+                  <Path Name="CheckMark" Data="M 3 8.5 L 6.5 12 L 13 4.5" Stroke="#FFFFFF" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+                </Border>
+                <ContentPresenter Grid.Column="1" VerticalAlignment="Center" RecognizesAccessKey="True" />
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                  <Setter TargetName="BoxBorder" Property="Background" Value="#FF7518" />
+                  <Setter TargetName="BoxBorder" Property="BorderBrush" Value="#FFA24C" />
+                  <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="BoxBorder" Property="BorderBrush" Value="#FF8833" />
+                  <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+                <MultiTrigger>
+                  <MultiTrigger.Conditions>
+                    <Condition Property="IsChecked" Value="True" />
+                    <Condition Property="IsMouseOver" Value="True" />
+                  </MultiTrigger.Conditions>
+                  <Setter TargetName="BoxBorder" Property="Background" Value="#FF8824" />
+                  <Setter TargetName="BoxBorder" Property="BorderBrush" Value="#FFB866" />
+                </MultiTrigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+
+  <Grid>
+    <!-- Halloween Spooky Theme Background Art -->
+    <Image Source="pack://application:,,,/AwayUptime/halloween_bg.png"
+           Stretch="Fill"
+           SnapsToDevicePixels="True"
+           IsHitTestVisible="False" />
+    <Grid Background="#660A0912">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- Top App Bar -->
+    <Grid Row="0" Margin="16,14,16,6">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <Image x:Name="ImgAppLogo" Source="pack://application:,,,/app_icon_256.png" Width="20" Height="20" Margin="0,0,8,0" VerticalAlignment="Center" Stretch="Uniform" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="HighQuality" />
+        <TextBlock Text="Uptime" FontSize="14" FontWeight="Bold" Foreground="#EDEDED" VerticalAlignment="Center" LineHeight="20" LineStackingStrategy="BlockLineHeight" />
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <Button Name="BtnCustomizeDashboard" Style="{StaticResource HudPinButtonStyle}" Margin="0,0,4,0" ToolTip="Personalizza Dashboard" Click="BtnCustomizeDashboard_Click">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <ui:SymbolIcon Symbol="TableSettings20" FontSize="15" Foreground="#A0A0AA" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Button Name="BtnPinHud" Style="{StaticResource HudPinButtonStyle}" Margin="0,0,4,0" ToolTip="Fissa Mini-Widget sul Desktop (HUD)" Click="BtnPinHud_Click">
+          <UIElement.RenderTransform>
+            <ScaleTransform x:Name="TransScalePin" ScaleX="1" ScaleY="1" CenterX="13" CenterY="13" />
+          </UIElement.RenderTransform>
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <ui:SymbolIcon Name="IconPinHud" Symbol="Pin20" FontSize="15" Foreground="#A0A0AA" VerticalAlignment="Center" />
+            <Border Name="BrdPinDot" Width="5" Height="5" CornerRadius="2.5" Background="#4CC2FF" Margin="4,0,0,0" VerticalAlignment="Center" Visibility="Collapsed" />
+          </StackPanel>
+        </Button>
+        <ui:Button Name="BtnLangSelect" Appearance="Secondary" Padding="8,4" Margin="0,0,6,0" Click="BtnLangSelect_Click">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Border Background="#251C1A" BorderBrush="#553526" BorderThickness="1" CornerRadius="4" Padding="4,1" Margin="0,0,6,0">
+              <TextBlock Name="TxtCurrentCode" Text="IT" FontSize="10" FontWeight="Bold" Foreground="#FF8822" />
+            </Border>
+            <TextBlock Name="TxtCurrentLangName" Text="Italiano" FontSize="11" FontWeight="SemiBold" Foreground="#E2E2E8" Margin="0,0,6,0" VerticalAlignment="Center" />
+            <ui:SymbolIcon Symbol="ChevronDown12" Foreground="#888894" VerticalAlignment="Center" />
+          </StackPanel>
+        </ui:Button>
+        <ui:Button Name="BtnCloseWindow" Appearance="Transparent" Padding="6,4" Click="CloseButton_Click">
+          <ui:SymbolIcon Symbol="Dismiss16" Foreground="#A0A0AA" />
+        </ui:Button>
+      </StackPanel>
+    </Grid>
+
+    <!-- Navigation Tabs -->
+    <Border Grid.Row="1" Background="#16141F" BorderBrush="#2F2538" BorderThickness="1" CornerRadius="8" Padding="3" Margin="16,4,16,8">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <RadioButton Name="TabBtnOverview" Grid.Column="0" Style="{StaticResource TabSegmentButton}" IsChecked="True" Click="TabBtn_Click">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <ui:SymbolIcon Symbol="Timer16" Margin="0,0,6,0" VerticalAlignment="Center" />
+            <TextBlock Name="TxtTabOverview" Text="Panoramica" VerticalAlignment="Center" />
+          </StackPanel>
+        </RadioButton>
+        <RadioButton Name="TabBtnRecords" Grid.Column="1" Style="{StaticResource TabSegmentButton}" Click="TabBtn_Click">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <ui:SymbolIcon Symbol="Trophy16" Margin="0,0,6,0" VerticalAlignment="Center" />
+            <TextBlock Name="TxtTabRecords" Text="Record" VerticalAlignment="Center" />
+          </StackPanel>
+        </RadioButton>
+        <RadioButton Name="TabBtnActions" Grid.Column="2" Style="{StaticResource TabSegmentButton}" Click="TabBtn_Click">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <ui:SymbolIcon Symbol="Flash16" Margin="0,0,6,0" VerticalAlignment="Center" />
+            <TextBlock Name="TxtTabActions" Text="Azioni" VerticalAlignment="Center" />
+          </StackPanel>
+        </RadioButton>
+      </Grid>
+    </Border>
+
+    <!-- Content Area -->
+    <Grid Row="2" Margin="16,0,16,14">
+
+      <!-- TAB 1: OVERVIEW (CUSTOMIZABLE DASHBOARD) -->
+      <Grid Name="TabContentOverview" Visibility="Visible">
+        <UIElement.RenderTransform>
+          <TranslateTransform x:Name="TransTabOverview" Y="0" />
+        </UIElement.RenderTransform>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Dynamic Scrollable Dashboard Widgets Container -->
+        <ScrollViewer Grid.Row="0" Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Style="{StaticResource ModernScrollViewer}">
+          <StackPanel Margin="0,0,6,0">
+
+            <!-- Empty Dashboard Notice -->
+            <Border Name="BrdEmptyDashboard" Background="#1C1C24" BorderBrush="#33333F" BorderThickness="1" CornerRadius="8" Padding="16,14" Margin="0,0,0,8" Visibility="Collapsed">
+              <StackPanel HorizontalAlignment="Center">
+                <ui:SymbolIcon Symbol="TableSettings24" Foreground="#888898" HorizontalAlignment="Center" Margin="0,0,0,6" />
+                <TextBlock Name="TxtEmptyDashboardNotice" Text="Tutti i widget del dashboard sono nascosti." Foreground="#A0A0B0" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                  <ui:Button Appearance="Secondary" Content="Personalizza" Padding="10,5" Margin="0,0,6,0" Click="BtnCustomizeDashboard_Click" />
+                  <ui:Button Appearance="Secondary" Content="Ripristina Predefiniti" Padding="10,5" Click="BtnResetDashboard_Click" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Active Widgets Container (Populated dynamically according to DashboardConfig) -->
+            <StackPanel Name="PnlDashboardWidgets" />
+
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Overview Footer -->
+        <Grid Row="1" VerticalAlignment="Bottom" Margin="0,8,0,0" ClipToBounds="True">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <CheckBox Name="ChkStartup" Grid.Column="0" Content="Avvia con Windows" Foreground="#AAAAAA" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,0" Click="ChkStartup_Click" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <ui:Button Name="BtnQuickShareBadge" Style="{StaticResource HalloweenSecondaryButton}" Margin="0,0,6,0" Padding="8,5" ToolTip="Copia Card Statistiche (Reddit/Discord)" Click="BtnShareBadge_Click">
+              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <ui:SymbolIcon Name="IconBtnQuickShare" Symbol="Share16" Foreground="#FF7518" Margin="0,0,5,0" VerticalAlignment="Center" />
+                <TextBlock Name="TxtBtnQuickShare" Text="Card" VerticalAlignment="Center" />
+              </StackPanel>
+            </ui:Button>
+            <ui:Button Name="BtnOverviewCustomize" Style="{StaticResource HalloweenSecondaryButton}" Margin="0,0,6,0" Padding="8,5" ToolTip="Personalizza Dashboard" Click="BtnCustomizeDashboard_Click">
+              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <ui:SymbolIcon Symbol="TableSettings16" Foreground="#FF7518" Margin="0,0,5,0" VerticalAlignment="Center" />
+                <TextBlock Name="TxtBtnOverviewCustomize" Text="Modifica" VerticalAlignment="Center" />
+              </StackPanel>
+            </ui:Button>
+            <ui:Button Name="BtnCopy" Style="{StaticResource HalloweenSecondaryButton}" Padding="8,5" Click="BtnCopy_Click">
+              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <ui:SymbolIcon Name="IconBtnCopy" Symbol="DocumentCopy16" Foreground="#FF7518" Margin="0,0,5,0" VerticalAlignment="Center" />
+                <TextBlock Name="TxtBtnCopy" Text="Copia" VerticalAlignment="Center" />
+              </StackPanel>
+            </ui:Button>
+          </StackPanel>
+        </Grid>
+      </Grid>
+
+      <!-- TAB 2: RECORDS -->
+      <Grid Name="TabContentRecords" Visibility="Collapsed">
+        <UIElement.RenderTransform>
+          <TranslateTransform x:Name="TransTabRecords" Y="0" />
+        </UIElement.RenderTransform>
+        <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Style="{StaticResource ModernScrollViewer}">
+          <StackPanel Margin="0,0,6,0">
+
+            <!-- Time Filter Bar -->
+            <Border Background="#16161C" BorderBrush="#2A2A34" BorderThickness="1" CornerRadius="6" Padding="4,3" Margin="0,0,0,8">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <RadioButton Name="FilterBtn24h" Grid.Column="0" Content="24 Ore" Style="{StaticResource FilterSegmentButton}" Click="FilterBtn_Click" />
+                <RadioButton Name="FilterBtn7d" Grid.Column="1" Content="7 Giorni" Style="{StaticResource FilterSegmentButton}" Click="FilterBtn_Click" />
+                <RadioButton Name="FilterBtn30d" Grid.Column="2" Content="30 Giorni" Style="{StaticResource FilterSegmentButton}" IsChecked="True" Click="FilterBtn_Click" />
+                <RadioButton Name="FilterBtnAll" Grid.Column="3" Content="Tutti" Style="{StaticResource FilterSegmentButton}" Click="FilterBtn_Click" />
+              </Grid>
+            </Border>
+
+            <!-- Reliability Statistics Quick Bar -->
+            <Border Background="#1A1D24" BorderBrush="#2C3240" BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="0,0,0,8">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                  <TextBlock Name="TxtObservedSessionsLabel" Text="Sessioni" FontSize="9.5" Foreground="#8E8E98" HorizontalAlignment="Center" />
+                  <TextBlock Name="TxtFilteredSessionsCount" Text="0" FontSize="13" FontWeight="Bold" Foreground="#EDEDED" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                  <TextBlock Text="Record" FontSize="9.5" Foreground="#8E8E98" HorizontalAlignment="Center" />
+                  <TextBlock Name="TxtFilteredLongestSession" Text="0h" FontSize="13" FontWeight="Bold" Foreground="#FF7518" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                  <TextBlock Name="TxtAvgDurationLabel" Text="Media" FontSize="9.5" Foreground="#8E8E98" HorizontalAlignment="Center" />
+                  <TextBlock Name="TxtFilteredAvgDuration" Text="0h" FontSize="13" FontWeight="Bold" Foreground="#FF7518" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                  <TextBlock Name="TxtCleanRateLabel" Text="Pulito" FontSize="9.5" Foreground="#8E8E98" HorizontalAlignment="Center" />
+                  <TextBlock Name="TxtFilteredCleanRate" Text="100%" FontSize="13" FontWeight="Bold" Foreground="#52D17C" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <!-- Stability Record (Personal Best) Card -->
+            <ui:Card Margin="0,0,0,8" Padding="14,10" Background="#CC171624" BorderBrush="#FF7518" BorderThickness="1.5">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                  <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <ui:SymbolIcon Symbol="Trophy20" Foreground="#FF7518" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtPersonalBestHeader" Text="RECORD DI STABILITÀ (PERSONAL BEST)" FontSize="10" FontWeight="Bold" Foreground="#FF7518" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <TextBlock Name="TxtRecordUptime" Text="0 giorni, 0 ore" FontSize="18" FontWeight="Bold" Foreground="#FF7518" Margin="0,2,0,2" />
+                  <TextBlock Name="TxtRecordDate" Text="Raggiunto il: --/--/----" FontSize="11" Foreground="#8E8E98" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                  <TextBlock Name="TxtRecordScore" Text="100.0%" FontSize="18" FontWeight="Bold" Foreground="#52D17C" HorizontalAlignment="Right" />
+                  <TextBlock Name="TxtRecordScoreLabel" Text="Indice Stabilità" FontSize="9.5" Foreground="#8E8E98" HorizontalAlignment="Right" />
+                </StackPanel>
+              </Grid>
+            </ui:Card>
+
+            <!-- Reliability & Crashes Card -->
+            <ui:Card Margin="0,0,0,8" Padding="14,10">
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,6">
+                  <ui:SymbolIcon Symbol="ShieldCheckmark20" Foreground="#52D17C" Margin="0,0,6,0" VerticalAlignment="Center" />
+                  <TextBlock Name="TxtStabilityHeader" Text="AFFIDABILITÀ &amp; CRASH DI SISTEMA" FontSize="10" FontWeight="Bold" Foreground="#8E8E98" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                  <TextBlock Name="TxtStabilityScore" Text="100.0%" FontSize="22" FontWeight="Bold" Foreground="#52D17C" HorizontalAlignment="Right" />
+                  <TextBlock Name="TxtStabilityRateLabel" Text="Indice Stabilità" FontSize="9.5" Foreground="#8E8E98" HorizontalAlignment="Right" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="0">
+                  <TextBlock Name="TxtCrashSummary" Text="0 crash rilevati • Sistema Perfetto" FontSize="12" FontWeight="SemiBold" Foreground="#EDEDED" />
+                  <TextBlock Name="TxtLastCrashDate" Text="Nessun arresto anomalo recente" FontSize="10.5" Foreground="#8E8E98" Margin="0,2,0,0" />
+                </StackPanel>
+              </Grid>
+            </ui:Card>
+
+            <!-- Session Timeline Card -->
+            <ui:Card Margin="0,0,0,8" Padding="14,10">
+              <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                  <ui:SymbolIcon Symbol="History20" Foreground="#4CC2FF" Margin="0,0,6,0" VerticalAlignment="Center" />
+                  <TextBlock Name="TxtSessionTimelineHeader" Text="CRONOLOGIA SESSIONI" FontSize="10" FontWeight="Bold" Foreground="#8E8E98" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Name="PnlSessionTimeline" />
+              </StackPanel>
+            </ui:Card>
+
+            <!-- Milestones Card -->
+            <ui:Card Margin="0,0,0,8" Padding="14,10">
+              <StackPanel>
+                <TextBlock Name="TxtMilestonesHeader" Text="TRAGUARDI RAGGIUNTI" FontSize="10" FontWeight="Bold" Foreground="#8E8E98" Margin="0,0,0,8" />
+                <WrapPanel Name="PnlMilestones" />
+              </StackPanel>
+            </ui:Card>
+
+            <!-- Share Card & Export Card -->
+            <ui:Card Padding="14,10" Margin="0,0,0,4">
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                    <ui:SymbolIcon Symbol="Share20" Foreground="#4CC2FF" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtShareCardHeader" Text="CONDIVIDI BADGE STABILITÀ" FontSize="10" FontWeight="Bold" Foreground="#8E8E98" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <TextBlock Name="TxtShareCardDesc" Text="Genera e copia negli appunti un'immagine con le tue statistiche per Reddit o Discord." FontSize="10.5" Foreground="#B0B0BE" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Button Name="BtnShareBadge" Grid.Row="0" Grid.Column="1" Style="{StaticResource ActionCleanRebootButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Click="BtnShareBadge_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Name="IconBtnShareBadge" Symbol="Share20" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnShareBadge" Text="Copia Card" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+
+                <!-- Export Buttons Row -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right">
+                  <ui:Button Name="BtnExportJson" Appearance="Secondary" Margin="0,0,6,0" Padding="8,4" Click="BtnExportJson_Click">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                      <ui:SymbolIcon Symbol="DocumentArrowDown16" Margin="0,0,4,0" VerticalAlignment="Center" />
+                      <TextBlock Name="TxtBtnExportJson" Text="Esporta JSON" FontSize="11" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </ui:Button>
+                  <ui:Button Name="BtnExportCsv" Appearance="Secondary" Padding="8,4" Click="BtnExportCsv_Click">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                      <ui:SymbolIcon Symbol="TableSimple16" Margin="0,0,4,0" VerticalAlignment="Center" />
+                      <TextBlock Name="TxtBtnExportCsv" Text="Esporta CSV" FontSize="11" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </ui:Button>
+                </StackPanel>
+              </Grid>
+            </ui:Card>
+
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+
+      <!-- TAB 3: ACTIONS -->
+      <Grid Name="TabContentActions" Visibility="Collapsed">
+        <UIElement.RenderTransform>
+          <TranslateTransform x:Name="TransTabActions" Y="0" />
+        </UIElement.RenderTransform>
+        <ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Style="{StaticResource ModernScrollViewer}">
+          <StackPanel Margin="0,0,6,0">
+
+            <!-- Diagnostic Refresh & Data Actions -->
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center">
+                  <TextBlock Name="TxtRefreshDiagnosticsTitle" Text="Aggiorna Diagnostica &amp; Affidabilità" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" />
+                  <TextBlock Name="TxtRefreshDiagnosticsDesc" Text="Rianalizza il registro eventi di Windows per arresti anomali e affidabilità." FontSize="10" Foreground="#8E8E98" Margin="0,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+                <ui:Button Name="BtnRefreshDiagnostics" Grid.Column="1" Appearance="Secondary" VerticalAlignment="Center" Padding="10,6" Click="BtnRefreshDiagnostics_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Name="IconRefreshDiag" Symbol="ArrowClockwise16" Margin="0,0,5,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnRefreshDiag" Text="Aggiorna" VerticalAlignment="Center" />
+                  </StackPanel>
+                </ui:Button>
+              </Grid>
+            </ui:Card>
+
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center">
+                  <TextBlock Name="TxtExportDataHeader" Text="Esporta Dati Sessioni &amp; Affidabilità" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" />
+                  <TextBlock Name="TxtExportDataDesc" Text="Salva report completo in formato strutturato JSON o tabellare CSV." FontSize="10" Foreground="#8E8E98" Margin="0,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                  <ui:Button Appearance="Secondary" Content="JSON" Margin="0,0,4,0" Padding="8,5" Click="BtnExportJson_Click" />
+                  <ui:Button Appearance="Secondary" Content="CSV" Padding="8,5" Click="BtnExportCsv_Click" />
+                </StackPanel>
+              </Grid>
+            </ui:Card>
+
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center">
+                  <TextBlock Name="TxtCopySummaryHeader" Text="Copia Riepilogo Affidabilità" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" />
+                  <TextBlock Name="TxtCopySummaryDesc" Text="Copia negli appunti statistiche e report di stabilità formattati." FontSize="10" Foreground="#8E8E98" Margin="0,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+                <ui:Button Name="BtnCopySummary" Grid.Column="1" Appearance="Secondary" VerticalAlignment="Center" Padding="10,6" Click="BtnCopySummary_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Name="IconCopySummary" Symbol="DocumentCopy16" Margin="0,0,5,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnCopySummary" Text="Copia" VerticalAlignment="Center" />
+                  </StackPanel>
+                </ui:Button>
+              </Grid>
+            </ui:Card>
+
+            <!-- Warning Card -->
+            <ui:Card Margin="0,0,0,8" Padding="12,8" Background="#26180C" BorderBrush="#FF7518" BorderThickness="1.5">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Grid.Column="0" Symbol="Warning20" Foreground="#FF7518" Margin="0,0,8,0" VerticalAlignment="Center" />
+                <TextBlock Name="TxtPowerWarning" Grid.Column="1" Text="ATTENZIONE: Queste azioni riavviano o spengono il PC." FontSize="11" Foreground="#FFA840" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </Grid>
+            </ui:Card>
+
+            <!-- Safe Shutdown -->
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,14,0" VerticalAlignment="Center">
+                  <TextBlock Name="TxtSafeShutdownTitle" Text="Spegnimento Completo e Sicuro" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" TextWrapping="Wrap" />
+                  <TextBlock Name="TxtSafeShutdownDesc" Text="Spegne il PC senza avvio rapido ibrido per azzerare la sessione." FontSize="10" Foreground="#8E8E98" Margin="0,3,0,0" TextWrapping="Wrap" LineHeight="14" />
+                </StackPanel>
+                <Button Name="BtnSafeShutdown" Grid.Column="1" Style="{StaticResource ActionSafeShutdownButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Click="BtnSafeShutdown_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Symbol="Power20" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnSafeShutdown" Text="Spegni Ora" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </ui:Card>
+
+            <!-- Fast Startup Toggle -->
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center">
+                  <WrapPanel Orientation="Horizontal" Margin="0,0,0,2">
+                    <TextBlock Name="TxtFastStartupTitle" Text="Avvio Rapido (Fast Startup)" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" VerticalAlignment="Center" />
+                    <Border Name="BrdFastStartupStatus" CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#2E2410" BorderBrush="#8A6B1A" BorderThickness="1" VerticalAlignment="Center">
+                      <TextBlock Name="TxtFastStartupStatus" Text="ATTIVO (Ibrido)" FontSize="9.5" FontWeight="Bold" Foreground="#F4D06F" />
+                    </Border>
+                  </WrapPanel>
+                  <TextBlock Name="TxtFastStartupDesc" Text="Il kernel viene ibernato allo spegnimento per velocizzare l'avvio, ma non azzera l'uptime né la memoria." FontSize="10" Foreground="#8E8E98" Margin="0,3,0,0" TextWrapping="Wrap" LineHeight="14" />
+                </StackPanel>
+                <Button Name="BtnToggleFastStartup" Grid.Column="1" Style="{StaticResource ActionCleanRebootButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="8,5" MinWidth="80" Click="BtnToggleFastStartup_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Name="IconBtnToggleFastStartup" Symbol="Power20" Margin="0,0,5,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnToggleFastStartup" Text="Disattiva" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </ui:Card>
+
+            <!-- Reboot to BIOS -->
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,14,0" VerticalAlignment="Center">
+                  <TextBlock Name="TxtRebootBiosTitle" Text="Riavvia nel BIOS / UEFI" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" TextWrapping="Wrap" />
+                  <TextBlock Name="TxtRebootBiosDesc" Text="Riavvia ed entra direttamente nel firmware UEFI." FontSize="10" Foreground="#8E8E98" Margin="0,3,0,0" TextWrapping="Wrap" LineHeight="14" />
+                </StackPanel>
+                <Button Name="BtnRebootBios" Grid.Column="1" Style="{StaticResource ActionDangerButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Click="BtnRebootBios_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Symbol="Power20" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnRebootBios" Text="Riavvia BIOS" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </ui:Card>
+
+            <!-- Clean Reboot -->
+            <ui:Card Margin="0,0,0,8" Padding="12,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,14,0" VerticalAlignment="Center">
+                  <TextBlock Name="TxtCleanRebootTitle" Text="Riavvio Pulito Immediato" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" TextWrapping="Wrap" />
+                  <TextBlock Name="TxtCleanRebootDesc" Text="Riavvio puro senza ibernazione per azzerare la cache." FontSize="10" Foreground="#8E8E98" Margin="0,3,0,0" TextWrapping="Wrap" LineHeight="14" />
+                </StackPanel>
+                <Button Name="BtnCleanReboot" Grid.Column="1" Style="{StaticResource ActionCleanRebootButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Click="BtnCleanReboot_Click">
+                  <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:SymbolIcon Symbol="ArrowClockwise16" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock Name="TxtBtnCleanReboot" Text="Riavvia Ora" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </ui:Card>
+
+            <!-- Shutdown Timer -->
+            <ui:Card Padding="12,10" Margin="0,0,0,8">
+              <StackPanel>
+                <TextBlock Name="TxtTimerTitle" Text="Timer Spegnimento Automatico" FontSize="12" FontWeight="Bold" Foreground="#EDEDED" />
+                <Grid Margin="0,8,0,0">
+                  <StackPanel Name="PnlTimerButtons" Orientation="Horizontal">
+                    <ui:Button Appearance="Secondary" Content="30 min" Margin="0,0,6,0" Padding="10,5" Click="BtnTimer30_Click" />
+                    <ui:Button Appearance="Secondary" Content="1 h" Margin="0,0,6,0" Padding="10,5" Click="BtnTimer60_Click" />
+                    <ui:Button Appearance="Secondary" Content="2 h" Padding="10,5" Click="BtnTimer120_Click" />
+                  </StackPanel>
+                  <ui:Button Name="BtnCancelTimer" Appearance="Danger" Content="Annulla Timer" HorizontalAlignment="Right" Visibility="Collapsed" Padding="10,5" Click="BtnCancelTimer_Click" />
+                </Grid>
+              </StackPanel>
+            </ui:Card>
+
+            <Border Margin="0,0,0,2" Background="#141822" BorderBrush="#242B3D" BorderThickness="1" CornerRadius="6" Padding="10,7">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <ui:SymbolIcon Symbol="Keyboard20" Foreground="#4CC2FF" Margin="0,0,6,0" VerticalAlignment="Center" />
+                <TextBlock Name="TxtHotkeyHint" Text="Scorciatoia Rapida: Win + Alt + U per aprire/chiudere Uptime" FontSize="10.5" Foreground="#8E99B0" VerticalAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Grid>
+
+    <!-- Modal Confirmation Overlay -->
+    <Grid Name="ModalConfirmation" Row="0" RowSpan="3" Visibility="Collapsed" Background="#D90C0C0E">
+      <ui:Card Width="340" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="18">
+        <UIElement.Effect>
+          <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.7" Color="#000000" />
+        </UIElement.Effect>
+        <StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <ui:SymbolIcon Symbol="Warning24" Foreground="#FFCC00" Margin="0,0,8,0" VerticalAlignment="Center" />
+            <TextBlock Name="TxtModalTitle" Text="Conferma Riavvio BIOS" FontSize="14" FontWeight="Bold" Foreground="#EDEDED" VerticalAlignment="Center" />
+          </StackPanel>
+          <TextBlock Name="TxtModalMessage" Text="Il computer verrà riavviato immediatamente nel BIOS / UEFI. Assicurati di aver salvato ogni lavoro prima di procedere." FontSize="11" Foreground="#C0C0CC" TextWrapping="Wrap" LineHeight="16" Margin="0,0,0,16" />
+          <Grid>
+            <ui:Button Name="BtnModalCancel" Appearance="Secondary" Content="Annulla" HorizontalAlignment="Left" Width="100" IsDefault="True" Click="BtnModalCancel_Click" />
+            <ui:Button Name="BtnModalProceed" Appearance="Danger" Content="Riavvia nel BIOS" HorizontalAlignment="Right" Click="BtnModalProceed_Click" />
+          </Grid>
+        </StackPanel>
+      </ui:Card>
+    </Grid>
+
+    <!-- Language Picker View Overlay (Halloween Spooky Theme) -->
+    <Grid Name="ViewLanguage" Row="0" RowSpan="3" Visibility="Collapsed" Background="#FA13111A" Margin="0">
+      <UIElement.RenderTransform>
+        <TranslateTransform x:Name="TransLangView" Y="0" />
+      </UIElement.RenderTransform>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid Row="0" Margin="14,12,14,10">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <ui:Button Appearance="Transparent" Padding="6,4" Margin="0,0,8,0" Click="BtnBackFromLang_Click">
+            <ui:SymbolIcon Symbol="ArrowLeft20" Foreground="#FF7518" />
+          </ui:Button>
+          <TextBlock Text="Lingua / Language" FontSize="13" FontWeight="Bold" Foreground="#FF8824" VerticalAlignment="Center" />
+        </StackPanel>
+        <ui:Button Appearance="Transparent" Padding="6,4" HorizontalAlignment="Right" Click="CloseButton_Click">
+          <ui:SymbolIcon Symbol="Dismiss16" Foreground="#A0A0AA" />
+        </ui:Button>
+      </Grid>
+      <ScrollViewer Grid.Row="1" Style="{StaticResource ModernScrollViewer}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Name="PnlLanguageList" Margin="14,0,14,10" />
+      </ScrollViewer>
+    </Grid>
+
+    <!-- Dashboard Customization View Overlay -->
+    <Grid Name="ViewDashboardCustomize" Row="0" RowSpan="3" Visibility="Collapsed" Background="#F018181C" Margin="6">
+      <UIElement.RenderTransform>
+        <TranslateTransform x:Name="TransCustomizeView" Y="0" />
+      </UIElement.RenderTransform>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <Grid Row="0" Margin="10,10,10,8">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <ui:Button Appearance="Transparent" Padding="6,4" Margin="0,0,8,0" Click="BtnBackFromCustomize_Click">
+            <ui:SymbolIcon Symbol="ArrowLeft20" Foreground="#EDEDED" />
+          </ui:Button>
+          <TextBlock Name="TxtCustomizeTitle" Text="Personalizza Dashboard" FontSize="13" FontWeight="Bold" Foreground="#EDEDED" VerticalAlignment="Center" />
+        </StackPanel>
+        <ui:Button Appearance="Transparent" Padding="6,4" HorizontalAlignment="Right" Click="BtnCloseCustomize_Click">
+          <ui:SymbolIcon Symbol="Dismiss16" Foreground="#EDEDED" />
+        </ui:Button>
+      </Grid>
+
+      <!-- Presets and Reset Bar -->
+      <Border Grid.Row="1" Background="#16161E" BorderBrush="#2A2A38" BorderThickness="1" CornerRadius="6" Padding="8,6" Margin="10,0,10,8">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+            <RadioButton Name="PresetBtnDefault" Content="Predefinito" Style="{StaticResource FilterSegmentButton}" Margin="0,0,4,0" Click="PresetBtn_Click" />
+            <RadioButton Name="PresetBtnMinimal" Content="Minimale" Style="{StaticResource FilterSegmentButton}" Margin="0,0,4,0" Click="PresetBtn_Click" />
+            <RadioButton Name="PresetBtnReliability" Content="Affidabilità" Style="{StaticResource FilterSegmentButton}" Margin="0,0,4,0" Click="PresetBtn_Click" />
+            <RadioButton Name="PresetBtnCustom" Content="Personalizzato" Style="{StaticResource FilterSegmentButton}" Click="PresetBtn_Click" />
+          </StackPanel>
+          <ui:Button Name="BtnResetDashboard" Grid.Column="1" Appearance="Secondary" Padding="8,3" FontSize="10.5" Click="BtnResetDashboard_Click">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <ui:SymbolIcon Symbol="ArrowReset20" FontSize="13" Margin="0,0,4,0" VerticalAlignment="Center" />
+              <TextBlock Name="TxtBtnResetDashboard" Text="Ripristina" VerticalAlignment="Center" />
+            </StackPanel>
+          </ui:Button>
+        </Grid>
+      </Border>
+
+      <!-- Reorderable / Toggleable Widget List -->
+      <ScrollViewer Grid.Row="2" Style="{StaticResource ModernScrollViewer}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Name="PnlCustomizeWidgetList" Margin="10,0,10,10" />
+      </ScrollViewer>
+    </Grid>
+    </Grid>
+  </Grid>
+</ui:FluentWindow>

@@ -1,0 +1,55 @@
+# Build results
+bin/
+obj/
+out/
+Debug_Build/
+dist/
+
+# Visual Studio / Rider
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# .NET
+*.dll
+*.exe
+*.pdb
+*.cache
+*.ilk
+*.lib
+*.exp
+*.log
+*.tlog
+
+# MSIX / packaging
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.pfx
+*.cer
+*.pri
+
+# Python cache (leftover scripts)
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Secrets / local config
+*.env
+appsettings.Development.json
+
+# NuGet
+packages/
+*.nupkg
+
+# Test results
+TestResults/
+*.trx

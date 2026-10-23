@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <Version>5.1.0</Version>
+    <AssemblyVersion>5.1.0.0</AssemblyVersion>
+    <FileVersion>5.1.0.0</FileVersion>
+    <Product>Uptime</Product>
+    <Company>Uptime</Company>
+    <Description>Lightweight Windows desktop application for operating-system uptime, stability diagnostics, and customizable analytics.</Description>
+  </PropertyGroup>
+
+  <!-- Resolves conflicts between WPF and WinForms for Color, Brushes, Point, Size, HorizontalAlignment, Orientation -->
+  <ItemGroup>
+    <Using Include="System.Windows.Media.Color" Alias="Color" />
+    <Using Include="System.Windows.Media.Brushes" Alias="Brushes" />
+    <Using Include="System.Windows.Point" Alias="Point" />
+    <Using Include="System.Windows.Size" Alias="Size" />
+    <Using Include="System.Windows.HorizontalAlignment" Alias="HorizontalAlignment" />
+    <Using Include="System.Windows.Controls.Orientation" Alias="Orientation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="AwayUptime\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <None Remove="tests\**" />
+    <Page Remove="tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="app.ico" />
+    <Resource Include="AwayUptime\app.ico" />
+    <Resource Include="app_icon_256.png" />
+    <Resource Include="app_icon_color.png" />
+    <Resource Include="AwayUptime\halloween_bg.png" />
+    <None Include="app.ico" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="AwayUptime\app.ico" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="app_icon_256.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="app_icon_color.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="AwayUptime\halloween_bg.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="*" />
+    <PackageReference Include="System.Drawing.Common" Version="8.*" />
+  </ItemGroup>
+
+</Project>
