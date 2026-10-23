@@ -73,7 +73,7 @@ and session records are derived from local Windows event logs and in-app trackin
 
 ## License
 
-All rights reserved. See repository for licensing details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Author
 
