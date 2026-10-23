@@ -31,7 +31,7 @@ version **5.1.0**.
 
 ## Website
 
-The official website is available at https://uptime-pc.vercel.app/ and provides an
+The official website is available at [uptime-pc.vercel.app](https://uptime-pc.vercel.app/) and provides an
 overview of the application, feature highlights, architecture notes, download
 links and legal information.
 
