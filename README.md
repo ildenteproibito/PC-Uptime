@@ -29,14 +29,14 @@ The screenshots below show the Monitor, Stability, and Operations views.
 
 ## Features
 
-- **Uptime monitoring** — tracks the current Windows boot session and reports its start time and elapsed duration.
-- **Session history** — records session durations and active or idle time.
-- **Stability analysis** — evaluates Windows startup and shutdown events and surfaces details about unexpected shutdowns.
-- **System context** — presents relevant system information alongside uptime and maintenance guidance.
-- **Desktop integration** — provides notification-area access, a global keyboard shortcut (`Win` + `Alt` + `U`), and a compact Mini-HUD.
-- **Power operations** — supports clean restart, full shutdown, restart to UEFI/BIOS, and scheduled shutdown.
-- **Data export** — exports records in JSON or CSV format and generates shareable uptime badges.
-- **Configurable interface** — includes preferences for startup behavior, Fast Startup, dashboard layout, language, and the optional night reminder.
+- **Uptime monitoring:** tracks the current Windows boot session and reports its start time and elapsed duration.
+- **Session history:** records session durations and active or idle time.
+- **Stability analysis:** evaluates Windows startup and shutdown events and surfaces details about unexpected shutdowns.
+- **System context:** presents relevant system information alongside uptime and maintenance guidance.
+- **Desktop integration:** provides notification-area access, a global keyboard shortcut (`Win` + `Alt` + `U`), and a compact Mini-HUD.
+- **Power operations:** supports clean restart, full shutdown, restart to UEFI/BIOS, and scheduled shutdown.
+- **Data export:** exports records in JSON or CSV format and generates shareable uptime badges.
+- **Configurable interface:** includes preferences for startup behavior, Fast Startup, dashboard layout, language, and the optional night reminder.
 
 ## Technology stack
 
