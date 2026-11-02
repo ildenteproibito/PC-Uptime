@@ -14,7 +14,9 @@ See how long your PC has been running, review recent sessions, and understand un
   </a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">Website</a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/support/">Help and support</a>
-  &nbsp;·&nbsp; <a href="https://discord.gg/88qrhwjBDP">Discord</a>
+  &nbsp;·&nbsp; <a href="https://discord.gg/88qrhwjBDP">
+    <img src="https://img.shields.io/badge/Join%20our-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join our Discord server" />
+  </a>
 </p>
 
 ## Screenshots
