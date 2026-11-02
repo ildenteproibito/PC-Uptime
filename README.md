@@ -40,27 +40,13 @@ The screenshots below show the Monitor, Stability, and Operations views.
 
 ## Platform compatibility
 
-PC Uptime currently supports Windows 10 and Windows 11. Support for Linux and macOS is planned for future releases.
+PC Uptime is currently available for Windows. Support for Linux and macOS is planned.
 
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <img src="https://cdn.simpleicons.org/windows/0078D4" alt="Windows logo" width="48" height="48" />
-      <br /><strong>Windows 10 / 11</strong>
-      <br /><sub>Supported</sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="https://cdn.simpleicons.org/linux/FCC624" alt="Linux logo" width="48" height="48" />
-      <br /><strong>Linux</strong>
-      <br /><sub>Coming Soon</sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="https://cdn.simpleicons.org/apple/000000" alt="Apple logo for macOS" width="48" height="48" />
-      <br /><strong>macOS</strong>
-      <br /><sub>Coming Soon</sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="https://img.shields.io/badge/Windows%2010%20%2F%2011-Supported-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows 10 and 11 supported" />
+  <img src="https://img.shields.io/badge/Linux-Coming%20Soon-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux coming soon" />
+  <img src="https://img.shields.io/badge/macOS-Coming%20Soon-555555?style=for-the-badge&logo=apple&logoColor=white" alt="macOS coming soon" />
+</p>
 
 ## Technology stack
 
