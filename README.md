@@ -12,8 +12,12 @@ See how long your PC has been running, review recent sessions, and understand un
   <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN">
     <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" width="220" />
   </a>
-  &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">Website</a>
-  &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/support/">Help and support</a>
+  &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">
+    <img src="https://img.shields.io/badge/PC%20UPTIME-WEBSITE-3B82F6?style=for-the-badge&labelColor=20242C" alt="PC Uptime website" />
+  </a>
+  &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/support/">
+    <img src="https://img.shields.io/badge/PC%20UPTIME-HELP%20CENTER-64748B?style=for-the-badge&labelColor=20242C" alt="PC Uptime help and support" />
+  </a>
   &nbsp;·&nbsp; <a href="https://discord.gg/88qrhwjBDP">Discord</a>
 </p>
 
