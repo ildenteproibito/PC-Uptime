@@ -81,7 +81,7 @@ The presentation layer consumes Core abstractions and Infrastructure implementat
 
 ## Get started
 
-Install PC Uptime from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&gl=EN), then launch it from the Start menu. The Monitor, Stability, and Operations sections provide the main dashboard, session and event history, and system controls.
+Install PC Uptime from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN), then launch it from the Start menu. The Monitor, Stability, and Operations sections provide the main dashboard, session and event history, and system controls.
 
 Use the notification-area icon or `Win` + `Alt` + `U` to bring the application back when it is minimized.
 
