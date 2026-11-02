@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="src/Uptime.Core/Uptime.Core.csproj" />
-  <Project Path="src/Uptime.Infrastructure/Uptime.Infrastructure.csproj" />
-  <Project Path="src/Uptime.Presentation/Uptime.Presentation.csproj" />
-  <Project Path="tests/Uptime.Core.Tests/Uptime.Core.Tests.csproj" />
-</Solution>
