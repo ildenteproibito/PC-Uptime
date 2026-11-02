@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i18n="using:Uptime.Presentation.Localization"
+        x:Class="Uptime.Presentation.Views.MiniHudWindow"
+        Title="Uptime Mini-HUD"
+        Width="420" Height="210" MinWidth="380" MinHeight="190"
+        CanResize="False" Topmost="True"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        TransparencyLevelHint="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        PointerPressed="OnWindowPointerPressed">
+  <Border Background="#111418" BorderBrush="#30363D" BorderThickness="1"
+          CornerRadius="14" Padding="20">
+    <Grid RowDefinitions="32,*,Auto" RowSpacing="14">
+      <Grid ColumnDefinitions="Auto,*,Auto,34" ColumnSpacing="10">
+        <Image Width="22" Height="22" Source="/Assets/uptime.png" Stretch="Uniform"
+               VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="Uptime" FontSize="14" FontWeight="SemiBold"
+                   VerticalAlignment="Center" />
+        <Border Grid.Column="2" Background="#20242A" CornerRadius="12" Padding="10,5"
+                VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+            <Ellipse Width="7" Height="7" Fill="{Binding StatusBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#DCE8E2"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+        <Button Grid.Column="3" Width="32" Height="30" Padding="0"
+                Background="Transparent" BorderThickness="0" CornerRadius="7"
+                i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose" Click="OnCloseClick"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+          <Path Data="M5,5 L13,13 M13,5 L5,13" Stroke="#9AA0A9" StrokeThickness="1.5" />
+        </Button>
+      </Grid>
+
+      <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="16" VerticalAlignment="Center">
+        <StackPanel Spacing="-2" VerticalAlignment="Center">
+          <TextBlock Text="{Binding PrimaryText}" FontSize="46" FontWeight="Light"
+                     LetterSpacing="-1.2" />
+          <TextBlock Text="{Binding SecondaryText}" FontSize="13" Foreground="#AEB5BD" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Spacing="5" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="HudTarget" Margin="0" FontSize="10"
+                     HorizontalAlignment="Right" />
+          <TextBlock Text="{Binding HudThresholdText}" FontSize="20" FontWeight="Medium"
+                     HorizontalAlignment="Right" />
+        </StackPanel>
+      </Grid>
+
+      <StackPanel Grid.Row="2" Spacing="7">
+        <ProgressBar Minimum="0" Maximum="168" Value="{Binding FilledTicks}"
+                     Height="6" Background="#292F35" Foreground="#7BC4A8" />
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Classes="muted" FontSize="10" i18n:Localize.TextKey="RulerStart" />
+          <TextBlock Grid.Column="1" Classes="muted" FontSize="10"
+                     Text="{Binding HudThresholdText}" />
+        </Grid>
+      </StackPanel>
+    </Grid>
+  </Border>
+</Window>

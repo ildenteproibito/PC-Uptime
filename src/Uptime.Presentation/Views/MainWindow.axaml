@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization"
+        xmlns:v="using:Uptime.Presentation.Views"
+        x:Class="Uptime.Presentation.Views.MainWindow"
+        Title="Uptime"
+        Icon="avares://Uptime/Assets/uptime.ico"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        Width="960" Height="640" MinWidth="820" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BgBrush}">
+  <Grid RowDefinitions="56,*" PointerPressed="OnWindowDragPointerPressed">
+    <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource LineBrush}" Padding="28,0">
+      <Grid ColumnDefinitions="*,Auto,*">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Image Width="32" Height="32" Source="/Assets/uptime.png" Stretch="Uniform" />
+          <TextBlock Text="Uptime" FontWeight="SemiBold" FontSize="19" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+          <Button Classes="nav" Classes.on="{Binding IsMonitor}"
+                  Command="{Binding NavigateCommand}" CommandParameter="Monitor"
+                  i18n:Localize.ContentKey="NavMonitor" />
+          <Button Classes="nav" Classes.on="{Binding IsStability}"
+                  Command="{Binding NavigateCommand}" CommandParameter="Stability"
+                  i18n:Localize.ContentKey="NavStability" />
+          <Button Classes="nav" Classes.on="{Binding IsOperations}"
+                  Command="{Binding NavigateCommand}" CommandParameter="Operations"
+                  i18n:Localize.ContentKey="NavOperations" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Right">
+          <Border Classes="language-switch" VerticalAlignment="Center">
+            <Grid ColumnDefinitions="28,28" ColumnSpacing="2">
+              <Border Width="28" Height="30" HorizontalAlignment="Left" Background="{DynamicResource AccentBrush}"
+                      CornerRadius="6" RenderTransformOrigin="0%,50%">
+                <Border.RenderTransform>
+                  <TranslateTransform X="{Binding LanguageIndicatorOffset}" />
+                </Border.RenderTransform>
+                <Border.Transitions>
+                  <Transitions>
+                    <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.18" />
+                  </Transitions>
+                </Border.Transitions>
+              </Border>
+              <Button Grid.Column="0" Classes="language-option" Classes.on="{Binding IsItalian}"
+                      Command="{Binding SetLanguageCommand}" CommandParameter="it"
+                      i18n:Localize.TipKey="PrefLanguage">IT</Button>
+              <Button Grid.Column="1" Classes="language-option" Classes.on="{Binding IsEnglish}"
+                      Command="{Binding SetLanguageCommand}" CommandParameter="en"
+                      i18n:Localize.TipKey="PrefLanguage">EN</Button>
+            </Grid>
+          </Border>
+          <Border Width="1" Height="20" Background="{DynamicResource LineBrush}" VerticalAlignment="Center" />
+          <Button Classes="nav" Classes.on="{Binding IsSettings}" Command="{Binding OpenSettingsCommand}"
+                  i18n:Localize.ContentKey="NavSettings" />
+          <Border Width="1" Height="20" Margin="4,0" Background="{DynamicResource LineBrush}" VerticalAlignment="Center" />
+          <Button Classes="window-control" i18n:Localize.TipKey="ToolMinimize" Click="OnMinimizeClick" i18n:Localize.AutomationNameKey="ToolMinimize">
+            <Path Data="M3,8 L13,8" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.4" />
+          </Button>
+          <Button Classes="window-control" i18n:Localize.TipKey="ToolMaximize" Click="OnToggleMaximizeClick" i18n:Localize.AutomationNameKey="ToolMaximize">
+            <Grid Width="16" Height="16">
+              <Path x:Name="MaximizeIcon" Data="M3,3 L13,3 13,13 3,13 Z" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.2" />
+              <Path x:Name="RestoreIcon" IsVisible="False" Data="M5,3 L13,3 13,11 M3,5 L11,5 11,13 3,13 Z" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.2" />
+            </Grid>
+          </Button>
+          <Button Classes="window-control close" i18n:Localize.TipKey="ToolClose" Click="OnCloseClick" i18n:Localize.AutomationNameKey="ToolClose">
+            <Grid Width="16" Height="16">
+              <Path Data="M3,3 L13,13 M13,3 L3,13" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.4" />
+            </Grid>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1">
+      <Grid IsVisible="{Binding IsMonitor}">
+        <v:MonitorView DataContext="{Binding Monitor}" />
+      </Grid>
+      <Grid IsVisible="{Binding IsStability}">
+        <v:StabilityView DataContext="{Binding Stability}" />
+      </Grid>
+      <Grid IsVisible="{Binding IsOperations}">
+        <v:OperationsView DataContext="{Binding Operations}" />
+      </Grid>
+      <Grid IsVisible="{Binding IsSettings}">
+        <v:SettingsView DataContext="{Binding Settings}" />
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

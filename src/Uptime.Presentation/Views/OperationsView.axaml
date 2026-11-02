@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization"
+             xmlns:c="using:Uptime.Presentation.Controls"
+             x:Class="Uptime.Presentation.Views.OperationsView">
+  <Grid RowDefinitions="*,76">
+    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="72" Margin="56,32,56,24">
+
+        <StackPanel Grid.Column="0">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPower" />
+
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="OpRestart" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="OpRestartDesc" />
+            </StackPanel>
+            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnRestart" Command="{Binding RequestRestartCommand}" />
+          </Grid></Border>
+
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="OpShutdown" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="OpShutdownDesc" />
+            </StackPanel>
+            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnShutdown" Command="{Binding RequestShutdownCommand}" />
+          </Grid></Border>
+
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="OpUefi" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="OpUefiDesc" />
+            </StackPanel>
+            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnUefi" Command="{Binding RequestUefiCommand}" />
+          </Grid></Border>
+
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="OpTimer" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="OpTimerDesc" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+              <Button Classes="ghost" Content="30 m" Command="{Binding StartTimerCommand}" CommandParameter="30" />
+              <Button Classes="ghost" Content="60 m" Command="{Binding StartTimerCommand}" CommandParameter="60" />
+              <Button Classes="ghost" Content="120 m" Command="{Binding StartTimerCommand}" CommandParameter="120" />
+            </StackPanel>
+          </Grid></Border>
+
+          <c:TimeRuler Height="64" Margin="0,16,0,0" TotalTicks="60" MajorEvery="15" GoodTicks="60"
+                       FilledTicks="{Binding TimerFilledTicks}" Labels="{Binding TimerLabels}" />
+          <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+            <TextBlock Classes="muted" FontSize="13" VerticalAlignment="Center" Text="{Binding TimerText}" />
+            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnCancel"
+                    Command="{Binding CancelTimerCommand}" IsVisible="{Binding TimerActive}" />
+          </Grid>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPrefs" />
+
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="PrefFast" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefFastDesc" IsVisible="{Binding FastStartupAvailable}" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="FastUnknown" IsVisible="{Binding !FastStartupAvailable}" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnFastStartupClick"
+                          IsChecked="{Binding FastStartupEnabled, Mode=OneWay}">
+              <ToggleSwitch.IsEnabled>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                  <Binding Path="FastStartupAvailable" />
+                  <Binding Path="!IsBusy" />
+                </MultiBinding>
+              </ToggleSwitch.IsEnabled>
+            </ToggleSwitch>
+          </Grid></Border>
+
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="PrefStartup" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefStartupDesc" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnRunAtStartupClick"
+                          IsChecked="{Binding RunAtStartup, Mode=OneWay}" />
+          </Grid></Border>
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+
+    <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource LineBrush}" Padding="28,0">
+      <Grid>
+        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center" IsVisible="{Binding IsConfirming}">
+          <TextBlock Text="{Binding ConfirmText}" FontSize="14" VerticalAlignment="Center" />
+          <Button Classes="ghost" i18n:Localize.ContentKey="BtnConfirm" Command="{Binding ConfirmPendingCommand}" />
+          <Button Classes="ghost" i18n:Localize.ContentKey="BtnCancel" Command="{Binding CancelPendingCommand}" />
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding ShowFooterInfo}">
+          <TextBlock FontSize="13" Foreground="{DynamicResource AmberBrush}" Text="{Binding StatusMessage}" />
+          <TextBlock FontSize="13" Foreground="{DynamicResource DimBrush}" i18n:Localize.TextKey="FooterNoTelemetry" />
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

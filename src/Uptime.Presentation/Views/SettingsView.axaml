@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization" x:Class="Uptime.Presentation.Views.SettingsView">
+  <ScrollViewer VerticalScrollBarVisibility="Hidden">
+    <StackPanel Margin="56,40" Spacing="24" MaxWidth="850" HorizontalAlignment="Left">
+      <TextBlock Classes="lbl" i18n:Localize.TextKey="LblSettings" />
+      <Border Classes="row" Padding="0,12,0,16">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" VerticalAlignment="Center">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="title" i18n:Localize.TextKey="PrefLanguage" />
+            <TextBlock Classes="hint" i18n:Localize.TextKey="PrefLanguageDesc" />
+          </StackPanel>
+          <Border Grid.Column="1" Classes="language-switch" Width="204">
+            <Grid ColumnDefinitions="98,98" ColumnSpacing="2">
+              <Border Width="98" Height="34" HorizontalAlignment="Left" Background="{DynamicResource AccentBrush}"
+                      CornerRadius="6" RenderTransformOrigin="0%,50%">
+                <Border.RenderTransform>
+                  <TranslateTransform X="{Binding LanguageIndicatorOffset}" />
+                </Border.RenderTransform>
+                <Border.Transitions>
+                  <Transitions>
+                    <DoubleTransition Property="TranslateTransform.X" Duration="0:0:0.18" />
+                  </Transitions>
+                </Border.Transitions>
+              </Border>
+              <Button Grid.Column="0" Classes="language-option language-option-full" Classes.on="{Binding IsItalian}"
+                      Command="{Binding SetLanguageCommand}" CommandParameter="it"
+                      i18n:Localize.TipKey="PrefLanguage">Italiano</Button>
+              <Button Grid.Column="1" Classes="language-option language-option-full" Classes.on="{Binding IsEnglish}"
+                      Command="{Binding SetLanguageCommand}" CommandParameter="en"
+                      i18n:Localize.TipKey="PrefLanguage">English</Button>
+            </Grid>
+          </Border>
+        </Grid>
+      </Border>
+      <TextBlock Classes="lbl" i18n:Localize.TextKey="LblWidgets" />
+      <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetSession"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowSession}"/></Grid></Border>
+      <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetAdvice"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowAdvice}"/></Grid></Border>
+      <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetSystem"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowSystem}"/></Grid></Border>
+      <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPresets" />
+      <StackPanel Orientation="Horizontal" Spacing="10"><Button Classes="ghost" i18n:Localize.ContentKey="PresetDefault" Command="{Binding ApplyPresetCommand}" CommandParameter="Default"/><Button Classes="ghost" i18n:Localize.ContentKey="PresetCompact" Command="{Binding ApplyPresetCommand}" CommandParameter="Compact"/><Button Classes="ghost" i18n:Localize.ContentKey="PresetFocus" Command="{Binding ApplyPresetCommand}" CommandParameter="Focus"/></StackPanel>
+      <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Classes="title" i18n:Localize.TextKey="PrefNight"/><TextBlock Classes="hint" i18n:Localize.TextKey="PrefNightDesc"/></StackPanel><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding NightReminder}"/></Grid></Border>
+      <TextBlock Classes="hint" i18n:Localize.TextKey="ShortcutHint" />
+      <TextBlock Classes="lbl" i18n:Localize.TextKey="MaintenanceTitle" />
+      <Border Classes="row" Padding="16">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" VerticalAlignment="Center">
+          <StackPanel Spacing="5">
+            <TextBlock Classes="hint" i18n:Localize.TextKey="MaintenanceDesc" TextWrapping="Wrap" MaxWidth="560" />
+            <TextBlock Classes="hint" Text="{Binding DiagnosticsStatus}" TextWrapping="Wrap" />
+          </StackPanel>
+          <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="CreateDiagnostics" Click="OnCreateDiagnosticsClick" />
+        </Grid>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

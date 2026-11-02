@@ -1,0 +1,110 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i18n="using:Uptime.Presentation.Localization"
+        x:Class="Uptime.Presentation.Views.TrayMenuWindow"
+        Title="Uptime"
+        Width="318" Height="280" MinWidth="318" MinHeight="280"
+        CanResize="False" ShowInTaskbar="False" Topmost="True"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent">
+  <Window.Styles>
+    <Style Selector="Button.tray-primary">
+      <Setter Property="Background" Value="#7BC4A8" />
+      <Setter Property="Foreground" Value="#111418" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="Button.tray-secondary">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#E8EAED" />
+      <Setter Property="BorderBrush" Value="#30353C" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="Button.tray-exit">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#DEA49A" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,4" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="Button.tray-secondary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#20242A" />
+    </Style>
+    <Style Selector="Button.tray-exit:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#302321" />
+    </Style>
+  </Window.Styles>
+
+  <Border Background="#111418" BorderBrush="#30363D" BorderThickness="1"
+          CornerRadius="15" Padding="15">
+    <Grid RowDefinitions="30,Auto,1,Auto,Auto" RowSpacing="8">
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9">
+        <Image Width="24" Height="24" Source="/Assets/uptime.png" Stretch="Uniform" VerticalAlignment="Center" />
+        <StackPanel Grid.Column="1" Spacing="0" VerticalAlignment="Center">
+          <TextBlock Text="Uptime" FontSize="13" FontWeight="SemiBold" />
+          <TextBlock i18n:Localize.TextKey="TrayPanelTitle" FontSize="10" Foreground="#9AA0A9" />
+        </StackPanel>
+        <Button Grid.Column="2" Width="28" Height="28" Padding="0" Background="Transparent" BorderThickness="0"
+                CornerRadius="7" i18n:Localize.TipKey="HudClose" Click="OnDismissClick"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+          <Path Data="M5,5 L13,13 M13,5 L5,13" Stroke="#9AA0A9" StrokeThickness="1.4" />
+        </Button>
+      </Grid>
+
+      <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="14" VerticalAlignment="Center">
+        <StackPanel Spacing="-1">
+          <TextBlock Text="{Binding PrimaryText}" FontSize="30" FontWeight="Light" LetterSpacing="-0.6" />
+          <TextBlock Text="{Binding SecondaryText}" FontSize="11" Foreground="#AEB5BD" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <Ellipse Width="7" Height="7" Fill="{Binding StatusBrush}" />
+          <TextBlock Text="{Binding StatusText}" FontSize="10" Foreground="#DCE8E2" />
+        </StackPanel>
+      </Grid>
+
+      <Border Grid.Row="2" Height="1" Background="#292E34" />
+
+      <StackPanel Grid.Row="3" Spacing="7">
+        <Button Classes="tray-primary" Width="286" HorizontalAlignment="Left" Click="OnOpenClick">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <StackPanel Spacing="1">
+              <TextBlock i18n:Localize.TextKey="TrayOpen" FontSize="12" FontWeight="SemiBold" />
+              <TextBlock i18n:Localize.TextKey="TrayOpenHint" FontSize="10" Foreground="#263E35" />
+            </StackPanel>
+            <Path Grid.Column="1" Data="M4,12 L12,4 M5,4 L12,4 12,11" Stroke="#111418"
+                  StrokeThickness="1.5" VerticalAlignment="Center" />
+          </Grid>
+        </Button>
+        <Button Classes="tray-secondary" Width="286" HorizontalAlignment="Left" Click="OnSettingsClick">
+          <StackPanel Spacing="1">
+            <TextBlock i18n:Localize.TextKey="NavSettings" FontSize="12" FontWeight="Medium" />
+            <TextBlock i18n:Localize.TextKey="TraySettingsHint" FontSize="10" Foreground="#9AA0A9" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+      <Button Grid.Row="4" Classes="tray-exit" Width="286" HorizontalAlignment="Left" Click="OnExitClick">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="0">
+            <TextBlock i18n:Localize.TextKey="TrayExit" FontSize="11" FontWeight="Medium" />
+            <TextBlock i18n:Localize.TextKey="TrayExitHint" FontSize="9" Foreground="#A98580" />
+          </StackPanel>
+          <Path Grid.Column="1" Data="M5,5 L13,13 M13,5 L5,13" Stroke="#DEA49A" StrokeThickness="1.4"
+                VerticalAlignment="Center" />
+        </Grid>
+      </Button>
+    </Grid>
+  </Border>
+</Window>
