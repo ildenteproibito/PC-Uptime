@@ -9,7 +9,7 @@ See how long your PC has been running, review recent sessions, and understand un
 </p>
 
 <p align="center">
-  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&amp;gl=EN">
+  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN">
     <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" width="220" />
   </a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">Website</a>
