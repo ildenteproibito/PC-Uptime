@@ -5,7 +5,7 @@ See how long your PC has been running, review recent sessions, and understand un
 **PC Uptime** is an independent desktop project for Windows. It keeps monitoring data on your computer and presents uptime, stability, and system activity in a clear dashboard.
 
 <p align="center">
-  <img src="docs/uptime-logo.svg" alt="Uptime clock logo" width="100" />
+  <img src="docs/Uptime-Logo.png" alt="Uptime clock logo" width="100" />
 </p>
 
 <p align="center">
