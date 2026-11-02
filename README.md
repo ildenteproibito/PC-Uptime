@@ -38,6 +38,30 @@ The screenshots below show the Monitor, Stability, and Operations views.
 - **Data export:** exports records in JSON or CSV format and generates shareable uptime badges.
 - **Configurable interface:** includes preferences for startup behavior, Fast Startup, dashboard layout, language, and the optional night reminder.
 
+## Platform compatibility
+
+PC Uptime currently supports Windows 10 and Windows 11. Support for Linux and macOS is planned for future releases.
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="https://cdn.simpleicons.org/windows/0078D4" alt="Windows logo" width="48" height="48" />
+      <br /><strong>Windows 10 / 11</strong>
+      <br /><sub>Supported</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="https://cdn.simpleicons.org/linux/FCC624" alt="Linux logo" width="48" height="48" />
+      <br /><strong>Linux</strong>
+      <br /><sub>Coming Soon</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="https://cdn.simpleicons.org/apple/000000" alt="Apple logo for macOS" width="48" height="48" />
+      <br /><strong>macOS</strong>
+      <br /><sub>Coming Soon</sub>
+    </td>
+  </tr>
+</table>
+
 ## Technology stack
 
 PC Uptime is built with the following technologies:
