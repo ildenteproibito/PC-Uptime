@@ -5,7 +5,7 @@ See how long your PC has been running, review recent sessions, and understand un
 **PC Uptime** is an independent Windows utility for monitoring system uptime, reviewing session history, assessing system stability, and accessing essential power-management operations. Monitoring data is processed locally and presented through a native-feeling desktop interface.
 
 <p align="center">
-  <img src="docs/Square150x150Logo.png" alt="PC Uptime logo" width="360" />
+  <img src="docs/Uptime-Logo.png" alt="PC Uptime logo" width="360" />
 </p>
 
 <p align="center">
