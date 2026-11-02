@@ -1,0 +1,99 @@
+name: Portable Windows Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Portable release version
+        required: true
+        default: "1.0.0"
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-portable:
+    name: Build Windows x64 portable package
+    runs-on: windows-latest
+
+    env:
+      VERSION: ${{ inputs.version || github.ref_name }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore solution
+        run: dotnet restore .\Uptime.slnx
+
+      - name: Run Core tests
+        run: dotnet test .\tests\Uptime.Core.Tests\Uptime.Core.Tests.csproj --configuration Release --no-restore
+
+      - name: Publish self-contained Windows x64 application
+        shell: pwsh
+        run: |
+          dotnet publish .\src\Uptime.Presentation\Uptime.Presentation.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --output .\artifacts\portable\Uptime `
+            -p:Version="${env:VERSION}" `
+            -p:DebugType=None `
+            -p:DebugSymbols=false
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "dotnet publish failed with exit code $LASTEXITCODE"
+          }
+
+      - name: Assemble portable archive
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $publishDir = Join-Path $PWD 'artifacts\portable\Uptime'
+          $archive = Join-Path $PWD "artifacts\Uptime-$env:VERSION-win-x64-portable.zip"
+
+          if (-not (Test-Path (Join-Path $publishDir 'Uptime.exe'))) {
+            throw 'Portable executable was not produced.'
+          }
+
+          Get-ChildItem -LiteralPath $publishDir -Filter '*.pdb' -File -Recurse |
+            Remove-Item -Force
+
+          @"
+          Uptime $env:VERSION — Portable for Windows x64
+
+          1. Extract the complete archive to a folder of your choice.
+          2. Run Uptime.exe.
+          3. Keep the extracted files together; do not run the executable from inside the ZIP archive.
+
+          This is a self-contained build and does not require a separate .NET Desktop Runtime installation.
+          This package is distributed without an installer.
+          "@ | Set-Content -LiteralPath (Join-Path $publishDir 'PORTABLE-README.txt') -Encoding utf8
+
+          Compress-Archive -Path (Join-Path $publishDir '*') -DestinationPath $archive -CompressionLevel Optimal
+          Write-Host "Created $archive"
+
+      - name: Upload portable package as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Uptime-${{ env.VERSION }}-win-x64-portable
+          path: artifacts/Uptime-${{ env.VERSION }}-win-x64-portable.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Uptime ${{ env.VERSION }} — Portable
+          generate_release_notes: true
+          files: artifacts/Uptime-${{ env.VERSION }}-win-x64-portable.zip
