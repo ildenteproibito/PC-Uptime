@@ -5,6 +5,10 @@ See how long your PC has been running, review recent sessions, and understand un
 **PC Uptime** is an independent desktop project for Windows. It keeps monitoring data on your computer and presents uptime, stability, and system activity in a clear dashboard.
 
 <p align="center">
+  <img src="docs/uptime-logo.png" alt="Uptime logo" width="360" />
+</p>
+
+<p align="center">
   <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&amp;gl=EN"><strong>Get it from Microsoft Store</strong></a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">Website</a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/support/">Help and support</a>
@@ -36,7 +40,7 @@ The screenshots below show the app’s Monitor, Stability, and Operations views.
 
 ## Get started
 
-Install PC Uptime from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0), then open it from the Start menu. The Monitor, Stability, and Operations tabs provide the main dashboard, history, and system controls. Use the tray icon or `Win` + `Alt` + `U` to bring the app back when it is minimized.
+Install PC Uptime from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&gl=EN), then open it from the Start menu. The Monitor, Stability, and Operations tabs provide the main dashboard, history, and system controls. Use the tray icon or `Win` + `Alt` + `U` to bring the app back when it is minimized.
 
 For usage help and troubleshooting, visit the [support page](https://uptime-pc.vercel.app/support/). You can also ask questions in the [Uptime Discord server](https://discord.gg/88qrhwjBDP).
 
@@ -88,5 +92,3 @@ PC Uptime is an independent project maintained in the open. The repository refle
 All rights reserved. The source is published for transparency and review; it is not licensed for redistribution or commercial use.
 
 Maintained by [@ildenteproibito](https://github.com/ildenteproibito).
-
-Issues and feature requests are welcome via GitHub Issues.
