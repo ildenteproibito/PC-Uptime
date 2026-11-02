@@ -4,5 +4,5 @@
   <path d="M128 50a78 78 0 1 1-63.64 32.9" fill="none" stroke="#7bc4a8" stroke-width="12" stroke-linecap="round"/>
   <path d="M128 83v47l34 20" fill="none" stroke="#e8eaed" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
   <circle cx="128" cy="130" r="9" fill="#7bc4a8"/>
-  <path d="M52 73l13 10M128 39v16M204 73l-13 10" fill="none" stroke="#7bc4a8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M128 39v16M204 73l-13 10M204 183l-13-10" fill="none" stroke="#7bc4a8" stroke-width="8" stroke-linecap="round"/>
 </svg>
