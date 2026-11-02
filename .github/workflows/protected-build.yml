@@ -1,0 +1,66 @@
+name: Protected Windows build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: protected-build-\${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-obfuscated:
+    name: Build, test and obfuscate (.NET 10 / win-x64)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Restore solution
+        run: dotnet restore .\Uptime.slnx
+      - name: Run tests
+        run: dotnet test .\tests\Uptime.Core.Tests\Uptime.Core.Tests.csproj --configuration Release --no-restore
+      - name: Publish Windows x64 application
+        shell: pwsh
+        run: |
+          $publish = Join-Path $env:RUNNER_TEMP 'uptime-publish'
+          dotnet publish .\src\Uptime.Presentation\Uptime.Presentation.csproj --configuration Release --runtime win-x64 --self-contained true --no-restore -p:ContinuousIntegrationBuild=true -p:DebugType=None -p:DebugSymbols=false --output $publish
+          if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed with exit code $LASTEXITCODE." }
+      - name: Restore pinned obfuscator
+        run: dotnet tool restore
+      - name: Obfuscate application assemblies
+        shell: pwsh
+        run: |
+          $publish = Join-Path $env:RUNNER_TEMP 'uptime-publish'
+          $obfuscated = Join-Path $env:RUNNER_TEMP 'uptime-obfuscated'
+          .\scripts\Obfuscate-Publish.ps1 -PublishDirectory $publish -OutputDirectory $obfuscated
+      - name: Verify distributable payload
+        shell: pwsh
+        run: |
+          $publish = Join-Path $env:RUNNER_TEMP 'uptime-publish'
+          $required = @('Uptime.exe', 'Uptime.dll', 'Uptime.Core.dll', 'Uptime.Infrastructure.dll', 'Uptime.runtimeconfig.json')
+          foreach ($file in $required) {
+            if (-not (Test-Path (Join-Path $publish $file))) { throw "Missing publish output: $file" }
+          }
+          if (Get-ChildItem $publish -Recurse -Filter '*.pdb' -File) { throw 'PDB files must not be shipped.' }
+          if (Get-ChildItem $publish -Recurse -Filter 'Mapping.*' -File) { throw 'Obfuscation mapping files must not be shipped.' }
+      - name: Upload protected Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: PC-Uptime-win-x64-obfuscated
+          path: \${{ runner.temp }}\uptime-publish\
+          if-no-files-found: error
+          retention-days: 14
