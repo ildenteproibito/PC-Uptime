@@ -33,7 +33,7 @@ The screenshots below show the Monitor, Stability, and Operations views.
 - **Session history** — records session durations and active or idle time.
 - **Stability analysis** — evaluates Windows startup and shutdown events and surfaces details about unexpected shutdowns.
 - **System context** — presents relevant system information alongside uptime and maintenance guidance.
-- **Desktop integration** — provides notification-area access, a global keyboard shortcut (\`Win\` + \`Alt\` + \`U\`), and a compact Mini-HUD.
+- **Desktop integration** — provides notification-area access, a global keyboard shortcut (`Win` + `Alt` + `U`), and a compact Mini-HUD.
 - **Power operations** — supports clean restart, full shutdown, restart to UEFI/BIOS, and scheduled shutdown.
 - **Data export** — exports records in JSON or CSV format and generates shareable uptime badges.
 - **Configurable interface** — includes preferences for startup behavior, Fast Startup, dashboard layout, language, and the optional night reminder.
@@ -52,7 +52,7 @@ PC Uptime is built with the following technologies:
 | Windows integration | Win32 APIs and Windows Event Log |
 | Automated tests | xUnit |
 
-The presentation project targets \`net10.0-windows\`. The Core, Infrastructure, and test projects target \`net10.0\`.
+The presentation project targets `net10.0-windows`. The Core, Infrastructure, and test projects target `net10.0`.
 
 ## Architecture
 
@@ -60,10 +60,10 @@ The solution is organized into three application projects with separate responsi
 
 | Project | Responsibility |
 | --- | --- |
-| \`Uptime.Core\` | Domain models, uptime and stability logic, service abstractions, localization, and core persistence utilities. |
-| \`Uptime.Infrastructure\` | Windows-specific implementations for uptime and idle-time providers, event log access, power operations, and startup configuration. |
-| \`Uptime.Presentation\` | Avalonia desktop application, views, view models, UI controls, application diagnostics, tray-related integration, and global hotkey handling. |
-| \`Uptime.Core.Tests\` | Automated tests for core application logic. |
+| `Uptime.Core` | Domain models, uptime and stability logic, service abstractions, localization, and core persistence utilities. |
+| `Uptime.Infrastructure` | Windows-specific implementations for uptime and idle-time providers, event log access, power operations, and startup configuration. |
+| `Uptime.Presentation` | Avalonia desktop application, views, view models, UI controls, application diagnostics, tray-related integration, and global hotkey handling. |
+| `Uptime.Core.Tests` | Automated tests for core application logic. |
 
 The presentation layer consumes Core abstractions and Infrastructure implementations. This separation keeps domain logic distinct from Windows-specific operations and UI concerns.
 
@@ -71,7 +71,7 @@ The presentation layer consumes Core abstractions and Infrastructure implementat
 
 Install PC Uptime from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&gl=EN), then launch it from the Start menu. The Monitor, Stability, and Operations sections provide the main dashboard, session and event history, and system controls.
 
-Use the notification-area icon or \`Win\` + \`Alt\` + \`U\` to bring the application back when it is minimized.
+Use the notification-area icon or `Win` + `Alt` + `U` to bring the application back when it is minimized.
 
 For usage help and troubleshooting, visit the [support page](https://uptime-pc.vercel.app/support/) or ask questions in the [Uptime Discord server](https://discord.gg/88qrhwjBDP).
 
@@ -93,28 +93,28 @@ For usage help and troubleshooting, visit the [support page](https://uptime-pc.v
 
 Run the following commands from the repository root in PowerShell:
 
-\`\`\`powershell
+```powershell
 dotnet restore .\Uptime.slnx
 dotnet build .\Uptime.slnx --configuration Release
-\`\`\`
+```
 
 ### Run tests
 
-\`\`\`powershell
+```powershell
 dotnet test .\tests\Uptime.Core.Tests\Uptime.Core.Tests.csproj --configuration Release
-\`\`\`
+```
 
 ### Publish a self-contained Windows x64 build
 
-\`\`\`powershell
+```powershell
 dotnet publish .\src\Uptime.Presentation\Uptime.Presentation.csproj --configuration Release --runtime win-x64 --self-contained true
-\`\`\`
+```
 
-The publish output is generated under the presentation project's \`bin\Release\net10.0-windows\win-x64\publish\` directory.
+The publish output is generated under the presentation project's `bin\Release\net10.0-windows\win-x64\publish` directory.
 
 ## Repository layout
 
-\`\`\`text
+```text
 .
 ├── docs/
 │   ├── screenshots/
@@ -126,7 +126,7 @@ The publish output is generated under the presentation project's \`bin\Release\n
 ├── tests/
 │   └── Uptime.Core.Tests/
 └── Uptime.slnx
-\`\`\`
+```
 
 ## Privacy
 
