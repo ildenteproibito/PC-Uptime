@@ -5,6 +5,10 @@ See how long your PC has been running, review recent sessions, and understand un
 **PC Uptime** is an independent desktop project for Windows. It keeps monitoring data on your computer and presents uptime, stability, and system activity in a clear dashboard.
 
 <p align="center">
+  <img src="docs/uptime-logo.png" alt="Uptime logo" width="360" />
+</p>
+
+<p align="center">
   <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-EN&amp;gl=EN"><strong>Get it from Microsoft Store</strong></a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">Website</a>
   &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/support/">Help and support</a>
