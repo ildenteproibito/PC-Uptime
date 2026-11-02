@@ -12,14 +12,14 @@ See how long your PC has been running, review recent sessions, and understand un
   <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN">
     <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" width="220" />
   </a>
-  &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/">
-    <img src="https://img.shields.io/badge/PC%20UPTIME-WEBSITE-3B82F6?style=for-the-badge&labelColor=20242C" alt="PC Uptime website" />
+  &nbsp; <a href="https://uptime-pc.vercel.app/">
+    <img src="https://img.shields.io/badge/Website-PC%20Uptime-3B82F6?style=flat&labelColor=20242C" alt="PC Uptime website" />
   </a>
-  &nbsp;·&nbsp; <a href="https://uptime-pc.vercel.app/support/">
-    <img src="https://img.shields.io/badge/PC%20UPTIME-HELP%20CENTER-64748B?style=for-the-badge&labelColor=20242C" alt="PC Uptime help and support" />
+  &nbsp; <a href="https://uptime-pc.vercel.app/support/">
+    <img src="https://img.shields.io/badge/Support-Help%20Center-64748B?style=flat&labelColor=20242C" alt="PC Uptime help and support" />
   </a>
-  &nbsp;·&nbsp; <a href="https://discord.gg/88qrhwjBDP">
-    <img src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d718355f9c89eb0fd350_Logo.svg" alt="Join our Discord server" height="30" />
+  &nbsp; <a href="https://discord.gg/88qrhwjBDP">
+    <img src="https://img.shields.io/badge/Discord-Join%20community-5865F2?style=flat&logo=discord&logoColor=white&labelColor=20242C" alt="Join our Discord server" />
   </a>
 </p>
 
