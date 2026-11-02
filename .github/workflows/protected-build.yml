@@ -30,7 +30,7 @@ jobs:
             8.0.x
             10.0.x
       - name: Restore solution
-        run: dotnet restore .\Uptime.slnx
+        run: dotnet restore .\Uptime.slnx --runtime win-x64
       - name: Run tests
         run: dotnet test .\tests\Uptime.Core.Tests\Uptime.Core.Tests.csproj --configuration Release --no-restore
       - name: Publish Windows x64 application
