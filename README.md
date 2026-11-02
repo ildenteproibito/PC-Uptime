@@ -88,7 +88,3 @@ PC Uptime is an independent project maintained in the open. The repository refle
 All rights reserved. The source is published for transparency and review; it is not licensed for redistribution or commercial use.
 
 Maintained by [@ildenteproibito](https://github.com/ildenteproibito).
-<<<<<<< HEAD
-Issues and feature requests are welcome via GitHub Issues.
-=======
->>>>>>> 7ec3a3a (docs: refresh README with app screenshots)
