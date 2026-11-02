@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
+    branches: [build/binary-obfuscation]
     tags:
       - 'v*'
   workflow_dispatch:
