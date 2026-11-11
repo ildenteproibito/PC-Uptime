@@ -56,7 +56,11 @@ public partial class App : Application
                     new Win32IdleProvider(),
                     new WindowsEventLogService(),
                     new Win32PowerService(),
-                    new Win32StartupService())
+                    new Win32StartupService(),
+                    new WindowsBatteryService(),
+                    new WindowsSleepBlockerService(),
+                    new WindowsStartupAppsService(),
+                    new WindowsMediaService())
             };
             desktop.MainWindow.Closing += (_, e) =>
             {

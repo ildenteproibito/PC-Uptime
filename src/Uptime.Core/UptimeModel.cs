@@ -24,3 +24,52 @@ public static class Health
     public static int DaysUntilMaintenance(TimeSpan uptime) =>
         Math.Max(0, (int)Math.Ceiling(MaintenanceDays - uptime.TotalDays));
 }
+
+public sealed record BatteryInfo(
+    bool HasBattery,
+    int Percent,
+    bool IsCharging,
+    int? HealthPercent,
+    int? DesignCapacityMWh,
+    int? FullChargeCapacityMWh,
+    int? CycleCount,
+    string PowerStatusText);
+
+public enum StartupImpactLevel { Low, Medium, High }
+
+public sealed record StartupAppItem(
+    string Name,
+    string Command,
+    StartupImpactLevel Impact,
+    string Location);
+
+public sealed record SleepBlockerItem(
+    string Category,
+    string Name,
+    string Detail);
+
+public sealed record SleepCheckResult(
+    bool HasBlockers,
+    IReadOnlyList<SleepBlockerItem> Blockers,
+    string? LastWakeReason,
+    bool IsElevated);
+
+public sealed record MediaTrackInfo(
+    bool HasTrack,
+    string Title,
+    string Artist,
+    string Album,
+    bool IsPlaying,
+    string SourceApp,
+    byte[]? ThumbnailBytes,
+    TimeSpan Position = default,
+    TimeSpan Duration = default,
+    bool IsLooping = false);
+
+public sealed record BsodExplanation(
+    long Code,
+    string HexCode,
+    string Name,
+    string Meaning,
+    string Advice);
+

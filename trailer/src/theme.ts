@@ -1,0 +1,25 @@
+export const theme = {
+  colors: {
+    bg: '#0F1114',
+    bgDark: '#08090B',
+    surface: '#1B1E24',
+    surfaceElevated: '#21252D',
+    line: '#1D2026',
+    rowLine: '#1A1D22',
+    outline: '#2A2E36',
+    outlineBright: '#3E4450',
+    text: '#E8EAED',
+    textDim: '#C4C8CF',
+    muted: '#9AA0A9',
+    dim: '#8D939C',
+    accent: '#7BC4A8',
+    accentGlow: 'rgba(123, 196, 168, 0.28)',
+    accentSubtle: 'rgba(123, 196, 168, 0.12)',
+    amber: '#E0A458',
+    orange: '#E8845A',
+  },
+  fonts: {
+    main: "'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif",
+    mono: "'Cascadia Code', 'Consolas', 'JetBrains Mono', monospace",
+  },
+};

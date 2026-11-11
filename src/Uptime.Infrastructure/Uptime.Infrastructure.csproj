@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Uptime.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.EventLog" Version="10.0.*" />
+    <PackageReference Include="System.Management" Version="10.0.*" />
     <ProjectReference Include="..\Uptime.Core\Uptime.Core.csproj" />
   </ItemGroup>
 </Project>

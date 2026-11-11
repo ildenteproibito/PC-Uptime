@@ -20,11 +20,23 @@ public partial class MonitorView : UserControl
             await clipboard.SetTextAsync(vm.L.Format("BadgeTemplate", $"{vm.PrimaryText} {vm.SecondaryText}", vm.StatusText));
     }
 
+    private MiniHudWindow? _hudWindow;
+
     private void OnHudClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not MonitorViewModel vm) return;
-        var hud = new MiniHudWindow { DataContext = vm };
-        hud.Show();
+        if (_hudWindow is { IsVisible: true })
+        {
+            if (_hudWindow.WindowState == WindowState.Minimized)
+                _hudWindow.WindowState = WindowState.Normal;
+            _hudWindow.Activate();
+        }
+        else
+        {
+            _hudWindow = new MiniHudWindow { DataContext = vm };
+            _hudWindow.Closed += (_, _) => _hudWindow = null;
+            _hudWindow.Show();
+        }
     }
 
     private void OnSettingsClick(object? sender, RoutedEventArgs e)

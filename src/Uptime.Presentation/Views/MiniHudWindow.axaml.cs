@@ -1,5 +1,5 @@
-using Avalonia.Controls;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
@@ -18,5 +18,6 @@ public partial class MiniHudWindow : Window
         BeginMoveDrag(e);
     }
 
+    private void OnMinimizeClick(object? sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
     private void OnCloseClick(object? sender, RoutedEventArgs e) => Close();
 }

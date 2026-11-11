@@ -10,8 +10,8 @@ public sealed class Win32PowerService : IPowerService
 {
     private const string PowerKey = @"SYSTEM\CurrentControlSet\Control\Session Manager\Power";
 
-    // Il riavvio e' sempre "pulito" (bypassa Fast Startup). Per lo spegnimento serve /full,
-    // altrimenti con Fast Startup attivo Windows esegue uno spegnimento ibrido.
+    // Reboot is always clean (bypasses Fast Startup). Shutdown requires /full,
+    // otherwise with Fast Startup enabled Windows performs a hybrid shutdown.
     public void CleanReboot() => RunShutdown("/r /t 0");
     public void FullShutdown() => RunShutdown("/s /full /t 0");
     public void RebootToUefi() => RunShutdown("/r /fw /t 0");
@@ -45,7 +45,7 @@ public sealed class Win32PowerService : IPowerService
                 $"add \"HKLM\\{PowerKey}\" /v HiberbootEnabled /t REG_DWORD /d {(enabled ? 1 : 0)} /f")
             {
                 UseShellExecute = true,
-                Verb = "runas", // richiede UAC
+                Verb = "runas", // requires UAC elevation
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
             using var process = Process.Start(psi);
@@ -55,7 +55,7 @@ public sealed class Win32PowerService : IPowerService
         }
         catch (Win32Exception)
         {
-            return false; // UAC rifiutato (1223) o reg.exe non avviabile
+            return false; // UAC rejected (1223) or reg.exe not launchable
         }
     }
 

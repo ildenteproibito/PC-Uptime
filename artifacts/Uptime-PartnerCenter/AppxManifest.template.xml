@@ -6,7 +6,7 @@
          IgnorableNamespaces="uap desktop rescap">
   <Identity Name="__IDENTITY_NAME__" Publisher="__PUBLISHER__" Version="__VERSION__" ProcessorArchitecture="x64" />
   <Properties>
-    <DisplayName>Uptime</DisplayName>
+    <DisplayName>PC Uptime</DisplayName>
     <PublisherDisplayName>__PUBLISHER_DISPLAY_NAME__</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -19,7 +19,7 @@
   </Resources>
   <Applications>
     <Application Id="Uptime" Executable="Uptime.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Uptime" Description="System uptime and stability monitor"
+      <uap:VisualElements DisplayName="PC Uptime" Description="System uptime and stability monitor"
                           BackgroundColor="#0F1114" Square150x150Logo="Assets\Square150x150Logo.png"
                           Square44x44Logo="Assets\Square44x44Logo.png" />
       <Extensions>

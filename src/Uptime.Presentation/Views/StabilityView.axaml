@@ -49,9 +49,30 @@
           <TextBlock Classes="muted" FontSize="14" i18n:Localize.TextKey="NoIncidents" IsVisible="{Binding HasNoIncidents}" />
           <ItemsControl ItemsSource="{Binding Incidents}">
             <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <TextBlock FontSize="14" LineHeight="22" TextWrapping="Wrap" Foreground="#C4C8CF"
-                           Margin="0,0,0,6" Text="{Binding}" />
+              <DataTemplate x:DataType="vm:IncidentRow">
+                <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                        CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
+                  <StackPanel Spacing="6">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <TextBlock Text="{Binding EventSummary}" FontSize="13" Foreground="#C4C8CF" FontWeight="Medium" />
+                      <Border Grid.Column="1" Background="#222730" CornerRadius="4" Padding="6,2" IsVisible="{Binding HasExplanation}">
+                        <TextBlock Text="{Binding BugcheckHex}" FontSize="11" Foreground="{DynamicResource OrangeBrush}" FontFamily="Consolas, monospace" />
+                      </Border>
+                    </Grid>
+
+                    <StackPanel Spacing="4" Margin="0,4,0,0" IsVisible="{Binding HasExplanation}">
+                      <TextBlock Text="{Binding BugcheckName}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource OrangeBrush}" />
+                      <TextBlock Text="{Binding Meaning}" FontSize="13" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" LineHeight="18" />
+                      <Border Background="#1C212A" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                              CornerRadius="6" Padding="12,8" Margin="0,4,0,0">
+                        <StackPanel Spacing="3">
+                          <TextBlock Text="ADVICE" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" LetterSpacing="0.8" />
+                          <TextBlock Text="{Binding Advice}" FontSize="12" Foreground="#C8CED6" TextWrapping="Wrap" LineHeight="17" />
+                        </StackPanel>
+                      </Border>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>

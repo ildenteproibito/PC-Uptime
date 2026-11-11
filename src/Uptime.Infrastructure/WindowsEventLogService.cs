@@ -4,7 +4,7 @@ using Uptime.Core;
 
 namespace Uptime.Infrastructure;
 
-/// <summary>Legge dal registro "System" gli eventi di avvio/arresto (12, 13, 41, 1074, 6005, 6006, 6008).</summary>
+/// <summary>Reads boot and shutdown events from the "System" log (12, 13, 41, 1074, 6005, 6006, 6008).</summary>
 public sealed class WindowsEventLogService : IEventLogService
 {
     private static readonly int[] Ids = { 12, 13, 41, 1074, 6005, 6006, 6008 };
@@ -22,7 +22,15 @@ public sealed class WindowsEventLogService : IEventLogService
             using (record)
             {
                 if (record.TimeCreated is { } time)
-                    result.Add(new LogEvent(time, record.Id, record.ProviderName ?? ""));
+                {
+                    long? bugcheckCode = null;
+                    if (record.Id == 41 && record.Properties.Count > 0 && record.Properties[0]?.Value is not null)
+                    {
+                        if (long.TryParse(record.Properties[0].Value.ToString(), out var codeVal))
+                            bugcheckCode = codeVal;
+                    }
+                    result.Add(new LogEvent(time, record.Id, record.ProviderName ?? "", bugcheckCode));
+                }
             }
         }
         return result.OrderBy(e => e.Time).ToList();

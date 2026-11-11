@@ -42,11 +42,16 @@ public partial class MonitorViewModel : ObservableObject, IDisposable
     public bool ShowAdvice => _settings.ShowAdvice;
     public bool ShowSystem => _settings.ShowSystem;
 
-    public MonitorViewModel(IUptimeProvider uptime, IIdleProvider idle, SettingsViewModel settings)
+    public SpotifyViewModel? Spotify { get; }
+    public Action? RequestIdleWindowOpen { get; set; }
+    public Action? RequestIdleWindowClose { get; set; }
+
+    public MonitorViewModel(IUptimeProvider uptime, IIdleProvider idle, SettingsViewModel settings, SpotifyViewModel? spotify = null)
     {
         _uptime = uptime;
         _idle = idle;
         _settings = settings;
+        Spotify = spotify;
         try { _personalBestSeconds = double.Parse(File.ReadAllText(RecordPath), System.Globalization.CultureInfo.InvariantCulture); } catch (Exception e) when (e is IOException or FormatException or UnauthorizedAccessException) { }
         _settings.PropertyChanged += (_, _) => { OnPropertyChanged(nameof(ShowSession)); OnPropertyChanged(nameof(ShowAdvice)); OnPropertyChanged(nameof(ShowSystem)); };
         Localizer.Instance.PropertyChanged += OnLanguageChanged;
@@ -116,6 +121,15 @@ public partial class MonitorViewModel : ObservableObject, IDisposable
         var idle = _idle.GetIdleTime();
         IdleText = $"{(int)idle.TotalMinutes} m {idle.Seconds:00} s";
         ClipboardText = l.Format("ClipboardText", $"{PrimaryText} {SecondaryText}", bootFormatted);
+
+        if (idle >= TimeSpan.FromMinutes(30))
+        {
+            RequestIdleWindowOpen?.Invoke();
+        }
+        else if (idle < TimeSpan.FromSeconds(5))
+        {
+            RequestIdleWindowClose?.Invoke();
+        }
     }
 
     public void Dispose()

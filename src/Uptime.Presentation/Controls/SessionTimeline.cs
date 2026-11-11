@@ -5,10 +5,10 @@ using Avalonia.Media;
 
 namespace Uptime.Presentation.Controls;
 
-/// <summary>Segmento della cronologia: posizione e lunghezza come frazioni (0..1) della finestra.</summary>
+/// <summary>Timeline segment: position and length as fractions (0..1) of the window.</summary>
 public sealed record TimelineSegment(double Start, double Length, IBrush Brush);
 
-/// <summary>Scala a tacche (una per giorno) con le sessioni disegnate come barre sopra.</summary>
+/// <summary>Tick ruler (one per day) with sessions drawn as bars on top.</summary>
 public sealed class SessionTimeline : Control
 {
     public static readonly StyledProperty<IReadOnlyList<TimelineSegment>?> SegmentsProperty =
