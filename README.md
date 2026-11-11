@@ -28,7 +28,7 @@ See how long your PC has been running, review recent sessions, and understand un
 Get a closer look at PC Uptime in the official project trailer.
 
 <p align="center">
-  <video src="https://cdn.rapidfile.cc/lRMgfjMaXV/trailer.mp4" controls playsinline preload="metadata" width="100%">
+  <video src="https://github.com/user-attachments/assets/31f1d3b9-b442-4472-9b60-07a57158a41d" controls playsinline preload="metadata" width="100%">
     Your browser does not support embedded video. <a href="https://cdn.rapidfile.cc/lRMgfjMaXV/trailer.mp4">Watch or download the PC Uptime trailer</a>.
   </video>
 </p>
