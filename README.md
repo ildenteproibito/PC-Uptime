@@ -34,7 +34,7 @@ Get a closer look at PC Uptime in the official project trailer.
 </p>
 
 <p align="center">
-  <a href="https://cdn.rapidfile.cc/lRMgfjMaXV/trailer.mp4">Open trailer directly</a>
+  <a href="https://github.com/user-attachments/assets/31f1d3b9-b442-4472-9b60-07a57158a41d">Open trailer directly</a>
 </p>
 
 ## Screenshots
