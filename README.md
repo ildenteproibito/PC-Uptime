@@ -50,11 +50,22 @@ The screenshots below show the Monitor, Stability, and Operations views.
 
 PC Uptime is currently available for Windows. Support for Linux and macOS is planned.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Windows%2010%20%2F%2011-Supported-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows 10 and 11 supported" />
-  <img src="https://img.shields.io/badge/Linux-Coming%20Soon-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux coming soon" />
-  <img src="https://img.shields.io/badge/macOS-Coming%20Soon-555555?style=for-the-badge&logo=apple&logoColor=white" alt="macOS coming soon" />
-</p>
+<table align="center">
+  <tr>
+    <td align="center" width="33%">
+      <img src="https://img.shields.io/badge/Windows%2010%20%2F%2011-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows 10 and 11 logo" />
+      <br /><sub><strong>Currently supported</strong></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="https://img.shields.io/badge/Linux-111827?style=for-the-badge&logo=linux&logoColor=FCC624" alt="Linux logo" />
+      <br /><sub><strong>Planned</strong></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="https://img.shields.io/badge/macOS-111827?style=for-the-badge&logo=apple&logoColor=white" alt="macOS logo" />
+      <br /><sub><strong>Planned</strong></sub>
+    </td>
+  </tr>
+</table>
 
 ## Technology stack
 
