@@ -23,6 +23,20 @@ See how long your PC has been running, review recent sessions, and understand un
   </a>
 </p>
 
+## Watch the trailer
+
+Get a closer look at PC Uptime in the official project trailer.
+
+<p align="center">
+  <video src="https://cdn.rapidfile.cc/lRMgfjMaXV/trailer.mp4" controls playsinline preload="metadata" width="100%">
+    Your browser does not support embedded video. <a href="https://cdn.rapidfile.cc/lRMgfjMaXV/trailer.mp4">Watch or download the PC Uptime trailer</a>.
+  </video>
+</p>
+
+<p align="center">
+  <a href="https://cdn.rapidfile.cc/lRMgfjMaXV/trailer.mp4">Open trailer directly</a>
+</p>
+
 ## Screenshots
 
 The screenshots below show the Monitor, Stability, and Operations views.
