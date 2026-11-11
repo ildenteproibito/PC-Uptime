@@ -3,7 +3,7 @@ using Uptime.Core;
 
 namespace Uptime.Infrastructure;
 
-/// <summary>Avvio con Windows tramite HKCU\...\Run. (Cartella Esecuzione automatica e StartupApproved: blocco successivo.)</summary>
+/// <summary>Launch on Windows startup via HKCU\...\Run.</summary>
 public sealed class Win32StartupService : IStartupService
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -23,7 +23,7 @@ public sealed class Win32StartupService : IStartupService
         using var key = Registry.CurrentUser.CreateSubKey(RunKey);
         if (enabled)
         {
-            var path = Environment.ProcessPath ?? throw new InvalidOperationException("Percorso eseguibile sconosciuto.");
+            var path = Environment.ProcessPath ?? throw new InvalidOperationException("Process executable path is unknown.");
             key.SetValue(ValueName, $"\"{path}\"");
         }
         else

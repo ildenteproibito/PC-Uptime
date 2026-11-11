@@ -6,8 +6,8 @@ using Avalonia.Media;
 namespace Uptime.Presentation.Controls;
 
 /// <summary>
-/// Righello a tacche, motivo visivo di Uptime: una tacca = un'ora.
-/// Tacche piene verdi fino a GoodTicks, ambra oltre; segno bianco sul punto attuale.
+/// Tick ruler, visual signature of Uptime: one tick = one hour.
+/// Filled green ticks up to GoodTicks, amber beyond; white indicator on current point.
 /// </summary>
 public sealed class TimeRuler : Control
 {

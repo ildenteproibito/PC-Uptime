@@ -3,7 +3,12 @@
              x:Class="Uptime.Presentation.App"
              RequestedThemeVariant="Dark">
   <Application.Styles>
-    <FluentTheme />
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Dark" Accent="#7BC4A8" RegionColor="#0F1114" />
+        <ColorPaletteResources x:Key="Light" Accent="#7BC4A8" RegionColor="#0F1114" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
     <StyleInclude Source="avares://Uptime/Styles/Theme.axaml" />
   </Application.Styles>
 </Application>

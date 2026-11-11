@@ -7,8 +7,8 @@ public enum LoadStatus { Ok, Missing, RecoveredFromBackup, Unrecoverable }
 public sealed record LoadResult<T>(T? Value, LoadStatus Status, IReadOnlyList<string> QuarantinedFiles) where T : class;
 
 /// <summary>
-/// Salvataggio atomico: scrive su .tmp, poi File.Replace con backup (.bak).
-/// Non scarta mai silenziosamente i dati: un file illeggibile viene messo in quarantena (.corrupt-*).
+/// Atomic persistence: writes to .tmp, then File.Replace with backup (.bak).
+/// Never silently discards data: unreadable files are quarantined (.corrupt-*).
 /// </summary>
 public sealed class AtomicJsonStore<T> where T : class
 {
@@ -33,7 +33,7 @@ public sealed class AtomicJsonStore<T> where T : class
         using (var fs = new FileStream(TempPath, FileMode.Create, FileAccess.Write, FileShare.None))
         {
             fs.Write(bytes, 0, bytes.Length);
-            fs.Flush(true); // forza la scrittura su disco prima dello scambio
+            fs.Flush(true); // force write to disk before swap
         }
 
         if (File.Exists(_path))
@@ -44,7 +44,7 @@ public sealed class AtomicJsonStore<T> where T : class
 
     public LoadResult<T> Load()
     {
-        TryDelete(TempPath); // residuo di una scrittura interrotta: il primario non e' stato toccato
+        TryDelete(TempPath); // remnant of an interrupted write: primary was untouched
 
         var primaryExists = File.Exists(_path);
         var backupExists = File.Exists(BackupPath);

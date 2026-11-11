@@ -34,7 +34,7 @@ public class AtomicJsonStoreTests : IDisposable
     {
         var store = new AtomicJsonStore<Data>(FilePath);
         store.Save(new Data { N = 1 });
-        store.Save(new Data { N = 2 }); // il backup contiene N = 1
+        store.Save(new Data { N = 2 }); // backup holds N = 1
         File.WriteAllText(FilePath, "{ not json");
 
         var r = store.Load();
@@ -106,10 +106,10 @@ public class StabilityAnalyzerTests
     {
         var events = new List<LogEvent>
         {
-            new(T0, 12, KG),                          // avvio 1
-            new(T0.AddHours(10), 13, KG),             // spegnimento pulito
-            new(T0.AddDays(1), 12, KG),               // avvio 2
-            new(T0.AddDays(1).AddHours(5), 12, KG),   // avvio 3 (nessun 13 prima: crash)
+            new(T0, 12, KG),                          // boot 1
+            new(T0.AddHours(10), 13, KG),             // clean shutdown
+            new(T0.AddDays(1), 12, KG),               // boot 2
+            new(T0.AddDays(1).AddHours(5), 12, KG),   // boot 3 (no preceding 13: crash)
             new(T0.AddDays(1).AddHours(5).AddSeconds(20), 41, KP),
             new(T0.AddDays(1).AddHours(5).AddSeconds(45), 6008, EL),
         };
@@ -153,5 +153,67 @@ public class StabilityAnalyzerTests
         var r = StabilityAnalyzer.Analyze(Array.Empty<LogEvent>(), T0);
         Assert.Null(r.ScorePercent);
         Assert.Empty(r.Sessions);
+    }
+
+    [Fact]
+    public void Incident_IncludesBsodExplanation_WhenBugcheckPresent()
+    {
+        var events = new List<LogEvent>
+        {
+            new(T0, 41, KP, 0x000000D1),
+            new(T0.AddSeconds(10), 6008, EL),
+        };
+
+        var r = StabilityAnalyzer.Analyze(events, T0.AddDays(1));
+        Assert.Single(r.Incidents);
+        Assert.NotNull(r.Incidents[0].Explanation);
+        Assert.Equal("DRIVER_IRQL_NOT_LESS_OR_EQUAL", r.Incidents[0].Explanation!.Name);
+    }
+}
+
+public class BsodExplainerTests
+{
+    [Fact]
+    public void Explain_CodeZero_ReturnsPowerLoss()
+    {
+        var exp = BsodExplainer.Explain(0);
+        Assert.Equal("POWER_LOSS_OR_HARD_RESET", exp.Name);
+        Assert.Equal("0x00000000", exp.HexCode);
+    }
+
+    [Theory]
+    [InlineData(0x0000001A, "MEMORY_MANAGEMENT")]
+    [InlineData(0x000000D1, "DRIVER_IRQL_NOT_LESS_OR_EQUAL")]
+    [InlineData(0x0000003B, "SYSTEM_SERVICE_EXCEPTION")]
+    [InlineData(0x00000124, "WHEA_UNCORRECTABLE_ERROR")]
+    public void Explain_KnownCodes_ReturnAccurateNames(long code, string expectedName)
+    {
+        var exp = BsodExplainer.Explain(code);
+        Assert.Equal(expectedName, exp.Name);
+        Assert.False(string.IsNullOrWhiteSpace(exp.Meaning));
+        Assert.False(string.IsNullOrWhiteSpace(exp.Advice));
+    }
+
+    [Fact]
+    public void Explain_UnknownCode_ReturnsFormattedHex()
+    {
+        var exp = BsodExplainer.Explain(0x00000ABC);
+        Assert.Equal("SYSTEM_CRASH", exp.Name);
+        Assert.Equal("0x00000ABC", exp.HexCode);
+    }
+
+    [Fact]
+    public void Explain_EnglishLanguage_ReturnsEnglishTexts()
+    {
+        var exp = BsodExplainer.Explain(0x000000D1, "en");
+        Assert.Contains("driver", exp.Meaning, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("reinstall", exp.Advice, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Explain_ItalianLanguage_ReturnsItalianTexts()
+    {
+        var exp = BsodExplainer.Explain(0x000000D1, "it");
+        Assert.Contains("Reinstalla", exp.Advice, StringComparison.OrdinalIgnoreCase);
     }
 }

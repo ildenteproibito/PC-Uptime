@@ -12,6 +12,16 @@ namespace Uptime.Presentation.ViewModels;
 
 public sealed record SessionRow(string DateText, string OutcomeText, IBrush OutcomeBrush, string DurationText);
 
+public sealed record IncidentRow(
+    string DateText,
+    string EventSummary,
+    string ConfidenceText,
+    bool HasExplanation,
+    string BugcheckName,
+    string BugcheckHex,
+    string Meaning,
+    string Advice);
+
 public partial class StabilityViewModel : ObservableObject
 {
     private static readonly IBrush Good = new SolidColorBrush(Color.Parse("#7BC4A8"));
@@ -25,7 +35,7 @@ public partial class StabilityViewModel : ObservableObject
 
     public Localizer L => Localizer.Instance;
     public ObservableCollection<SessionRow> Sessions { get; } = new();
-    public ObservableCollection<string> Incidents { get; } = new();
+    public ObservableCollection<IncidentRow> Incidents { get; } = new();
 
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private bool _hasError;
@@ -71,7 +81,7 @@ public partial class StabilityViewModel : ObservableObject
         catch (Exception ex)
         {
             AppDiagnostics.Write("Error", "Could not load Windows stability event history.", ex);
-            HasError = true; // registro eventi illeggibile: stato di errore visibile, nessun dato inventato
+            HasError = true; // unreadable event log: visible error state, no fabricated data
         }
         finally
         {
@@ -114,8 +124,20 @@ public partial class StabilityViewModel : ObservableObject
         foreach (var inc in r.Incidents.OrderByDescending(i => i.Time).Take(5))
         {
             var conf = inc.Confidence == IncidentConfidence.High ? l["ConfHigh"] : l["ConfMedium"];
-            Incidents.Add(l.Format("IncidentLine", inc.Time.ToString("d MMM, HH:mm", culture),
-                string.Join(", ", inc.EventIds), conf));
+            var dateStr = inc.Time.ToString("d MMM, HH:mm", culture);
+            var evSummary = l.Format("IncidentLine", dateStr, string.Join(", ", inc.EventIds), conf);
+            var exp = inc.BugcheckCode.HasValue
+                ? BsodExplainer.Explain(inc.BugcheckCode.Value, l.Language)
+                : inc.Explanation != null
+                    ? BsodExplainer.Explain(inc.Explanation.Code, l.Language)
+                    : null;
+            var hasExp = exp != null;
+            var name = exp?.Name ?? "";
+            var hex = exp?.HexCode ?? "";
+            var meaning = exp?.Meaning ?? "";
+            var advice = exp?.Advice ?? "";
+
+            Incidents.Add(new IncidentRow(dateStr, evSummary, conf, hasExp, name, hex, meaning, advice));
         }
         HasNoIncidents = Incidents.Count == 0;
 

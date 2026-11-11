@@ -52,6 +52,37 @@
             <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnCancel"
                     Command="{Binding CancelTimerCommand}" IsVisible="{Binding TimerActive}" />
           </Grid>
+
+          <!-- Power and battery status -->
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblBattery" />
+          <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="2">
+                  <TextBlock Text="{Binding BatteryStatusText}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                  <TextBlock Text="{Binding BatteryDetailsText}" FontSize="12" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <Border Grid.Column="1" Background="#1D222A" CornerRadius="6" Padding="10,4" VerticalAlignment="Center" IsVisible="{Binding HasBattery}">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding BatteryHealthText}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="BatteryHealthShort" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+              </Grid>
+
+              <Grid ColumnDefinitions="*,*" Margin="0,4,0,0" IsVisible="{Binding HasBattery}">
+                <StackPanel Spacing="2">
+                  <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="BatteryCycles" />
+                  <TextBlock Text="{Binding BatteryCyclesText}" FontSize="14" FontWeight="Medium" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="2">
+                  <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="BatteryHealth" />
+                  <TextBlock Text="{Binding BatteryHealthText}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Border>
         </StackPanel>
 
         <StackPanel Grid.Column="1">
@@ -82,6 +113,70 @@
             <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnRunAtStartupClick"
                           IsChecked="{Binding RunAtStartup, Mode=OneWay}" />
           </Grid></Border>
+
+          <!-- Sleep Inspector -->
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblSleepInspector" />
+          <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,10">
+            <StackPanel Spacing="6">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Text="{Binding SleepStatusText}" FontSize="13" Foreground="{DynamicResource TextBrush}"
+                             IsVisible="{Binding SleepStatusText.Length}" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding FormattedLastWake}" FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                             IsVisible="{Binding FormattedLastWake.Length}" TextWrapping="Wrap" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" MinHeight="32" Height="32" Padding="14,0" FontSize="12"
+                        VerticalAlignment="Center"
+                        i18n:Localize.ContentKey="BtnCheckSleep"
+                        Command="{Binding CheckSleepBlockersCommand}" IsEnabled="{Binding !IsSleepLoading}" />
+              </Grid>
+
+              <ItemsControl ItemsSource="{Binding SleepBlockers}" IsVisible="{Binding SleepBlockers.Count}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Border Background="#1C2027" CornerRadius="6" Padding="10,6" Margin="0,4,0,0">
+                      <Grid ColumnDefinitions="Auto,*">
+                        <Border Background="#252B35" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                          <TextBlock Text="{Binding Category}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource OrangeBrush}" />
+                        </Border>
+                        <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12" Foreground="#D0D5DD" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+
+              <TextBlock Text="{Binding L[SleepRequiresAdmin]}" FontSize="11" Foreground="{DynamicResource DimBrush}"
+                         IsVisible="{Binding ShowAdminNotice}" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <!-- Startup Applications -->
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblStartupApps" />
+          <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="muted" FontSize="13" i18n:Localize.TextKey="StartupNoApps" IsVisible="{Binding !StartupApps.Count}" />
+              <ItemsControl ItemsSource="{Binding StartupApps}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource LineBrush}" Padding="0,6">
+                      <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                          <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" />
+                          <TextBlock Text="{Binding Location}" FontSize="11" Foreground="{DynamicResource DimBrush}" />
+                        </StackPanel>
+                        <Border Grid.Column="1" Background="#1D222A" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding ImpactText}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding ImpactBrush}" />
+                        </Border>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
         </StackPanel>
       </Grid>
     </ScrollViewer>

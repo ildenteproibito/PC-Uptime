@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i18n="using:Uptime.Presentation.Localization"
+        xmlns:v="using:Uptime.Presentation.Views"
         x:Class="Uptime.Presentation.Views.MiniHudWindow"
         Title="Uptime Mini-HUD"
         Width="420" Height="210" MinWidth="380" MinHeight="190"
@@ -12,10 +13,34 @@
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         PointerPressed="OnWindowPointerPressed">
+  <Window.Styles>
+    <Style Selector="Button.hud-btn">
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.hud-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#20242B" />
+    </Style>
+    <Style Selector="Button.hud-btn.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#C42B1C" />
+    </Style>
+    <Style Selector="Button.hud-btn.close:pointerover Path">
+      <Setter Property="Stroke" Value="#FFFFFF" />
+    </Style>
+    <Style Selector="Button.hud-btn:pointerover Rectangle">
+      <Setter Property="Fill" Value="#FFFFFF" />
+    </Style>
+  </Window.Styles>
   <Border Background="#111418" BorderBrush="#30363D" BorderThickness="1"
           CornerRadius="14" Padding="20">
     <Grid RowDefinitions="32,*,Auto" RowSpacing="14">
-      <Grid ColumnDefinitions="Auto,*,Auto,34" ColumnSpacing="10">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
         <Image Width="22" Height="22" Source="/Assets/uptime.png" Stretch="Uniform"
                VerticalAlignment="Center" />
         <TextBlock Grid.Column="1" Text="Uptime" FontSize="14" FontWeight="SemiBold"
@@ -28,12 +53,16 @@
                        VerticalAlignment="Center" />
           </StackPanel>
         </Border>
-        <Button Grid.Column="3" Width="32" Height="30" Padding="0"
-                Background="Transparent" BorderThickness="0" CornerRadius="7"
-                i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose" Click="OnCloseClick"
-                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-          <Path Data="M5,5 L13,13 M13,5 L5,13" Stroke="#9AA0A9" StrokeThickness="1.5" />
-        </Button>
+        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="1" VerticalAlignment="Center" Margin="4,0,0,0">
+          <Button Classes="hud-btn"
+                  i18n:Localize.TipKey="ToolMinimize" i18n:Localize.AutomationNameKey="ToolMinimize" Click="OnMinimizeClick">
+            <Rectangle Width="9" Height="1.5" Fill="#9AA0A9" RadiusX="0.75" RadiusY="0.75" />
+          </Button>
+          <Button Classes="hud-btn close"
+                  i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose" Click="OnCloseClick">
+            <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#9AA0A9" StrokeThickness="1.5" />
+          </Button>
+        </StackPanel>
       </Grid>
 
       <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="16" VerticalAlignment="Center">

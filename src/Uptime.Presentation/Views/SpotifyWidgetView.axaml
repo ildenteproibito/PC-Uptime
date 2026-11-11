@@ -1,0 +1,125 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             x:Class="Uptime.Presentation.Views.SpotifyWidgetView"
+             x:DataType="vm:SpotifyViewModel">
+  <Border Background="#14171D" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+          CornerRadius="10" Padding="12,10">
+    <Grid>
+      <!-- State: No track playing -->
+      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" IsVisible="{Binding !HasTrack}" VerticalAlignment="Center">
+        <Border Width="36" Height="36" Background="#1D222A" CornerRadius="6">
+          <Path Data="M9,6 L18,12 L9,18 Z" Fill="{DynamicResource DimBrush}" Width="12" Height="12"
+                Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="Spotify" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+          <TextBlock Classes="muted" FontSize="12" i18n:Localize.TextKey="SpotifyNoTrack" />
+        </StackPanel>
+      </Grid>
+
+      <!-- State: Active track with cover art, controls and progress -->
+      <Grid RowDefinitions="Auto,Auto" RowSpacing="6" IsVisible="{Binding HasTrack}">
+        <!-- Main row: Cover, track info and controls -->
+        <Grid ColumnDefinitions="42,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+          <!-- Album cover -->
+          <Border Width="42" Height="42" CornerRadius="6" ClipToBounds="True" Background="#1B1F26">
+            <Panel>
+              <Image Source="{Binding CoverImage}" Stretch="UniformToFill" IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+              <!-- Fallback icon when cover is absent -->
+              <Path Data="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                    Fill="{DynamicResource AccentBrush}" Width="16" Height="16" Stretch="Uniform"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNull}}" />
+            </Panel>
+          </Border>
+
+          <!-- Title and Artist -->
+          <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+            <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"
+                       TextTrimming="CharacterEllipsis" MaxLines="1" />
+            <TextBlock Text="{Binding Artist}" FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                       TextTrimming="CharacterEllipsis" MaxLines="1" />
+          </StackPanel>
+
+          <!-- SMTC Media Player Controls -->
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+            <!-- Loop / Repeat -->
+            <Button Width="26" Height="26" Padding="0" Background="Transparent" BorderThickness="0" CornerRadius="5"
+                    Command="{Binding ToggleLoopCommand}" i18n:Localize.TipKey="SpotifyLoop"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <Panel>
+                <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
+                      Fill="{DynamicResource AccentBrush}" Width="11" Height="11" Stretch="Uniform"
+                      IsVisible="{Binding IsLooping}" />
+                <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
+                      Fill="{DynamicResource DimBrush}" Width="11" Height="11" Stretch="Uniform"
+                      IsVisible="{Binding !IsLooping}" />
+              </Panel>
+            </Button>
+
+            <!-- Rewind 10s -->
+            <Button Width="26" Height="26" Padding="0" Background="Transparent" BorderThickness="0" CornerRadius="5"
+                    Command="{Binding SeekBackward10Command}" i18n:Localize.TipKey="SpotifySeekBack"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Path Data="M11 6l-6 6 6 6z" Fill="{DynamicResource MutedBrush}" Width="7" Height="7" Stretch="Uniform" VerticalAlignment="Center" />
+                <TextBlock Text="10" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+
+            <!-- Previous -->
+            <Button Width="26" Height="26" Padding="0" Background="Transparent" BorderThickness="0" CornerRadius="5"
+                    Command="{Binding SkipPreviousCommand}" i18n:Localize.TipKey="SpotifyPrevious"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <Path Data="M6 6h2v12H6zm3.5 6l8.5 6V6z" Fill="{DynamicResource MutedBrush}" Width="10" Height="10" Stretch="Uniform" />
+            </Button>
+
+            <!-- Play / Pause -->
+            <Button Width="32" Height="32" Padding="0" Background="#222832" BorderThickness="0" CornerRadius="16"
+                    Command="{Binding TogglePlayPauseCommand}" i18n:Localize.TipKey="SpotifyPlayPause"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <Panel>
+                <!-- Pause icon when playing -->
+                <Path Data="M6 19h4V5H6v14zm8-14v14h4V5h-4z" Fill="{DynamicResource AccentBrush}" Width="12" Height="12"
+                      Stretch="Uniform" IsVisible="{Binding IsPlaying}" />
+                <!-- Play icon when paused -->
+                <Path Data="M8 5v14l11-7z" Fill="{DynamicResource AccentBrush}" Width="12" Height="12"
+                      Stretch="Uniform" IsVisible="{Binding !IsPlaying}" Margin="2,0,0,0" />
+              </Panel>
+            </Button>
+
+            <!-- Next -->
+            <Button Width="26" Height="26" Padding="0" Background="Transparent" BorderThickness="0" CornerRadius="5"
+                    Command="{Binding SkipNextCommand}" i18n:Localize.TipKey="SpotifyNext"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <Path Data="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" Fill="{DynamicResource MutedBrush}" Width="10" Height="10" Stretch="Uniform" />
+            </Button>
+
+            <!-- Forward 10s -->
+            <Button Width="26" Height="26" Padding="0" Background="Transparent" BorderThickness="0" CornerRadius="5"
+                    Command="{Binding SeekForward10Command}" i18n:Localize.TipKey="SpotifySeekForward"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="10" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                <Path Data="M5 6l6 6-6 6z" Fill="{DynamicResource MutedBrush}" Width="7" Height="7" Stretch="Uniform" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Grid>
+
+        <!-- Secondary row: Track progress bar -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center" Margin="0,2,0,0">
+          <TextBlock Text="{Binding PositionText}" FontSize="10" Foreground="{DynamicResource MutedBrush}"
+                     FontFamily="Consolas, Segoe UI, monospace" VerticalAlignment="Center" />
+          <ProgressBar Grid.Column="1" Minimum="0" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"
+                       Height="3" CornerRadius="1.5" Background="#242932" Foreground="{DynamicResource AccentBrush}"
+                       VerticalAlignment="Center" />
+          <TextBlock Grid.Column="2" Text="{Binding DurationText}" FontSize="10" Foreground="{DynamicResource MutedBrush}"
+                     FontFamily="Consolas, Segoe UI, monospace" VerticalAlignment="Center" />
+        </Grid>
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>

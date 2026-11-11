@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i18n="using:Uptime.Presentation.Localization"
+        xmlns:v="using:Uptime.Presentation.Views"
+        x:Class="Uptime.Presentation.Views.IdleWidgetWindow"
+        Title="Uptime Idle"
+        Width="520" Height="360" MinWidth="480" MinHeight="320"
+        CanResize="False" Topmost="True"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        TransparencyLevelHint="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        PointerMoved="OnActivityPointerMoved"
+        KeyDown="OnActivityKeyDown"
+        PointerPressed="OnWindowPointerPressed">
+  <Border Background="#0C0E12" BorderBrush="#252A34" BorderThickness="1"
+          CornerRadius="16" Padding="28" BoxShadow="0 16 32 0 #50000000">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="16">
+      <!-- Header -->
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Image Width="20" Height="20" Source="/Assets/uptime.png" Stretch="Uniform" />
+          <TextBlock Text="Uptime" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource DimBrush}" />
+          <TextBlock Text="·" FontSize="13" Foreground="{DynamicResource LineBrush}" />
+          <TextBlock i18n:Localize.TextKey="IdleWidgetTitle" FontSize="13" Foreground="{DynamicResource AccentBrush}" FontWeight="Medium" />
+        </StackPanel>
+
+        <Button Grid.Column="2" Width="28" Height="28" Padding="0"
+                Background="Transparent" BorderThickness="0" CornerRadius="6"
+                Click="OnCloseClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+          <Path Data="M5,5 L13,13 M13,5 L5,13" Stroke="#8A909A" StrokeThickness="1.4" />
+        </Button>
+      </Grid>
+
+      <!-- Center: Clock and idle status -->
+      <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
+        <TextBlock x:Name="ClockText" Text="12:00" FontSize="68" FontWeight="Light"
+                   LetterSpacing="-2" HorizontalAlignment="Center" Foreground="#F0F3F6" />
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+          <Border Background="#1C212A" CornerRadius="10" Padding="10,4">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+              <TextBlock x:Name="UptimeSummaryText" Text="—" FontSize="12" Foreground="#D0D6DE" />
+            </StackPanel>
+          </Border>
+          <Border Background="#241E18" BorderBrush="#382C20" BorderThickness="1" CornerRadius="10" Padding="10,4">
+            <TextBlock i18n:Localize.TextKey="IdleSubtitle" FontSize="12" Foreground="{DynamicResource AmberBrush}" />
+          </Border>
+        </StackPanel>
+      </StackPanel>
+
+      <!-- Spotify Widget if active -->
+      <v:SpotifyWidgetView Grid.Row="2" DataContext="{Binding Spotify}" Margin="0,4,0,0"
+                           IsVisible="{Binding Spotify.HasTrack, FallbackValue=False}" />
+
+      <!-- Footer: Resume activity hint -->
+      <StackPanel Grid.Row="3" HorizontalAlignment="Center" Spacing="4" Margin="0,4,0,0">
+        <TextBlock Classes="muted" FontSize="12" HorizontalAlignment="Center"
+                   i18n:Localize.TextKey="IdleResumeHint" />
+      </StackPanel>
+    </Grid>
+  </Border>
+</Window>

@@ -12,6 +12,22 @@
     <SolidColorBrush x:Key="AccentBrush" Color="#7BC4A8" />
     <SolidColorBrush x:Key="AmberBrush" Color="#E0A458" />
     <SolidColorBrush x:Key="OrangeBrush" Color="#E8845A" />
+    <Color x:Key="SystemAccentColor">#7BC4A8</Color>
+    <Color x:Key="SystemAccentColorDark1">#6CB599</Color>
+    <Color x:Key="SystemAccentColorDark2">#5DA68A</Color>
+    <Color x:Key="SystemAccentColorDark3">#4E977B</Color>
+    <Color x:Key="SystemAccentColorLight1">#8CD0B7</Color>
+    <Color x:Key="SystemAccentColorLight2">#9DDCB6</Color>
+    <Color x:Key="SystemAccentColorLight3">#AEE8D5</Color>
+    <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#8CD0B7" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#6CB599" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOnPointerOver" Color="#8CD0B7" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOnPressed" Color="#6CB599" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="#0F1114" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="#0F1114" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPressed" Color="#0F1114" />
     <FontFamily x:Key="UiFont">Segoe UI Variable, Segoe UI, Inter, sans-serif</FontFamily>
   </Styles.Resources>
 
@@ -36,7 +52,7 @@
     <Setter Property="Padding" Value="0,11" />
   </Style>
 
-  <!-- Tab di navigazione -->
+  <!-- Navigation tabs -->
   <Style Selector="Button.nav">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
@@ -59,7 +75,7 @@
     <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
   </Style>
 
-  <!-- Pulsante con contorno -->
+  <!-- Outline ghost button -->
   <Style Selector="Button.ghost">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}" />
@@ -146,5 +162,22 @@
     <Setter Property="FontSize" Value="13" />
     <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
     <Setter Property="Margin" Value="0,3,0,0" />
+  </Style>
+
+  <!-- ToggleSwitch: Uptime brand green accent (#7BC4A8) -->
+  <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+  </Style>
+  <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="#8CD0B7" />
+    <Setter Property="BorderBrush" Value="#8CD0B7" />
+  </Style>
+  <Style Selector="ToggleSwitch:checked:pressed /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="#6CB599" />
+    <Setter Property="BorderBrush" Value="#6CB599" />
+  </Style>
+  <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
+    <Setter Property="Fill" Value="#0F1114" />
   </Style>
 </Styles>

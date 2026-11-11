@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Uptime.Core;
 
-/// <summary>Localizzazione con cambio lingua a runtime. Le chiavi "Lbl*" sono rese in maiuscolo.</summary>
+/// <summary>Runtime localization and language switching. Keys starting with "Lbl*" are rendered uppercase.</summary>
 public sealed class Localizer : INotifyPropertyChanged
 {
     public static Localizer Instance { get; } = new();
