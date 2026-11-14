@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using Avalonia;
 using Uptime.Core;
@@ -7,6 +8,16 @@ namespace Uptime.Presentation;
 
 internal static class Program
 {
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
+    private sealed record CliJsonStatus(
+        long uptimeSeconds,
+        long idleSeconds,
+        string health,
+        string powerPlan,
+        bool hasBattery,
+        int batteryPercent,
+        bool isCharging);
+
     [STAThread]
     public static void Main(string[] args)
     {
@@ -22,16 +33,14 @@ internal static class Program
             var idle = new Win32IdleProvider().GetIdleTime();
             var bat = new WindowsBatteryService().GetBatteryStatus();
             var plan = new WindowsPowerPlanService().GetActivePlan();
-            Console.WriteLine(JsonSerializer.Serialize(new
-            {
-                uptimeSeconds = (long)up.TotalSeconds,
-                idleSeconds = (long)idle.TotalSeconds,
-                health = Health.For(up).ToString(),
-                powerPlan = plan.ToString(),
-                hasBattery = bat.HasBattery,
-                batteryPercent = bat.Percent,
-                isCharging = bat.IsCharging
-            }, new JsonSerializerOptions { WriteIndented = true }));
+            Console.WriteLine(JsonSerializer.Serialize(new CliJsonStatus(
+                (long)up.TotalSeconds,
+                (long)idle.TotalSeconds,
+                Health.For(up).ToString(),
+                plan.ToString(),
+                bat.HasBattery,
+                bat.Percent,
+                bat.IsCharging), new JsonSerializerOptions { WriteIndented = true }));
             return;
         }
 

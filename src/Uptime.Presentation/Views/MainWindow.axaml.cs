@@ -550,6 +550,12 @@ public partial class MainWindow : Window
     private void ToggleVisibility()
     {
         if (IsVisible) Hide();
-        else { Show(); Activate(); }
+        else
+        {
+            if (WindowState == WindowState.Minimized)
+                WindowState = WindowState.Normal;
+            Show();
+            Activate();
+        }
     }
 }

@@ -607,6 +607,18 @@ public partial class MainViewModel : ObservableObject
 
     public void DisposeDiscordRpc() => _discordRpc.Dispose();
 
+    public void Dispose()
+    {
+        _bridgeTimer.Stop();
+        if (Spotify is not null)
+        {
+            Spotify.PropertyChanged -= OnSpotifyPropertyChanged;
+            Spotify.Dispose();
+        }
+        Monitor.Dispose();
+        _discordRpc.Dispose();
+    }
+
     private static readonly HttpClient BetaTestersHttp = new() { Timeout = TimeSpan.FromSeconds(10) };
     private bool _loadingBetaTesters;
     private string _mobileDevName = "Koi";

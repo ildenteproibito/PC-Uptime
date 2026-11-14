@@ -27,6 +27,7 @@ public sealed class AtomicJsonStore<T> where T : class
 
     public void Save(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
         lock (_sync)
         {
             var dir = Path.GetDirectoryName(_path);
@@ -68,7 +69,12 @@ public sealed class AtomicJsonStore<T> where T : class
                 try
                 {
                     // Write backup atomically via TempPath so power loss mid-copy never truncates _path
-                    File.Copy(BackupPath, TempPath, overwrite: true);
+                    using (var src = File.OpenRead(BackupPath))
+                    using (var dst = new FileStream(TempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        src.CopyTo(dst);
+                        dst.Flush(true);
+                    }
                     File.Move(TempPath, _path, overwrite: true);
                 }
                 catch (Exception e) when (e is IOException or UnauthorizedAccessException)
@@ -100,7 +106,7 @@ public sealed class AtomicJsonStore<T> where T : class
     {
         try
         {
-            var target = $"{file}.corrupt-{DateTime.Now:yyyyMMddHHmmssfff}";
+            var target = $"{file}.corrupt-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}";
             File.Move(file, target, overwrite: true);
             return target;
         }

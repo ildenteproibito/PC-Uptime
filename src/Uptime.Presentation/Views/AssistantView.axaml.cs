@@ -8,6 +8,8 @@ namespace Uptime.Presentation.Views;
 
 public partial class AssistantView : UserControl
 {
+    private AssistantViewModel? _subscribedVm;
+
     public AssistantView()
     {
         InitializeComponent();
@@ -16,10 +18,16 @@ public partial class AssistantView : UserControl
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
+        if (_subscribedVm is not null)
+        {
+            _subscribedVm.Messages.CollectionChanged -= OnMessagesChanged;
+            _subscribedVm = null;
+        }
+
         if (DataContext is AssistantViewModel vm)
         {
-            vm.Messages.CollectionChanged -= OnMessagesChanged;
             vm.Messages.CollectionChanged += OnMessagesChanged;
+            _subscribedVm = vm;
         }
     }
 

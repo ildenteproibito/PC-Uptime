@@ -28,7 +28,7 @@ public static partial class UpdateManifestValidator
 
     public static bool TryParseNormalizedVersion(string? text, out Version version)
     {
-        version = new Version(0, 0, 0);
+        version = new Version(0, 0, 0, 0);
         if (string.IsNullOrWhiteSpace(text))
             return false;
 
@@ -38,8 +38,8 @@ public static partial class UpdateManifestValidator
 
         var plusIdx = cleaned.IndexOf('+');
         if (plusIdx >= 0) cleaned = cleaned[..plusIdx];
-        var dashIdx = cleaned.IndexOf('-');
-        if (dashIdx >= 0) cleaned = cleaned[..dashIdx];
+        if (cleaned.Contains('-'))
+            return false;
 
         if (!Version.TryParse(cleaned, out var parsed) || parsed is null)
             return false;
@@ -47,7 +47,8 @@ public static partial class UpdateManifestValidator
         version = new Version(
             Math.Max(0, parsed.Major),
             Math.Max(0, parsed.Minor),
-            Math.Max(0, parsed.Build));
+            Math.Max(0, parsed.Build),
+            Math.Max(0, parsed.Revision));
         return true;
     }
 
@@ -55,9 +56,16 @@ public static partial class UpdateManifestValidator
     {
         if (manifest is null) return false;
         if (!TryParseNormalizedVersion(manifest.version, out _)) return false;
-        if (string.IsNullOrWhiteSpace(manifest.downloadUrl) ||
-            !manifest.downloadUrl.StartsWith(TrustedDownloadPrefix, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(manifest.downloadUrl)) return false;
+
+        var url = manifest.downloadUrl.Trim();
+        if (url.Any(char.IsWhiteSpace) ||
+            !url.StartsWith(TrustedDownloadPrefix, StringComparison.OrdinalIgnoreCase) ||
+            url.Length <= TrustedDownloadPrefix.Length ||
+            !Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+            uri.Scheme != Uri.UriSchemeHttps)
             return false;
+
         if (string.IsNullOrWhiteSpace(manifest.sha256) || !Sha256HexRegex().IsMatch(manifest.sha256.Trim()))
             return false;
         return true;

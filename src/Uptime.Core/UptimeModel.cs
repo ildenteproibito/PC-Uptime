@@ -21,10 +21,13 @@ public static class Health
         : uptime.TotalDays <= MaintenanceDays ? HealthLevel.Attention
         : HealthLevel.Maintenance;
 
-    public static int DaysUntilMaintenance(TimeSpan uptime) =>
-        uptime.TotalDays > MaintenanceDays
+    public static int DaysUntilMaintenance(TimeSpan uptime)
+    {
+        var days = uptime < TimeSpan.Zero ? 0 : uptime.TotalDays;
+        return days > MaintenanceDays
             ? 0
-            : Math.Max(0, (int)Math.Ceiling(MaintenanceDays - uptime.TotalDays));
+            : Math.Max(0, (int)Math.Ceiling(MaintenanceDays - days));
+    }
 }
 
 public sealed record BatteryInfo(

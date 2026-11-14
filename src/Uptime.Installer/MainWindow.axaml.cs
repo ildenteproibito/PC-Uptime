@@ -340,13 +340,14 @@ public partial class MainWindow : Window
             else runKey.DeleteValue("Uptime", throwOnMissingValue: false);
         }
 
+        var cleanTargetDir = Path.TrimEndingDirectorySeparator(targetDir);
         using var uninstKey = Registry.CurrentUser.CreateSubKey(UninstallRegPath);
         uninstKey.SetValue("DisplayName", "Uptime");
         uninstKey.SetValue("DisplayVersion", "2.0.0");
         uninstKey.SetValue("Publisher", "IL DENTE PROIBITO");
         uninstKey.SetValue("DisplayIcon", exePath);
-        uninstKey.SetValue("InstallLocation", targetDir);
-        uninstKey.SetValue("UninstallString", $"\"{uninstallPath}\" --uninstall \"--dir={targetDir}\"");
+        uninstKey.SetValue("InstallLocation", cleanTargetDir);
+        uninstKey.SetValue("UninstallString", $"\"{uninstallPath}\" --uninstall \"--dir={cleanTargetDir}\"");
         uninstKey.SetValue("NoModify", 1, RegistryValueKind.DWord);
         uninstKey.SetValue("NoRepair", 1, RegistryValueKind.DWord);
         uninstKey.SetValue("EstimatedSize", 168000, RegistryValueKind.DWord);
@@ -395,10 +396,11 @@ public partial class MainWindow : Window
                     if (runningInsideTarget)
                     {
                         var pid = Environment.ProcessId;
+                        var escapedDir = Path.TrimEndingDirectorySeparator(_installedDir).Replace("'", "''");
                         Process.Start(new ProcessStartInfo
                         {
-                            FileName = "cmd.exe",
-                            Arguments = $"/c :wait & tasklist /fi \"PID eq {pid}\" 2>nul | find \"{pid}\" >nul && (ping 127.0.0.1 -n 2 >nul & goto wait) & rd /s /q \"{_installedDir}\"",
+                            FileName = "powershell.exe",
+                            Arguments = $"-NoProfile -WindowStyle Hidden -Command \"Wait-Process -Id {pid} -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 300; Remove-Item -LiteralPath '{escapedDir}' -Recurse -Force -ErrorAction SilentlyContinue\"",
                             CreateNoWindow = true,
                             UseShellExecute = false
                         });
