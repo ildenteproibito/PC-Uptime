@@ -5,33 +5,94 @@ using Uptime.Core;
 namespace Uptime.Infrastructure;
 
 /// <summary>Reads boot and shutdown events from the "System" log (12, 13, 41, 1074, 6005, 6006, 6008).</summary>
-public sealed class WindowsEventLogService : IEventLogService
+public sealed class WindowsEventLogService : IEventLogService, ISystemIncidentLogService
 {
     private static readonly int[] Ids = { 12, 13, 41, 1074, 6005, 6006, 6008 };
 
-    public IReadOnlyList<LogEvent> ReadEvents(DateTime sinceLocal)
+    public IReadOnlyList<SystemEventLogItem> ReadRecentCriticalAndErrorEvents(DateTime sinceLocal, int maxItems = 25)
     {
-        var ms = (long)Math.Max(1, (DateTime.UtcNow - sinceLocal.ToUniversalTime()).TotalMilliseconds);
-        var idFilter = string.Join(" or ", Ids.Select(i => $"EventID={i}"));
-        var xpath = $"*[System[({idFilter}) and TimeCreated[timediff(@SystemTime) <= {ms}]]]";
+        if (!OperatingSystem.IsWindows()) return Array.Empty<SystemEventLogItem>();
 
-        var result = new List<LogEvent>();
-        using var reader = new EventLogReader(new EventLogQuery("System", PathType.LogName, xpath));
-        for (var record = reader.ReadEvent(); record != null; record = reader.ReadEvent())
+        var result = new List<SystemEventLogItem>();
+        try
         {
-            using (record)
+            var ms = (long)Math.Max(1, (DateTime.UtcNow - sinceLocal.ToUniversalTime()).TotalMilliseconds);
+            var xpath = $"*[System[(Level=1 or Level=2) and TimeCreated[timediff(@SystemTime) <= {ms}]]]";
+            var query = new EventLogQuery("System", PathType.LogName, xpath)
             {
-                if (record.TimeCreated is { } time)
+                ReverseDirection = true
+            };
+
+            using var reader = new EventLogReader(query);
+            while (result.Count < maxItems && reader.ReadEvent() is { } record)
+            {
+                using (record)
                 {
-                    long? bugcheckCode = null;
-                    if (record.Id == 41 && record.Properties.Count > 0 && record.Properties[0]?.Value is not null)
+                    if (record.TimeCreated is not { } time) continue;
+                    string? level = null;
+                    try { level = record.LevelDisplayName; } catch { }
+                    if (string.IsNullOrWhiteSpace(level))
+                        level = record.Level == 1 ? "Critical" : "Error";
+
+                    var provider = string.IsNullOrWhiteSpace(record.ProviderName) ? "System" : record.ProviderName;
+                    var message = "";
+                    try
                     {
-                        if (long.TryParse(record.Properties[0].Value.ToString(), out var codeVal))
-                            bugcheckCode = codeVal;
+                        message = record.FormatDescription()?.Trim() ?? "";
                     }
-                    result.Add(new LogEvent(time, record.Id, record.ProviderName ?? "", bugcheckCode));
+                    catch
+                    {
+                        message = "";
+                    }
+
+                    result.Add(new SystemEventLogItem(time.ToLocalTime(), record.Id, level, provider, message));
                 }
             }
+        }
+        catch
+        {
+            // Silent fallback if System log is restricted
+        }
+
+        return result;
+    }
+
+    public IReadOnlyList<LogEvent> ReadEvents(DateTime sinceLocal)
+    {
+        var result = new List<LogEvent>();
+        if (!OperatingSystem.IsWindows()) return result;
+
+        try
+        {
+            var ms = (long)Math.Max(1, (DateTime.UtcNow - sinceLocal.ToUniversalTime()).TotalMilliseconds);
+            var idFilter = string.Join(" or ", Ids.Select(i => $"EventID={i}"));
+            var xpath = $"*[System[({idFilter}) and TimeCreated[timediff(@SystemTime) <= {ms}]]]";
+
+            using var reader = new EventLogReader(new EventLogQuery("System", PathType.LogName, xpath));
+            for (var record = reader.ReadEvent(); record != null; record = reader.ReadEvent())
+            {
+                using (record)
+                {
+                    if (record.TimeCreated is { } time)
+                    {
+                        long? bugcheckCode = null;
+                        try
+                        {
+                            if (record.Id == 41 && record.Properties.Count > 0 && record.Properties[0]?.Value is not null)
+                            {
+                                if (long.TryParse(record.Properties[0].Value.ToString(), out var codeVal))
+                                    bugcheckCode = codeVal;
+                            }
+                        }
+                        catch { }
+                        result.Add(new LogEvent(time, record.Id, record.ProviderName ?? "", bugcheckCode));
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Silent fallback if System log is restricted
         }
         return result.OrderBy(e => e.Time).ToList();
     }
@@ -57,7 +118,9 @@ public sealed class WindowsEventLogService : IEventLogService
                     {
                         count++;
                         output.AppendLine($"Time: {record.TimeCreated:O}");
-                        output.AppendLine($"Level: {record.LevelDisplayName ?? record.Level?.ToString() ?? "Unknown"}");
+                        string? levelDisp = null;
+                        try { levelDisp = record.LevelDisplayName; } catch { }
+                        output.AppendLine($"Level: {levelDisp ?? record.Level?.ToString() ?? "Unknown"}");
                         output.AppendLine($"Provider: {record.ProviderName ?? "Unknown"}");
                         output.AppendLine($"Event ID: {record.Id}");
                         output.AppendLine("Message:");

@@ -1,0 +1,157 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Uptime.Installer.MainWindow"
+        Title="Uptime Setup"
+        Width="640" Height="510"
+        CanResize="False"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        TransparencyLevelHint="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        Icon="avares://UptimeSetup/Assets/uptime.ico">
+  <Border Background="#0F1114" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="16" ClipToBounds="True">
+    <Grid RowDefinitions="52,*,Auto">
+      <!-- Subtle top ambient mint glow -->
+      <Border Grid.RowSpan="3" Height="180" VerticalAlignment="Top" IsHitTestVisible="False">
+        <Border.Background>
+          <RadialGradientBrush Center="50%,0%" GradientOrigin="50%,0%" RadiusX="85%" RadiusY="85%">
+            <GradientStop Color="#227BC4A8" Offset="0" />
+            <GradientStop Color="#000F1114" Offset="1" />
+          </RadialGradientBrush>
+        </Border.Background>
+      </Border>
+
+      <!-- Header -->
+      <Grid ColumnDefinitions="Auto,*,Auto" Margin="20,0,14,0" PointerPressed="OnHeaderPointerPressed" Background="Transparent">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Image Width="22" Height="22" Source="avares://UptimeSetup/Assets/uptime.png" Stretch="Uniform" />
+          <TextBlock Text="Uptime" FontSize="14" FontWeight="SemiBold" Foreground="#E8EAED" VerticalAlignment="Center" />
+          <Border Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+            <TextBlock x:Name="HeaderSubtitleText" Text="SETUP · v2.0.0" FontSize="11" Foreground="#7BC4A8" FontWeight="Medium" />
+          </Border>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <Button x:Name="LangItBtn" Classes="ghost" Content="IT" FontSize="11" Padding="8,4" Click="OnLangClick" Tag="it" />
+          <Button x:Name="LangEnBtn" Classes="ghost" Content="EN" FontSize="11" Padding="8,4" Click="OnLangClick" Tag="en" />
+          <Button x:Name="LangRuBtn" Classes="ghost" Content="RU" FontSize="11" Padding="8,4" Click="OnLangClick" Tag="ru" />
+          <Button x:Name="CloseBtn" Width="30" Height="30" Margin="6,0,0,0" Padding="0"
+                  Background="Transparent" BorderThickness="0" CornerRadius="6"
+                  Click="OnCloseClick" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+            <Path Data="M6,6 L14,14 M14,6 L6,14" Stroke="#8D939C" StrokeThickness="1.5" />
+          </Button>
+        </StackPanel>
+      </Grid>
+
+      <!-- Body -->
+      <Grid Grid.Row="1" Margin="28,12,28,12">
+        <!-- 1. Options Panel -->
+        <StackPanel x:Name="OptionsPanel" Spacing="18" VerticalAlignment="Center">
+          <StackPanel Spacing="6">
+            <TextBlock x:Name="HeroTitleText" Text="Install Uptime" FontSize="26" FontWeight="Light" Foreground="#E8EAED" />
+            <TextBlock x:Name="HeroDescText" FontSize="13" Foreground="#9AA0A9" TextWrapping="Wrap" LineHeight="20" />
+          </StackPanel>
+
+          <Border Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="12" Padding="16">
+            <StackPanel Spacing="10">
+              <TextBlock x:Name="PathLabelText" FontSize="11" LetterSpacing="1" Foreground="#8D939C" />
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <TextBox x:Name="InstallPathBox" FontSize="12.5" />
+                <Button x:Name="BrowseBtn" Grid.Column="1" Classes="ghost" Padding="14,8" Click="OnBrowseClick" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <Border Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="12" Padding="16,12">
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock x:Name="OptDesktopText" VerticalAlignment="Center" FontSize="13" Foreground="#E8EAED" />
+                <ToggleSwitch x:Name="DesktopToggle" Grid.Column="1" IsChecked="True" OnContent="" OffContent="" />
+              </Grid>
+              <Border Height="1" Background="#252932" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock x:Name="OptStartMenuText" VerticalAlignment="Center" FontSize="13" Foreground="#E8EAED" />
+                <ToggleSwitch x:Name="StartMenuToggle" Grid.Column="1" IsChecked="True" OnContent="" OffContent="" />
+              </Grid>
+              <Border Height="1" Background="#252932" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock x:Name="OptStartupText" VerticalAlignment="Center" FontSize="13" Foreground="#E8EAED" />
+                <ToggleSwitch x:Name="StartupToggle" Grid.Column="1" IsChecked="False" OnContent="" OffContent="" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <TextBlock x:Name="ErrorText" IsVisible="False" FontSize="12.5" Foreground="#E8845A" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- 2. Progress Panel -->
+        <StackPanel x:Name="ProgressPanel" IsVisible="False" Spacing="18" VerticalAlignment="Center">
+          <StackPanel Spacing="6">
+            <TextBlock x:Name="InstallingTitleText" FontSize="24" FontWeight="Light" Foreground="#E8EAED" />
+            <TextBlock x:Name="InstallingHintText" FontSize="13" Foreground="#9AA0A9" TextWrapping="Wrap" />
+          </StackPanel>
+
+          <Border Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="12" Padding="18">
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock x:Name="ProgressStepText" FontSize="13" Foreground="#E8EAED" />
+                <TextBlock x:Name="ProgressPercentText" Grid.Column="1" FontSize="13" FontWeight="SemiBold" Foreground="#7BC4A8" Text="0%" />
+              </Grid>
+              <ProgressBar x:Name="InstallProgressBar" Minimum="0" Maximum="100" Value="0"
+                           Height="8" CornerRadius="4"
+                           Background="#0F1114" Foreground="#7BC4A8" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- 3. Done Panel -->
+        <StackPanel x:Name="DonePanel" IsVisible="False" Spacing="18" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+            <Border Width="44" Height="44" CornerRadius="22" Background="#1F7BC4A8" BorderBrush="#7BC4A8" BorderThickness="1">
+              <Path Data="M13,22 L19,28 L31,16" Stroke="#7BC4A8" StrokeThickness="2.4" StrokeLineCap="Round" StrokeJoin="Round" />
+            </Border>
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock x:Name="DoneTitleText" FontSize="24" FontWeight="Light" Foreground="#E8EAED" />
+              <TextBlock x:Name="DoneDescText" FontSize="13" Foreground="#9AA0A9" />
+            </StackPanel>
+          </StackPanel>
+
+          <Border Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="12" Padding="16">
+            <TextBlock x:Name="DonePathText" FontSize="12.5" Foreground="#7BC4A8" TextWrapping="Wrap" />
+          </Border>
+
+          <Border x:Name="LaunchCard" Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="12" Padding="16,10">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock x:Name="LaunchAfterText" VerticalAlignment="Center" FontSize="13" Foreground="#E8EAED" />
+              <ToggleSwitch x:Name="LaunchAfterToggle" Grid.Column="1" IsChecked="True" OnContent="" OffContent="" />
+            </Grid>
+          </Border>
+        </StackPanel>
+
+        <!-- 4. Uninstall Confirm Panel -->
+        <StackPanel x:Name="UninstallPanel" IsVisible="False" Spacing="18" VerticalAlignment="Center">
+          <StackPanel Spacing="6">
+            <TextBlock x:Name="UninstallTitleText" FontSize="26" FontWeight="Light" Foreground="#E8EAED" />
+            <TextBlock x:Name="UninstallDescText" FontSize="13" Foreground="#9AA0A9" TextWrapping="Wrap" LineHeight="20" />
+          </StackPanel>
+          <Border Background="#1B1E24" BorderBrush="#2A2E36" BorderThickness="1" CornerRadius="12" Padding="16">
+            <TextBlock x:Name="UninstallPathText" FontSize="12.5" Foreground="#9AA0A9" TextWrapping="Wrap" />
+          </Border>
+        </StackPanel>
+      </Grid>
+
+      <!-- Footer -->
+      <Border Grid.Row="2" BorderBrush="#1D2026" BorderThickness="0,1,0,0" Padding="28,16">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+          <TextBlock Text="IL DENTE PROIBITO · x64" FontSize="11.5" Foreground="#6B717B" VerticalAlignment="Center" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+            <Button x:Name="CancelBtn" Classes="ghost" Padding="16,9" Click="OnCloseClick" />
+            <Button x:Name="PrimaryBtn" Classes="accent" Padding="22,9" Click="OnPrimaryClick" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Grid>
+  </Border>
+</Window>

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Uptime.Core;
 using Uptime.Presentation.ViewModels;
 
 namespace Uptime.Presentation.Views;
@@ -10,14 +11,27 @@ public partial class MonitorView : UserControl
 
     private async void OnCopyClick(object? sender, RoutedEventArgs e)
     {
-        if (DataContext is MonitorViewModel vm && TopLevel.GetTopLevel(this)?.Clipboard is { } clipboard)
-            await clipboard.SetTextAsync(vm.ClipboardText);
+        if (DataContext is MonitorViewModel vm)
+            await CopyToClipboardAsync(vm.ClipboardText);
     }
 
     private async void OnBadgeClick(object? sender, RoutedEventArgs e)
     {
-        if (DataContext is MonitorViewModel vm && TopLevel.GetTopLevel(this)?.Clipboard is { } clipboard)
-            await clipboard.SetTextAsync(vm.L.Format("BadgeTemplate", $"{vm.PrimaryText} {vm.SecondaryText}", vm.StatusText));
+        if (DataContext is MonitorViewModel vm)
+            await CopyToClipboardAsync(vm.L.Format("BadgeTemplate", $"{vm.PrimaryText} {vm.SecondaryText}", vm.StatusText));
+    }
+
+    private async Task CopyToClipboardAsync(string text)
+    {
+        try
+        {
+            if (TopLevel.GetTopLevel(this)?.Clipboard is { } clipboard)
+                await clipboard.SetTextAsync(text);
+        }
+        catch (Exception ex)
+        {
+            AppDiagnostics.Write("Error", "Failed to copy text to clipboard", ex);
+        }
     }
 
     private MiniHudWindow? _hudWindow;
@@ -37,6 +51,12 @@ public partial class MonitorView : UserControl
             _hudWindow.Closed += (_, _) => _hudWindow = null;
             _hudWindow.Show();
         }
+    }
+
+    private void OnStandByClick(object? sender, RoutedEventArgs e)
+    {
+        if (TopLevel.GetTopLevel(this) is MainWindow window && window.DataContext is MainViewModel main)
+            main.OpenStandByMode();
     }
 
     private void OnSettingsClick(object? sender, RoutedEventArgs e)

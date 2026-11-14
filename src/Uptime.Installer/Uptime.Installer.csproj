@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Uptime.Installer</RootNamespace>
+    <AssemblyName>UptimeSetup</AssemblyName>
+    <ApplicationIcon>..\Uptime.Presentation\Assets\uptime.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="..\Uptime.Presentation\Assets\uptime.ico" Link="Assets\uptime.ico" />
+    <AvaloniaResource Include="..\Uptime.Presentation\Assets\uptime.png" Link="Assets\uptime.png" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('Payload\Uptime.exe.gz')">
+    <EmbeddedResource Include="Payload\Uptime.exe.gz" LogicalName="Uptime.Installer.Payload.Uptime.exe.gz" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('Payload\favicon.svg')">
+    <EmbeddedResource Include="Payload\favicon.svg" LogicalName="Uptime.Installer.Payload.favicon.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.*" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.*" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.*" />
+  </ItemGroup>
+  <Target Name="RemoveUnsupportedCultureSatellites" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
+    <RemoveDir Directories="$(PublishDir)cs;$(PublishDir)de;$(PublishDir)es;$(PublishDir)fr;$(PublishDir)ja;$(PublishDir)ko;$(PublishDir)pl;$(PublishDir)pt-BR;$(PublishDir)ru;$(PublishDir)tr;$(PublishDir)zh-Hans;$(PublishDir)zh-Hant" />
+  </Target>
+</Project>

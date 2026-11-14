@@ -5,7 +5,7 @@
         x:Class="Uptime.Presentation.Views.SpotifyWidgetWindow"
         x:DataType="vm:SpotifyViewModel"
         Title="Spotify Widget"
-        Width="380" Height="110" MinWidth="340" MinHeight="100"
+        Width="408" Height="138" MinWidth="360" MinHeight="128"
         CanResize="False" Topmost="True" ShowInTaskbar="False"
         SystemDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
@@ -16,127 +16,167 @@
         PointerPressed="OnWindowPointerPressed">
   <Window.Styles>
     <Style Selector="Button.spotify-tool">
-      <Setter Property="Width" Value="24" />
-      <Setter Property="Height" Value="24" />
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="CornerRadius" Value="14" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.spotify-tool:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1F252F" />
+      <Setter Property="Background" Value="#24FFFFFF" />
     </Style>
-    <Style Selector="Button.spotify-tool.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.spotify-play">
+      <Setter Property="Width" Value="34" />
+      <Setter Property="Height" Value="34" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="#1DB954" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="17" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.spotify-play:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#25D363" />
+    </Style>
+    <Style Selector="Button.spotify-close">
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="#14FFFFFF" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.spotify-close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#C42B1C" />
     </Style>
-    <Style Selector="Button.spotify-tool.close:pointerover Path">
+    <Style Selector="Button.spotify-close:pointerover Path">
       <Setter Property="Stroke" Value="#FFFFFF" />
     </Style>
   </Window.Styles>
 
-  <Border Background="#12151B" BorderBrush="#2A313C" BorderThickness="1"
-          CornerRadius="14" Padding="12,10" BoxShadow="0 14 32 0 #70000000">
-    <Grid ColumnDefinitions="52,*" ColumnSpacing="12" VerticalAlignment="Center">
-      <!-- Album Cover -->
-      <Border Width="52" Height="52" CornerRadius="8" ClipToBounds="True" Background="#1B2028"
-              VerticalAlignment="Center" HorizontalAlignment="Center">
-        <Panel>
-          <Image Source="{Binding CoverImage}" Stretch="UniformToFill"
-                 IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNotNull}}" />
-          <Path Data="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-                Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNull}}" />
-        </Panel>
+  <Border CornerRadius="18" ClipToBounds="True" Background="#101318"
+          BorderBrush="#2CFFFFFF" BorderThickness="1"
+          BoxShadow="0 18 40 0 #85000000">
+    <Panel>
+      <!-- Ambient blurred album art glow -->
+      <Image Source="{Binding CoverImage}" Stretch="UniformToFill" Opacity="0.34"
+             IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <Image.Effect>
+          <BlurEffect Radius="32" />
+        </Image.Effect>
+      </Image>
+
+      <!-- Dark frosted readability scrim -->
+      <Border>
+        <Border.Background>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Offset="0" Color="#CE11141A" />
+            <GradientStop Offset="1" Color="#EA0D1015" />
+          </LinearGradientBrush>
+        </Border.Background>
       </Border>
 
-      <!-- Details & Controls -->
-      <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="4" VerticalAlignment="Center">
-        <!-- Top Row: Title, Artist and Close -->
-        <Grid ColumnDefinitions="*,Auto">
-          <StackPanel VerticalAlignment="Center" Spacing="1">
-            <TextBlock Text="{Binding Title}" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"
-                       TextTrimming="CharacterEllipsis" MaxLines="1" />
-            <TextBlock Text="{Binding Artist}" FontSize="11" Foreground="{DynamicResource MutedBrush}"
-                       TextTrimming="CharacterEllipsis" MaxLines="1" />
-          </StackPanel>
+      <!-- Main content -->
+      <Grid ColumnDefinitions="82,*" ColumnSpacing="14" Margin="14,12">
+        <!-- Album cover with subtle inner frame -->
+        <Border Width="82" Height="82" CornerRadius="12" ClipToBounds="True"
+                Background="#1A1F28" BorderBrush="#26FFFFFF" BorderThickness="1"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                BoxShadow="0 8 18 0 #50000000">
+          <Panel>
+            <Image Source="{Binding CoverImage}" Stretch="UniformToFill"
+                   IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            <Path Data="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                  Fill="#1DB954" Width="28" Height="28" Stretch="Uniform"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNull}}" />
+          </Panel>
+        </Border>
 
-          <Button Grid.Column="1" Classes="spotify-tool close" Click="OnCloseClick" VerticalAlignment="Top"
-                  i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose">
-            <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#8E95A0" StrokeThickness="1.5" />
-          </Button>
-        </Grid>
+        <!-- Track details, progress bar and transport controls -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="7" VerticalAlignment="Center">
+          <!-- Row 1: Track title + Artist + Close -->
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="{Binding Title}" FontSize="14.5" FontWeight="SemiBold" Foreground="#F4F6F9"
+                         TextTrimming="CharacterEllipsis" MaxLines="1" />
+              <TextBlock Text="{Binding Artist}" FontSize="12" Foreground="#9EA8B7"
+                         TextTrimming="CharacterEllipsis" MaxLines="1" />
+            </StackPanel>
 
-        <!-- Row 2: Playback Timeline Progress -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center" Margin="0,2,0,2">
-          <TextBlock Text="{Binding PositionText}" FontSize="9.5" Foreground="{DynamicResource MutedBrush}"
-                     FontFamily="Consolas, Segoe UI, monospace" VerticalAlignment="Center" />
-          <ProgressBar Grid.Column="1" Minimum="0" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"
-                       Height="3" CornerRadius="1.5" Background="#242A34" Foreground="{DynamicResource AccentBrush}"
-                       VerticalAlignment="Center" />
-          <TextBlock Grid.Column="2" Text="{Binding DurationText}" FontSize="9.5" Foreground="{DynamicResource MutedBrush}"
-                     FontFamily="Consolas, Segoe UI, monospace" VerticalAlignment="Center" />
-        </Grid>
-
-        <!-- Row 3: Compact Media Player Controls -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
-          <!-- Loop / Repeat -->
-          <Button Classes="spotify-tool" Command="{Binding ToggleLoopCommand}" i18n:Localize.TipKey="SpotifyLoop"
-                  VerticalAlignment="Center">
-            <Panel>
-              <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
-                    Fill="{DynamicResource AccentBrush}" Width="10" Height="10" Stretch="Uniform"
-                    IsVisible="{Binding IsLooping}" />
-              <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
-                    Fill="{DynamicResource DimBrush}" Width="10" Height="10" Stretch="Uniform"
-                    IsVisible="{Binding !IsLooping}" />
-            </Panel>
-          </Button>
-
-          <!-- Playback Controls -->
-          <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4" VerticalAlignment="Center">
-            <!-- Rewind 10s -->
-            <Button Classes="spotify-tool" Command="{Binding SeekBackward10Command}" i18n:Localize.TipKey="SpotifySeekBack">
-              <StackPanel Orientation="Horizontal" Spacing="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Path Data="M11 6l-6 6 6 6z" Fill="{DynamicResource MutedBrush}" Width="6" Height="6" Stretch="Uniform" VerticalAlignment="Center" />
-                <TextBlock Text="10" FontSize="8.5" FontWeight="SemiBold" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
-              </StackPanel>
+            <Button Grid.Column="1" Classes="spotify-close" Click="OnCloseClick" VerticalAlignment="Top"
+                    i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose">
+              <Path Data="M4,4 L11,11 M11,4 L4,11" Stroke="#A8B1BE" StrokeThickness="1.5" />
             </Button>
+          </Grid>
 
-            <!-- Previous -->
-            <Button Classes="spotify-tool" Command="{Binding SkipPreviousCommand}" i18n:Localize.TipKey="SpotifyPrevious">
-              <Path Data="M6 6h2v12H6zm3.5 6l8.5 6V6z" Fill="{DynamicResource MutedBrush}" Width="9" Height="9" Stretch="Uniform" />
-            </Button>
+          <!-- Row 2: Sleek progress bar & timestamps -->
+          <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+            <TextBlock Text="{Binding PositionText}" FontSize="10" Foreground="#9EA8B7"
+                       FontFamily="Consolas, Segoe UI, monospace" VerticalAlignment="Center" />
+            <ProgressBar Grid.Column="1" Minimum="0" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"
+                         Height="4" CornerRadius="2" Background="#2EFFFFFF" Foreground="#1DB954"
+                         VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2" Text="{Binding DurationText}" FontSize="10" Foreground="#9EA8B7"
+                       FontFamily="Consolas, Segoe UI, monospace" VerticalAlignment="Center" />
+          </Grid>
 
-            <!-- Play / Pause -->
-            <Button Width="28" Height="28" Padding="0" Background="#20252E" BorderBrush="#2E3542" BorderThickness="1" CornerRadius="14"
-                    Command="{Binding TogglePlayPauseCommand}" i18n:Localize.TipKey="SpotifyPlayPause"
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+          <!-- Row 3: Transport Controls -->
+          <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
+            <!-- Loop / Repeat -->
+            <Button Classes="spotify-tool" Command="{Binding ToggleLoopCommand}" i18n:Localize.TipKey="SpotifyLoop"
+                    VerticalAlignment="Center">
               <Panel>
-                <Path Data="M6 19h4V5H6v14zm8-14v14h4V5h-4z" Fill="{DynamicResource AccentBrush}" Width="10" Height="10"
-                      Stretch="Uniform" IsVisible="{Binding IsPlaying}" />
-                <Path Data="M8 5v14l11-7z" Fill="{DynamicResource AccentBrush}" Width="10" Height="10"
-                      Stretch="Uniform" IsVisible="{Binding !IsPlaying}" Margin="1.5,0,0,0" />
+                <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
+                      Fill="#1DB954" Width="12" Height="12" Stretch="Uniform"
+                      IsVisible="{Binding IsLooping}" />
+                <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
+                      Fill="#7B8492" Width="12" Height="12" Stretch="Uniform"
+                      IsVisible="{Binding !IsLooping}" />
               </Panel>
             </Button>
 
-            <!-- Next -->
-            <Button Classes="spotify-tool" Command="{Binding SkipNextCommand}" i18n:Localize.TipKey="SpotifyNext">
-              <Path Data="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" Fill="{DynamicResource MutedBrush}" Width="9" Height="9" Stretch="Uniform" />
-            </Button>
+            <!-- Center Transport -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="6" VerticalAlignment="Center">
+              <Button Classes="spotify-tool" Command="{Binding SeekBackward10Command}" i18n:Localize.TipKey="SpotifySeekBack">
+                <StackPanel Orientation="Horizontal" Spacing="1.5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                  <Path Data="M11 6l-6 6 6 6z" Fill="#C5CDD8" Width="7" Height="7" Stretch="Uniform" VerticalAlignment="Center" />
+                  <TextBlock Text="10" FontSize="9" FontWeight="SemiBold" Foreground="#C5CDD8" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
 
-            <!-- Forward 10s -->
-            <Button Classes="spotify-tool" Command="{Binding SeekForward10Command}" i18n:Localize.TipKey="SpotifySeekForward">
-              <StackPanel Orientation="Horizontal" Spacing="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="10" FontSize="8.5" FontWeight="SemiBold" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
-                <Path Data="M5 6l6 6-6 6z" Fill="{DynamicResource MutedBrush}" Width="6" Height="6" Stretch="Uniform" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
-          </StackPanel>
+              <Button Classes="spotify-tool" Command="{Binding SkipPreviousCommand}" i18n:Localize.TipKey="SpotifyPrevious">
+                <Path Data="M6 6h2v12H6zm3.5 6l8.5 6V6z" Fill="#E5E9F0" Width="11" Height="11" Stretch="Uniform" />
+              </Button>
+
+              <Button Classes="spotify-play" Command="{Binding TogglePlayPauseCommand}" i18n:Localize.TipKey="SpotifyPlayPause">
+                <Panel>
+                  <Path Data="M6 19h4V5H6v14zm8-14v14h4V5h-4z" Fill="#0A0E12" Width="12" Height="12"
+                        Stretch="Uniform" IsVisible="{Binding IsPlaying}" />
+                  <Path Data="M8 5v14l11-7z" Fill="#0A0E12" Width="12" Height="12"
+                        Stretch="Uniform" IsVisible="{Binding !IsPlaying}" Margin="2,0,0,0" />
+                </Panel>
+              </Button>
+
+              <Button Classes="spotify-tool" Command="{Binding SkipNextCommand}" i18n:Localize.TipKey="SpotifyNext">
+                <Path Data="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" Fill="#E5E9F0" Width="11" Height="11" Stretch="Uniform" />
+              </Button>
+
+              <Button Classes="spotify-tool" Command="{Binding SeekForward10Command}" i18n:Localize.TipKey="SpotifySeekForward">
+                <StackPanel Orientation="Horizontal" Spacing="1.5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                  <TextBlock Text="10" FontSize="9" FontWeight="SemiBold" Foreground="#C5CDD8" VerticalAlignment="Center" />
+                  <Path Data="M5 6l6 6-6 6z" Fill="#C5CDD8" Width="7" Height="7" Stretch="Uniform" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </Panel>
   </Border>
 </Window>

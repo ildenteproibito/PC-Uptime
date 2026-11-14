@@ -216,4 +216,83 @@ public class BsodExplainerTests
         var exp = BsodExplainer.Explain(0x000000D1, "it");
         Assert.Contains("Reinstalla", exp.Advice, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public void Localization_ThemeKeys_PresentInBothLanguages()
+    {
+        var loc = Localizer.Instance;
+        loc.Language = "it";
+        Assert.False(string.IsNullOrWhiteSpace(loc["LblThemes"]));
+        Assert.False(string.IsNullOrWhiteSpace(loc["ThemesDesc"]));
+        Assert.Equal("Attivo", loc["ThemeActive"]);
+        Assert.Equal("Scorri a sinistra", loc["TooltipScrollLeft"]);
+        Assert.Equal("Scorri a destra", loc["TooltipScrollRight"]);
+
+        loc.Language = "en";
+        Assert.False(string.IsNullOrWhiteSpace(loc["LblThemes"]));
+        Assert.False(string.IsNullOrWhiteSpace(loc["ThemesDesc"]));
+        Assert.Equal("Active", loc["ThemeActive"]);
+        Assert.Equal("Scroll left", loc["TooltipScrollLeft"]);
+        Assert.Equal("Scroll right", loc["TooltipScrollRight"]);
+    }
+
+    [Fact]
+    public void EventLogLocalizer_TranslatesScm7000AndLevels_AcrossAllThreeLanguages()
+    {
+        const string sample = "The Brave Update Service (brave) service failed to start due to the following error:\nThe service did not respond to the start or control request in a timely fashion.";
+
+        Assert.Equal("Errore", EventLogLocalizer.LocalizeLevel("Error", "it"));
+        Assert.Equal("Critico", EventLogLocalizer.LocalizeLevel("Critical", "it"));
+        Assert.Equal("Ошибка", EventLogLocalizer.LocalizeLevel("Errore", "ru"));
+        Assert.Equal("Критическая", EventLogLocalizer.LocalizeLevel("Critico", "ru"));
+
+        var itMsg = EventLogLocalizer.LocalizeMessage(7000, "Service Control Manager", sample, "it");
+        Assert.Contains("Brave Update Service (brave)", itMsg);
+        Assert.Contains("non è riuscito ad avviarsi", itMsg);
+        Assert.Contains("tempo utile", itMsg);
+
+        var ruMsg = EventLogLocalizer.LocalizeMessage(7000, "Service Control Manager", sample, "ru");
+        Assert.Contains("Brave Update Service (brave)", ruMsg);
+        Assert.Contains("Сбой при запуске службы", ruMsg);
+
+        var enMsg = EventLogLocalizer.LocalizeMessage(7000, "Service Control Manager", itMsg, "en");
+        Assert.Contains("failed to start", enMsg);
+        Assert.Contains("timely fashion", enMsg);
+    }
+
+    [Fact]
+    public void UpdateManifestValidator_ValidatesVersionAndTrustedManifest()
+    {
+        Assert.True(UpdateManifestValidator.IsNewerVersion("1.0.0", "1.0.1"));
+        Assert.True(UpdateManifestValidator.IsNewerVersion("1.0.0", "v1.2.0"));
+        Assert.False(UpdateManifestValidator.IsNewerVersion("1.0.0", "1.0.0"));
+        Assert.False(UpdateManifestValidator.IsNewerVersion("1.2.0", "1.1.9"));
+
+        var validSha = new string('a', 64);
+        var ok = new UpdateManifest("1.0.1", "https://uptime-pc.vercel.app/downloads/Uptime-1.0.0-win-x64.zip", validSha, "Notes");
+        var badHost = new UpdateManifest("1.0.1", "https://evil.example/update.zip", validSha);
+        var badSha = new UpdateManifest("1.0.1", "https://uptime-pc.vercel.app/downloads/Uptime-1.0.0-win-x64.zip", "1234");
+
+        Assert.True(UpdateManifestValidator.IsValidManifest(ok));
+        Assert.False(UpdateManifestValidator.IsValidManifest(badHost));
+        Assert.False(UpdateManifestValidator.IsValidManifest(badSha));
+    }
+
+    [Fact]
+    public void StabilityAnalyzer_InitiatedShutdownFollowedByCrash_IsUnexpected()
+    {
+        var t0 = new DateTime(2026, 11, 14, 10, 0, 0);
+        var events = new[]
+        {
+            new LogEvent(t0, 12, "Microsoft-Windows-Kernel-General"),
+            new LogEvent(t0.AddHours(2), 1074, "User32"),
+            new LogEvent(t0.AddHours(2).AddMinutes(2), 12, "Microsoft-Windows-Kernel-General"),
+            new LogEvent(t0.AddHours(2).AddMinutes(2).AddSeconds(5), 41, "Microsoft-Windows-Kernel-Power", 0),
+        };
+
+        var report = StabilityAnalyzer.Analyze(events, t0.AddHours(3));
+        Assert.Equal(2, report.Sessions.Count);
+        Assert.Equal(SessionOutcome.Unexpected, report.Sessions[0].Outcome);
+        Assert.Equal(1, report.UnexpectedCount);
+    }
 }

@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:Class="Uptime.Presentation.Views.WallpaperStudioView"
+             x:DataType="vm:SettingsViewModel">
+  <Grid Background="{DynamicResource BgBrush}">
+    <!-- Fullscreen Live Wallpaper Preview -->
+    <Image Source="{Binding StudioPreviewImage}" Stretch="UniformToFill"
+           RenderOptions.BitmapInterpolationMode="MediumQuality">
+      <Image.Effect>
+        <BlurEffect Radius="{Binding BackgroundBlur}" />
+      </Image.Effect>
+    </Image>
+
+    <!-- Live Dimming Layer -->
+    <Border Background="{DynamicResource BgBrush}" Opacity="{Binding BackgroundDim}" IsHitTestVisible="False" />
+
+    <!-- Live Radial Vignette Layer -->
+    <Border Opacity="{Binding BackgroundVignette}" IsHitTestVisible="False">
+      <Border.Background>
+        <RadialGradientBrush Center="50%,50%" GradientOrigin="50%,50%" RadiusX="75%" RadiusY="75%">
+          <GradientStop Offset="0.0" Color="#00000000" />
+          <GradientStop Offset="0.65" Color="#44000000" />
+          <GradientStop Offset="1.0" Color="#E6000000" />
+        </RadialGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <!-- Fullscreen Layout: Top-right Close + Center Live Uptime Readability Mockup + Bottom Editor Dock -->
+    <Grid RowDefinitions="Auto,*,Auto" Margin="36,24">
+      <!-- Top Bar -->
+      <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+        <Border HorizontalAlignment="Left" Padding="14,8" CornerRadius="10"
+                Background="#CC0B0F15" BorderBrush="#33FFFFFF" BorderThickness="1"
+                IsVisible="{Binding IsPreviewingCommunityWallpaper}">
+          <TextBlock Text="{Binding PreviewingWallpaper.Title}" FontSize="12.5" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+        </Border>
+
+        <Button Grid.Column="1" Classes="ghost" Padding="16,8"
+                Background="#CC0B0F15"
+                Command="{Binding CloseWallpaperPreviewCommand}"
+                i18n:Localize.ContentKey="WallpaperClosePreview" />
+      </Grid>
+
+      <!-- Center Live Widget Readability Preview -->
+      <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="14" IsHitTestVisible="False">
+        <TextBlock Text="16 h 06 m" FontSize="56" FontWeight="Light"
+                   Foreground="{DynamicResource TextBrush}" HorizontalAlignment="Center" />
+        <Border CornerRadius="999" Padding="14,5" Background="#247BC4A8" BorderBrush="#667BC4A8" BorderThickness="1" HorizontalAlignment="Center">
+          <TextBlock i18n:Localize.TextKey="WallpaperPreviewSample" FontSize="13" FontWeight="Medium"
+                     Foreground="{DynamicResource AccentBrush}" />
+        </Border>
+      </StackPanel>
+
+      <!-- Bottom Glass Editor Dock -->
+      <Border Grid.Row="2" MaxWidth="880" HorizontalAlignment="Center" Width="880"
+              Padding="22,18" CornerRadius="14"
+              Background="#E00B0F15" BorderBrush="#40FFFFFF" BorderThickness="1">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="28">
+          <!-- Sliders -->
+          <StackPanel Spacing="10" VerticalAlignment="Center">
+            <Grid ColumnDefinitions="110,*,54" ColumnSpacing="12" VerticalAlignment="Center">
+              <TextBlock i18n:Localize.TextKey="WallpaperBlur" FontSize="13" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Slider Grid.Column="1" Minimum="0" Maximum="24" SmallChange="0.25" LargeChange="2" Value="{Binding BackgroundBlur, Mode=TwoWay}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="{Binding BackgroundBlurText}" FontSize="12.5" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            </Grid>
+            <Grid ColumnDefinitions="110,*,54" ColumnSpacing="12" VerticalAlignment="Center">
+              <TextBlock i18n:Localize.TextKey="WallpaperDim" FontSize="13" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Slider Grid.Column="1" Minimum="0.25" Maximum="0.92" SmallChange="0.01" LargeChange="0.05" Value="{Binding BackgroundDim, Mode=TwoWay}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="{Binding BackgroundDimText}" FontSize="12.5" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            </Grid>
+            <Grid ColumnDefinitions="110,*,54" ColumnSpacing="12" VerticalAlignment="Center">
+              <TextBlock i18n:Localize.TextKey="WallpaperVignette" FontSize="13" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Slider Grid.Column="1" Minimum="0" Maximum="0.90" SmallChange="0.01" LargeChange="0.05" Value="{Binding BackgroundVignette, Mode=TwoWay}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="{Binding BackgroundVignetteText}" FontSize="12.5" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            </Grid>
+          </StackPanel>
+
+          <!-- Actions -->
+          <StackPanel Grid.Column="1" Spacing="10" VerticalAlignment="Center" MinWidth="150">
+            <Button Classes="accent" Padding="16,9" HorizontalAlignment="Stretch"
+                    IsVisible="{Binding IsPreviewingCommunityWallpaper}"
+                    Command="{Binding ApplyCommunityWallpaperCommand}"
+                    CommandParameter="{Binding PreviewingWallpaper}"
+                    i18n:Localize.ContentKey="CommunityApply" />
+            <Button Classes="ghost" Padding="16,8" HorizontalAlignment="Stretch"
+                    Command="{Binding ResetBackgroundEffectsCommand}"
+                    i18n:Localize.ContentKey="WallpaperResetEffects" />
+            <Button Classes="ghost" Padding="16,8" HorizontalAlignment="Stretch"
+                    Command="{Binding CloseWallpaperPreviewCommand}"
+                    i18n:Localize.ContentKey="WallpaperClosePreview" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

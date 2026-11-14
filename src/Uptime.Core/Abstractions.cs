@@ -54,3 +54,83 @@ public interface ISpotifyMediaService
     Task ToggleLoopAsync();
 }
 
+public enum PowerPlanKind { Unknown, Balanced, HighPerformance, PowerSaver }
+
+public sealed record AppCrashItem(DateTime Time, string AppName, string Kind, string ModuleName);
+
+public interface IKeepAwakeService
+{
+    bool IsActive { get; }
+    void SetAwake(bool enabled, bool keepDisplayOn = true);
+    bool IsProcessRunning(string processName);
+}
+
+public interface IPowerPlanService
+{
+    PowerPlanKind GetActivePlan();
+    string GetActivePlanName() => GetActivePlan().ToString();
+    bool SetActivePlan(PowerPlanKind plan);
+}
+
+public interface IWorkspaceRestoreService
+{
+    void SaveWorkspaceSnapshot();
+    void RestoreWorkspaceIfPending();
+}
+
+public sealed record SystemEventLogItem(DateTime Time, int EventId, string Level, string Provider, string Message);
+
+public interface ISystemIncidentLogService
+{
+    IReadOnlyList<SystemEventLogItem> ReadRecentCriticalAndErrorEvents(DateTime sinceLocal, int maxItems = 25);
+}
+
+public interface IAppCrashService
+{
+    IReadOnlyList<AppCrashItem> ReadRecentAppCrashes(DateTime sinceLocal, int maxItems = 15);
+}
+
+public sealed record MemoryStatusInfo(int UsedPercent, double UsedGb, double TotalGb, long AvailableMb);
+public sealed record MemoryTrimResult(long FreedMb, int TrimmedProcessCount, MemoryStatusInfo After);
+
+public interface IMemoryService
+{
+    MemoryStatusInfo GetStatus();
+    MemoryTrimResult TrimBackgroundWorkingSets();
+}
+
+public sealed record NetworkDropEvent(DateTime Time, string Target, string Reason);
+public sealed record NetworkWatchdogSnapshot(
+    string Target,
+    bool IsOnline,
+    long? LastLatencyMs,
+    int CheckCount,
+    int DropCount,
+    IReadOnlyList<NetworkDropEvent> RecentDrops);
+
+public interface INetworkWatchdogService
+{
+    Task<NetworkWatchdogSnapshot> ProbeAsync(CancellationToken cancellationToken = default);
+    NetworkWatchdogSnapshot GetSnapshot();
+}
+
+public sealed record CommunityWallpaperItem(
+    string Id,
+    string Title,
+    string Author,
+    string Resolution,
+    string ThemeTag,
+    string ImageUrl,
+    int Downloads,
+    DateTimeOffset CreatedAt);
+
+public interface ICommunityWallpaperService
+{
+    bool IsConfigured { get; }
+    Task<IReadOnlyList<CommunityWallpaperItem>> GetWallpapersAsync(CancellationToken cancellationToken = default);
+    Task<CommunityWallpaperItem> UploadWallpaperAsync(string filePath, string title, string author, string resolution, string themeTag, CancellationToken cancellationToken = default);
+    Task<string> DownloadWallpaperToTempAsync(CommunityWallpaperItem item, bool countDownload = true, CancellationToken cancellationToken = default);
+    Task<bool> DeleteWallpaperAsync(string wallpaperId, string token, CancellationToken cancellationToken = default);
+}
+
+

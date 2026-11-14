@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Uptime.Core;
@@ -22,6 +23,17 @@ public sealed record IncidentRow(
     string Meaning,
     string Advice);
 
+public sealed record SystemEventLogRow(
+    string DateText,
+    string EventIdText,
+    string LevelText,
+    IBrush LevelBrush,
+    string Provider,
+    string Message);
+
+public sealed record AppCrashRow(string DateText, string AppName, string KindText, IBrush KindBrush, string ModuleText);
+public sealed record NetworkDropRow(string TimeText, string Target, string Reason);
+
 public partial class StabilityViewModel : ObservableObject
 {
     private static readonly IBrush Good = new SolidColorBrush(Color.Parse("#7BC4A8"));
@@ -30,16 +42,32 @@ public partial class StabilityViewModel : ObservableObject
     private static readonly IBrush Grey = new SolidColorBrush(Color.Parse("#6B717B"));
 
     private readonly IEventLogService _log;
+    private readonly IAppCrashService? _appCrashes;
+    private readonly ISystemIncidentLogService? _systemIncidentLogs;
+    private readonly INetworkWatchdogService? _networkWatchdog;
+    private readonly DispatcherTimer _networkTimer = new() { Interval = TimeSpan.FromSeconds(10) };
     private StabilityReport? _report;
+    private IReadOnlyList<AppCrashItem> _rawAppCrashes = Array.Empty<AppCrashItem>();
+    private IReadOnlyList<SystemEventLogItem> _rawSystemLogs = Array.Empty<SystemEventLogItem>();
     private DateTime _loadedAt = DateTime.MinValue;
+    private bool _isProbingNetwork;
 
     public Localizer L => Localizer.Instance;
     public ObservableCollection<SessionRow> Sessions { get; } = new();
     public ObservableCollection<IncidentRow> Incidents { get; } = new();
+    public ObservableCollection<SystemEventLogRow> SystemEventLogs { get; } = new();
+    public ObservableCollection<AppCrashRow> AppCrashes { get; } = new();
+    public ObservableCollection<NetworkDropRow> NetworkDrops { get; } = new();
 
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private bool _hasError;
     [ObservableProperty] private bool _hasNoIncidents;
+    [ObservableProperty] private bool _hasNoAppCrashes = true;
+    [ObservableProperty] private bool _hasNoNetworkDrops = true;
+    [ObservableProperty] private string _networkStatusText = "";
+    [ObservableProperty] private IBrush _networkStatusBrush = Grey;
+    [ObservableProperty] private string _networkGatewayText = "";
+    [ObservableProperty] private string _networkDropsCountText = "";
     [ObservableProperty] private string _scoreText = "—";
     [ObservableProperty] private string _confidenceText = "";
     [ObservableProperty] private IBrush _confidenceBrush = Grey;
@@ -47,10 +75,23 @@ public partial class StabilityViewModel : ObservableObject
     [ObservableProperty] private string _longestText = "";
     [ObservableProperty] private IReadOnlyList<TimelineSegment> _segments = Array.Empty<TimelineSegment>();
 
-    public StabilityViewModel(IEventLogService log)
+    public StabilityViewModel(
+        IEventLogService log,
+        IAppCrashService? appCrashes = null,
+        ISystemIncidentLogService? systemIncidentLogs = null,
+        INetworkWatchdogService? networkWatchdog = null)
     {
         _log = log;
+        _appCrashes = appCrashes;
+        _systemIncidentLogs = systemIncidentLogs ?? log as ISystemIncidentLogService;
+        _networkWatchdog = networkWatchdog;
         Localizer.Instance.PropertyChanged += OnLanguageChanged;
+        if (_networkWatchdog is not null)
+        {
+            _networkTimer.Tick += async (_, _) => await ProbeNetworkAsync();
+            _networkTimer.Start();
+            _ = ProbeNetworkAsync();
+        }
     }
 
     private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e)
@@ -58,6 +99,54 @@ public partial class StabilityViewModel : ObservableObject
         if (e.PropertyName != nameof(Localizer.Language)) return;
         OnPropertyChanged(nameof(L));
         if (_report is not null) Render(DateTime.Now);
+        if (_networkWatchdog is not null) RenderNetworkSnapshot(_networkWatchdog.GetSnapshot());
+    }
+
+    [RelayCommand]
+    private Task ProbeNetworkNowAsync() => ProbeNetworkAsync();
+
+    private async Task ProbeNetworkAsync()
+    {
+        if (_networkWatchdog is null || _isProbingNetwork) return;
+        _isProbingNetwork = true;
+        try
+        {
+            var snap = await _networkWatchdog.ProbeAsync();
+            RenderNetworkSnapshot(snap);
+        }
+        catch { }
+        finally
+        {
+            _isProbingNetwork = false;
+        }
+    }
+
+    private void RenderNetworkSnapshot(NetworkWatchdogSnapshot snap)
+    {
+        var l = Localizer.Instance;
+        if (snap.CheckCount == 0)
+        {
+            NetworkStatusText = l["NetChecking"];
+            NetworkStatusBrush = Grey;
+        }
+        else if (snap.IsOnline)
+        {
+            NetworkStatusText = snap.LastLatencyMs is { } ms ? $"{l["NetOnline"]} · {ms} ms" : l["NetOnline"];
+            NetworkStatusBrush = Good;
+        }
+        else
+        {
+            NetworkStatusText = l["NetDrop"];
+            NetworkStatusBrush = Orange;
+        }
+
+        NetworkGatewayText = l.Format("NetGateway", snap.Target);
+        NetworkDropsCountText = l.Format("NetDropsCount", snap.DropCount);
+
+        NetworkDrops.Clear();
+        foreach (var d in snap.RecentDrops)
+            NetworkDrops.Add(new NetworkDropRow(d.Time.ToString("HH:mm:ss"), d.Target, d.Reason));
+        HasNoNetworkDrops = NetworkDrops.Count == 0;
     }
 
     [RelayCommand]
@@ -74,6 +163,12 @@ public partial class StabilityViewModel : ObservableObject
         {
             var now = DateTime.Now;
             var events = await Task.Run(() => _log.ReadEvents(now.AddDays(-30)));
+            _rawSystemLogs = _systemIncidentLogs is not null
+                ? await Task.Run(() => _systemIncidentLogs.ReadRecentCriticalAndErrorEvents(now.AddDays(-30), 25))
+                : Array.Empty<SystemEventLogItem>();
+            _rawAppCrashes = _appCrashes is not null
+                ? await Task.Run(() => _appCrashes.ReadRecentAppCrashes(now.AddDays(-7), 12))
+                : Array.Empty<AppCrashItem>();
             _report = StabilityAnalyzer.Analyze(events, now);
             _loadedAt = now;
             Render(now);
@@ -139,7 +234,34 @@ public partial class StabilityViewModel : ObservableObject
 
             Incidents.Add(new IncidentRow(dateStr, evSummary, conf, hasExp, name, hex, meaning, advice));
         }
-        HasNoIncidents = Incidents.Count == 0;
+
+        SystemEventLogs.Clear();
+        foreach (var ev in _rawSystemLogs)
+        {
+            var isCrit = EventLogLocalizer.IsCriticalLevel(ev.Level);
+            var brush = isCrit ? Orange : Amber;
+            var levelText = EventLogLocalizer.LocalizeLevel(ev.Level, l.Language);
+            var msg = EventLogLocalizer.LocalizeMessage(ev.EventId, ev.Provider, ev.Message, l.Language);
+            SystemEventLogs.Add(new SystemEventLogRow(
+                ev.Time.ToString("d MMM, HH:mm", culture),
+                $"ID {ev.EventId}",
+                levelText,
+                brush,
+                ev.Provider,
+                msg));
+        }
+        HasNoIncidents = SystemEventLogs.Count == 0;
+
+        AppCrashes.Clear();
+        foreach (var ac in _rawAppCrashes)
+        {
+            var isHang = ac.Kind == "Freeze";
+            var kindText = isHang ? l["AppCrashTypeHang"] : l["AppCrashTypeCrash"];
+            var brush = isHang ? Amber : Orange;
+            var modText = string.IsNullOrWhiteSpace(ac.ModuleName) ? "" : l.Format("AppCrashModule", ac.ModuleName);
+            AppCrashes.Add(new AppCrashRow(ac.Time.ToString("d MMM, HH:mm", culture), ac.AppName, kindText, brush, modText));
+        }
+        HasNoAppCrashes = AppCrashes.Count == 0;
 
         var windowStart = now.AddDays(-30);
         var window = TimeSpan.FromDays(30).TotalSeconds;
@@ -148,6 +270,7 @@ public partial class StabilityViewModel : ObservableObject
         {
             var from = session.Start < windowStart ? windowStart : session.Start;
             var to = session.End ?? now;
+            if (to > now) to = now;
             if (to <= from) continue;
             IBrush brush = session.Outcome switch
             {
@@ -166,7 +289,7 @@ public partial class StabilityViewModel : ObservableObject
     [ObservableProperty] private string _leftLabelText = "";
     [ObservableProperty] private string _rightLabelText = "";
 
-    public string ExportJson() => JsonSerializer.Serialize(_report, new JsonSerializerOptions { WriteIndented = true });
+    public string ExportJson() => _report is null ? "{}" : JsonSerializer.Serialize(_report, new JsonSerializerOptions { WriteIndented = true });
     public string ExportCsv()
     {
         var l = Localizer.Instance;

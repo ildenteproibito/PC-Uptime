@@ -1,5 +1,10 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization" x:Class="Uptime.Presentation.Views.SettingsView">
-  <ScrollViewer VerticalScrollBarVisibility="Hidden">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:Class="Uptime.Presentation.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+  <ScrollViewer x:Name="SettingsScrollViewer" VerticalScrollBarVisibility="Hidden">
     <StackPanel Margin="56,40" Spacing="24" MaxWidth="850" HorizontalAlignment="Left">
       <TextBlock Classes="lbl" i18n:Localize.TextKey="LblSettings" />
       <Border Classes="row" Padding="0,12,0,16">
@@ -8,8 +13,8 @@
             <TextBlock Classes="title" i18n:Localize.TextKey="PrefLanguage" />
             <TextBlock Classes="hint" i18n:Localize.TextKey="PrefLanguageDesc" />
           </StackPanel>
-          <Border Grid.Column="1" Classes="language-switch" Width="204">
-            <Grid ColumnDefinitions="98,98" ColumnSpacing="2">
+          <Border Grid.Column="1" Classes="language-switch" Width="304">
+            <Grid ColumnDefinitions="98,98,98" ColumnSpacing="2">
               <Border Width="98" Height="34" HorizontalAlignment="Left" Background="{DynamicResource AccentBrush}"
                       CornerRadius="6" RenderTransformOrigin="0%,50%">
                 <Border.RenderTransform>
@@ -27,18 +32,138 @@
               <Button Grid.Column="1" Classes="language-option language-option-full" Classes.on="{Binding IsEnglish}"
                       Command="{Binding SetLanguageCommand}" CommandParameter="en"
                       i18n:Localize.TipKey="PrefLanguage">English</Button>
+              <Button Grid.Column="2" Classes="language-option language-option-full" Classes.on="{Binding IsRussian}"
+                      Command="{Binding SetLanguageCommand}" CommandParameter="ru"
+                      i18n:Localize.TipKey="PrefLanguage">Русский</Button>
             </Grid>
           </Border>
         </Grid>
       </Border>
+
+      <!-- Theme Carousel -->
+      <Border Classes="row" Padding="0,12,0,16">
+        <Grid RowDefinitions="Auto,Auto" RowSpacing="14">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="title" i18n:Localize.TextKey="LblThemes" />
+            <TextBlock Classes="hint" i18n:Localize.TextKey="ThemesDesc" />
+          </StackPanel>
+
+          <!-- Carousel with navigation chevrons -->
+          <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+            <Button Grid.Column="0" Classes="carousel-nav" Click="OnScrollThemesLeftClick" Content="‹" i18n:Localize.TipKey="TooltipScrollLeft" />
+
+            <ScrollViewer Grid.Column="1" x:Name="ThemesScrollViewer"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Disabled"
+                          Margin="8,0">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <ItemsControl ItemsSource="{Binding Themes}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal" Spacing="8" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ThemeItemViewModel">
+                      <Button Classes="theme-tile" Command="{Binding SelectCommand}"
+                              Width="78" Height="52">
+                        <Border CornerRadius="8" Background="{Binding BgBrush}"
+                                BorderBrush="{DynamicResource OutlineBrush}" BorderThickness="1"
+                                ClipToBounds="True">
+                          <Grid>
+                            <!-- Mini mockup of Uptime UI -->
+                            <Border Margin="5" CornerRadius="5" Background="{Binding SurfaceBrush}">
+                              <Grid ColumnDefinitions="Auto,*" Margin="6,0" VerticalAlignment="Center">
+                                <!-- Accent status dot / checkmark -->
+                                <Border Width="14" Height="14" CornerRadius="7" Background="{Binding AccentBrush}" VerticalAlignment="Center">
+                                  <TextBlock IsVisible="{Binding IsSelected}" Text="✓" FontSize="9" FontWeight="Bold"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             Foreground="{Binding BgBrush}" Margin="0,-1,0,0" />
+                                </Border>
+                                <!-- Mini UI indicator lines -->
+                                <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                  <Border Width="22" Height="3" CornerRadius="1.5" Background="{Binding TextBrush}" />
+                                  <Border Width="14" Height="2" CornerRadius="1" Background="{Binding AccentBrush}" HorizontalAlignment="Right" />
+                                </StackPanel>
+                              </Grid>
+                            </Border>
+
+                            <!-- Outer selection glow ring -->
+                            <Border CornerRadius="8" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2"
+                                    IsVisible="{Binding IsSelected}" />
+                          </Grid>
+                        </Border>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Custom Wallpaper '+' button tile -->
+                <Button Classes="theme-tile-custom" Click="OnPickCustomWallpaperClick"
+                        Width="78" Height="52" i18n:Localize.TipKey="TooltipCustomWallpaper">
+                  <Border Classes="tile-border" CornerRadius="8" Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource OutlineBrush}" BorderThickness="1"
+                          ClipToBounds="True">
+                    <Grid>
+                      <!-- Live wallpaper preview if present -->
+                      <Image Source="{Binding CustomBackgroundImage}" Stretch="UniformToFill"
+                             IsVisible="{Binding HasCustomBackgroundImage}" Opacity="0.85" />
+                      <Border Background="{DynamicResource SurfaceBrush}" Opacity="0.35"
+                              IsVisible="{Binding HasCustomBackgroundImage}" />
+
+                      <!-- Empty state '+' icon -->
+                      <TextBlock Classes="plus-icon" IsVisible="{Binding !HasCustomBackgroundImage}"
+                                 Text="+" FontSize="24" FontWeight="Light"
+                                 Foreground="{DynamicResource MutedBrush}"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0" />
+
+                      <!-- Active selection border if custom wallpaper active -->
+                      <Border IsVisible="{Binding HasCustomBackgroundImage}"
+                              BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2" CornerRadius="8" />
+
+                      <!-- Clear custom wallpaper '✕' button -->
+                      <Button IsVisible="{Binding HasCustomBackgroundImage}" Classes="custom-clear"
+                              Click="OnClearCustomWallpaperClick" Width="18" Height="18"
+                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"
+                              i18n:Localize.TipKey="TooltipRemoveWallpaper">
+                        <TextBlock Text="✕" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource TextBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0" />
+                      </Button>
+                    </Grid>
+                  </Border>
+                </Button>
+              </StackPanel>
+            </ScrollViewer>
+
+            <Button Grid.Column="2" Classes="carousel-nav" Click="OnScrollThemesRightClick" Content="›" i18n:Localize.TipKey="TooltipScrollRight" />
+          </Grid>
+        </Grid>
+      </Border>
+
       <TextBlock Classes="lbl" i18n:Localize.TextKey="LblWidgets" />
       <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetSession"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowSession}"/></Grid></Border>
       <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetAdvice"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowAdvice}"/></Grid></Border>
       <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetSystem"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowSystem}"/></Grid></Border>
-      <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPresets" />
-      <StackPanel Orientation="Horizontal" Spacing="10"><Button Classes="ghost" i18n:Localize.ContentKey="PresetDefault" Command="{Binding ApplyPresetCommand}" CommandParameter="Default"/><Button Classes="ghost" i18n:Localize.ContentKey="PresetCompact" Command="{Binding ApplyPresetCommand}" CommandParameter="Compact"/><Button Classes="ghost" i18n:Localize.ContentKey="PresetFocus" Command="{Binding ApplyPresetCommand}" CommandParameter="Focus"/></StackPanel>
+      <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><TextBlock Classes="title" i18n:Localize.TextKey="WidgetMascot"/><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding ShowMascot}"/></Grid></Border>
       <Border Classes="row"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Classes="title" i18n:Localize.TextKey="PrefNight"/><TextBlock Classes="hint" i18n:Localize.TextKey="PrefNightDesc"/></StackPanel><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding NightReminder}"/></Grid></Border>
-      <TextBlock Classes="hint" i18n:Localize.TextKey="ShortcutHint" />
+      <Border Classes="row"><Grid ColumnDefinitions="*,Auto" ColumnSpacing="16"><StackPanel HorizontalAlignment="Stretch"><TextBlock Classes="title" HorizontalAlignment="Left" i18n:Localize.TextKey="PrefLiveBridge"/><TextBlock Classes="hint" HorizontalAlignment="Left" i18n:Localize.TextKey="PrefLiveBridgeDesc" TextWrapping="Wrap"/></StackPanel><ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding LiveStateBridge}"/></Grid></Border>
+      <Border Classes="row" IsVisible="{Binding LiveStateBridge}">
+        <StackPanel Spacing="10">
+          <TextBlock Classes="title" i18n:Localize.TextKey="BridgePanelTitle" />
+          <WrapPanel Orientation="Horizontal">
+            <CheckBox Margin="0,0,14,4" i18n:Localize.ContentKey="BridgeOptUptime" IsChecked="{Binding WidgetIncludeUptime}" />
+            <CheckBox Margin="0,0,14,4" i18n:Localize.ContentKey="BridgeOptHealth" IsChecked="{Binding WidgetIncludeHealth}" />
+            <CheckBox Margin="0,0,14,4" i18n:Localize.ContentKey="BridgeOptPower" IsChecked="{Binding WidgetIncludePower}" />
+            <CheckBox Margin="0,0,14,4" i18n:Localize.ContentKey="BridgeOptBattery" IsChecked="{Binding WidgetIncludeBattery}" />
+            <CheckBox Margin="0,0,14,4" i18n:Localize.ContentKey="BridgeOptSpotify" IsChecked="{Binding WidgetIncludeSpotify}" />
+          </WrapPanel>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="ghost" i18n:Localize.ContentKey="BridgeCreateRainmeter" Command="{Binding CreateRainmeterSkinCommand}" />
+            <Button Classes="ghost" i18n:Localize.ContentKey="BridgeCopyPath" Click="OnCopyLiveStatePathClick" />
+          </StackPanel>
+          <TextBlock Classes="hint" Text="{Binding BridgeActionStatus}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
       <TextBlock Classes="lbl" i18n:Localize.TextKey="MaintenanceTitle" />
       <Border Classes="row" Padding="16">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" VerticalAlignment="Center">
@@ -48,6 +173,81 @@
           </StackPanel>
           <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="CreateDiagnostics" Click="OnCreateDiagnosticsClick" />
         </Grid>
+      </Border>
+      <Border Classes="row" Margin="0,10,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" VerticalAlignment="Center">
+          <StackPanel Spacing="5">
+            <TextBlock Classes="title" i18n:Localize.TextKey="ReplayTutorial" />
+            <TextBlock Classes="hint" i18n:Localize.TextKey="ReplayTutorialDesc" TextWrapping="Wrap" MaxWidth="560" HorizontalAlignment="Left" />
+          </StackPanel>
+          <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="ReplayTutorialBtn" Command="{Binding ReplayTutorialCommand}" />
+        </Grid>
+      </Border>
+      <TextBlock Classes="lbl" i18n:Localize.TextKey="LblDiscordRpc" />
+      <Border Classes="row">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="PrefDiscordRpc" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefDiscordRpcDesc" TextWrapping="Wrap" MaxWidth="540" HorizontalAlignment="Left" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding DiscordRichPresenceEnabled}" />
+          </Grid>
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" IsVisible="{Binding DiscordRichPresenceEnabled}">
+            <TextBlock VerticalAlignment="Center" FontSize="12.5" FontWeight="Medium" i18n:Localize.TextKey="DiscordAppIdLabel" />
+            <TextBox Grid.Column="1" Text="{Binding DiscordApplicationId}" Watermark="1234567890123456789" />
+          </Grid>
+          <TextBlock Classes="hint" Text="{Binding DiscordRpcStatus}" IsVisible="{Binding DiscordRpcStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+      <TextBlock Classes="lbl" i18n:Localize.TextKey="LblUpdates" />
+      <Border Classes="row">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel>
+            <TextBlock Classes="title" i18n:Localize.TextKey="PrefAutoUpdate" />
+            <TextBlock Classes="hint" i18n:Localize.TextKey="PrefAutoUpdateDesc" />
+          </StackPanel>
+          <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" IsChecked="{Binding AutoCheckUpdates}" />
+        </Grid>
+      </Border>
+      <Border Classes="row" Padding="16">
+        <StackPanel Spacing="10">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+            <StackPanel Spacing="3" VerticalAlignment="Center">
+              <TextBlock Classes="title" Text="{Binding CurrentVersionLabel}" />
+              <TextBlock Classes="hint" Text="{Binding UpdateStatus}" IsVisible="{Binding UpdateStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <Button Classes="ghost" i18n:Localize.ContentKey="UpdateCheckBtn" Command="{Binding CheckForUpdatesCommand}" IsEnabled="{Binding !IsCheckingUpdates}" />
+              <Button Classes="accent" i18n:Localize.ContentKey="UpdateInstallBtn" Command="{Binding DownloadAndInstallUpdateCommand}" IsVisible="{Binding IsUpdateAvailable}" IsEnabled="{Binding !IsDownloadingUpdate}" />
+            </StackPanel>
+          </Grid>
+          <ProgressBar Minimum="0" Maximum="100" Value="{Binding UpdateProgress}" Height="4" IsVisible="{Binding IsDownloadingUpdate}" />
+          <TextBlock Classes="hint" Text="{Binding UpdateNotes}" IsVisible="{Binding UpdateNotes, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+      <Border Classes="row" Padding="16">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24" VerticalAlignment="Center">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="title" i18n:Localize.TextKey="BugReportTitle" />
+            <TextBlock Classes="hint" i18n:Localize.TextKey="BugReportDesc" TextWrapping="Wrap" MaxWidth="560" HorizontalAlignment="Left" />
+          </StackPanel>
+          <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BugReportToggleBtn" Command="{Binding ToggleBugReportCommand}" Click="OnBugReportToggleClick" />
+        </Grid>
+      </Border>
+      <Border Classes="row" Padding="16" IsVisible="{Binding IsBugReportOpen}">
+        <StackPanel Spacing="10">
+          <TextBlock Classes="hint" i18n:Localize.TextKey="BugReportSummaryLabel" />
+          <TextBox x:Name="BugReportTitleBox" Text="{Binding BugReportTitle}" MaxLength="120" i18n:Localize.WatermarkKey="BugReportSummaryWatermark" />
+          <TextBlock Classes="hint" i18n:Localize.TextKey="BugReportDetailsLabel" />
+          <TextBox Text="{Binding BugReportDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="84" MaxLength="2000" i18n:Localize.WatermarkKey="BugReportDetailsWatermark" />
+          <TextBlock Classes="hint" i18n:Localize.TextKey="BugReportContactLabel" />
+          <TextBox Text="{Binding BugReportContact}" MaxLength="80" i18n:Localize.WatermarkKey="BugReportContactWatermark" />
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Button Classes="ghost" i18n:Localize.ContentKey="BugReportSendBtn" Command="{Binding SubmitBugReportCommand}" IsEnabled="{Binding !IsBugReportSending}" />
+            <TextBlock Classes="hint" Text="{Binding BugReportStatus}" VerticalAlignment="Center" TextWrapping="Wrap" />
+          </StackPanel>
+        </StackPanel>
       </Border>
     </StackPanel>
   </ScrollViewer>

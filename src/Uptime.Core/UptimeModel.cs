@@ -22,7 +22,9 @@ public static class Health
         : HealthLevel.Maintenance;
 
     public static int DaysUntilMaintenance(TimeSpan uptime) =>
-        Math.Max(0, (int)Math.Ceiling(MaintenanceDays - uptime.TotalDays));
+        uptime.TotalDays > MaintenanceDays
+            ? 0
+            : Math.Max(0, (int)Math.Ceiling(MaintenanceDays - uptime.TotalDays));
 }
 
 public sealed record BatteryInfo(

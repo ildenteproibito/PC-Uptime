@@ -2,6 +2,7 @@ import React from 'react';
 import { Composition, Still } from 'remotion';
 import { Trailer } from './Trailer';
 import { Poster } from './Poster';
+import { UppyShowcase } from './UppyShowcase';
 
 export const Root: React.FC = () => {
   return (
@@ -10,6 +11,14 @@ export const Root: React.FC = () => {
         id="Trailer"
         component={Trailer}
         durationInFrames={2400}
+        fps={60}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="UppyShowcase"
+        component={UppyShowcase}
+        durationInFrames={1920}
         fps={60}
         width={1920}
         height={1080}

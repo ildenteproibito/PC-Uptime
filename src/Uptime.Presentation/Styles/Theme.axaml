@@ -33,29 +33,28 @@
 
   <Style Selector="Window">
     <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
-    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
   <Style Selector="TextBlock.lbl">
     <Setter Property="FontSize" Value="12" />
     <Setter Property="LetterSpacing" Value="1" />
-    <Setter Property="Foreground" Value="{StaticResource DimBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource DimBrush}" />
     <Setter Property="Margin" Value="0,0,0,10" />
   </Style>
   <Style Selector="TextBlock.muted">
-    <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
   </Style>
 
   <Style Selector="Border.row">
-    <Setter Property="BorderThickness" Value="0,0,0,1" />
-    <Setter Property="BorderBrush" Value="{StaticResource RowLineBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="0,11" />
   </Style>
 
   <!-- Navigation tabs -->
   <Style Selector="Button.nav">
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
     <Setter Property="FontSize" Value="14" />
     <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="Padding" Value="16,8" />
@@ -64,23 +63,45 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
+  <Style Selector="Button.nav:pointerover">
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
   <Style Selector="Button.nav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="#2E7BC4A8" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
   </Style>
   <Style Selector="Button.nav.on">
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Foreground" Value="#111418" />
+    <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
   <Style Selector="Button.nav.on /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+    <Setter Property="Background" Value="#7BC4A8" />
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.nav.on:pointerover">
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.nav.on:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#8CD0B7" />
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.nav:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#6CB599" />
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.nav.top-tab">
+    <Setter Property="CornerRadius" Value="0,0,14,14" />
+    <Setter Property="Padding" Value="18,8,18,10" />
+    <Setter Property="MinHeight" Value="42" />
+    <Setter Property="VerticalAlignment" Value="Top" />
   </Style>
 
   <!-- Outline ghost button -->
   <Style Selector="Button.ghost">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}" />
+    <Setter Property="Background" Value="#147BC4A8" />
+    <Setter Property="BorderBrush" Value="#597BC4A8" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="Padding" Value="18,0" />
     <Setter Property="CornerRadius" Value="8" />
@@ -100,45 +121,51 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.window-control:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+    <Setter Property="Background" Value="#2E7BC4A8" />
   </Style>
   <Style Selector="Button.window-control.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="#C42B1C" />
   </Style>
   <Style Selector="Border.language-switch">
-    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}" />
+    <Setter Property="Background" Value="#38000000" />
+    <Setter Property="BorderBrush" Value="{DynamicResource LineBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="8" />
     <Setter Property="Padding" Value="2" />
   </Style>
   <Style Selector="Button.language-option">
-    <Setter Property="MinWidth" Value="30" />
+    <Setter Property="MinWidth" Value="0" />
     <Setter Property="MinHeight" Value="30" />
-    <Setter Property="Padding" Value="7,0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="CornerRadius" Value="6" />
     <Setter Property="FontSize" Value="12" />
     <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.language-option-full">
-    <Setter Property="MinWidth" Value="82" />
-    <Setter Property="Padding" Value="12,0" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="Padding" Value="8,0" />
     <Setter Property="MinHeight" Value="34" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
   </Style>
   <Style Selector="Button.language-option:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource OutlineBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="Background" Value="#2E7BC4A8" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
   <Style Selector="Button.language-option.on">
     <Setter Property="Foreground" Value="#111418" />
   </Style>
   <Style Selector="Button.language-option.on /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="Button.language-option.on:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#111418" />
   </Style>
   <Style Selector="ToolTip">
     <Setter Property="Background" Value="#20242A" />
@@ -149,9 +176,21 @@
     <Setter Property="FontSize" Value="12" />
     <Setter Property="CornerRadius" Value="4" />
   </Style>
+  <Style Selector="Button.ghost:pointerover">
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
   <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}" />
+    <Setter Property="Background" Value="#7BC4A8" />
+    <Setter Property="BorderBrush" Value="#7BC4A8" />
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.ghost:pressed">
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.ghost:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#6CB599" />
+    <Setter Property="BorderBrush" Value="#6CB599" />
+    <Setter Property="Foreground" Value="#111418" />
   </Style>
 
   <Style Selector="TextBlock.title">
@@ -160,14 +199,14 @@
   </Style>
   <Style Selector="TextBlock.hint">
     <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
     <Setter Property="Margin" Value="0,3,0,0" />
   </Style>
 
   <!-- ToggleSwitch: Uptime brand green accent (#7BC4A8) -->
   <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
-    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
   </Style>
   <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchKnobBounds">
     <Setter Property="Background" Value="#8CD0B7" />
@@ -178,6 +217,88 @@
     <Setter Property="BorderBrush" Value="#6CB599" />
   </Style>
   <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
-    <Setter Property="Fill" Value="#0F1114" />
+    <Setter Property="Fill" Value="{DynamicResource BgBrush}" />
+  </Style>
+
+  <!-- Theme carousel tile styles -->
+  <Style Selector="Button.theme-tile">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.theme-tile /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+  <Style Selector="Button.theme-tile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <!-- Carousel arrow navigation buttons -->
+  <Style Selector="Button.carousel-nav">
+    <Setter Property="Width" Value="30" />
+    <Setter Property="Height" Value="52" />
+    <Setter Property="Background" Value="#147BC4A8" />
+    <Setter Property="BorderBrush" Value="#597BC4A8" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="#7BC4A8" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Padding" Value="0,0,0,2" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.carousel-nav:pointerover">
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+  <Style Selector="Button.carousel-nav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#7BC4A8" />
+    <Setter Property="BorderBrush" Value="#7BC4A8" />
+    <Setter Property="Foreground" Value="#111418" />
+  </Style>
+
+  <!-- Custom wallpaper '+' tile -->
+  <Style Selector="Button.theme-tile-custom">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.theme-tile-custom /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+  <Style Selector="Button.theme-tile-custom:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="Button.theme-tile-custom:pointerover Border.tile-border">
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+  </Style>
+  <Style Selector="Button.theme-tile-custom:pointerover TextBlock.plus-icon">
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <!-- Clear custom wallpaper button -->
+  <Style Selector="Button.custom-clear">
+    <Setter Property="Background" Value="#CC1B1E24" />
+    <Setter Property="BorderBrush" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.custom-clear:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#E52B50" />
   </Style>
 </Styles>
