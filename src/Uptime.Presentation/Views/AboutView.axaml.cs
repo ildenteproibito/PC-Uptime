@@ -19,6 +19,9 @@ public partial class AboutView : UserControl
     private void OnOpenWallpapersClick(object? sender, RoutedEventArgs e) =>
         OpenUrl("https://uptime-pc.vercel.app/wallpapers/");
 
+    private void OnOpenGitHubClick(object? sender, RoutedEventArgs e) =>
+        OpenUrl("https://github.com/ildenteproibito/PC-Uptime");
+
     private void OnOpenDiscordClick(object? sender, RoutedEventArgs e) =>
         OpenUrl("https://discord.gg/88qrhwjBDP");
 
