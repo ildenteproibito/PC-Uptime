@@ -38,127 +38,138 @@ The screenshots below show all 7 main views of PC Uptime 2.0: Monitor, Stability
 
 ## Features
 
-- **Uptime monitoring:** tracks the current Windows boot session and reports its start time and elapsed duration.
-- **Session history:** records session durations and active or idle time.
-- **Stability analysis:** evaluates Windows startup and shutdown events and surfaces details about unexpected shutdowns.
-- **System context:** presents relevant system information alongside uptime and maintenance guidance.
-- **Desktop integration:** provides notification-area access, a global keyboard shortcut (`Win` + `Alt` + `U`), and a compact Mini-HUD.
-- **Power operations:** supports clean restart, full shutdown, restart to UEFI/BIOS, and scheduled shutdown.
-- **Data export:** exports records in JSON or CSV format and generates shareable uptime badges.
-- **Configurable interface:** includes preferences for startup behavior, Fast Startup, dashboard layout, language, and the optional night reminder.
-
-## Platform compatibility
-
-PC Uptime is currently available for Windows. Support for Linux and macOS is planned.
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Windows%2010%20%2F%2011-Supported-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows 10 and 11 supported" />
-  <img src="https://img.shields.io/badge/Linux-Coming%20Soon-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux coming soon" />
-  <img src="https://img.shields.io/badge/macOS-Coming%20Soon-555555?style=for-the-badge&logo=apple&logoColor=white" alt="macOS coming soon" />
-</p>
-
-## Technology stack
-
-PC Uptime is built with the following technologies:
-
-| Component | Technology |
-| --- | --- |
-| Language | C# |
-| Target framework | .NET 10 |
-| Desktop UI | Avalonia UI 11.3 |
-| UI theme | Avalonia Fluent Theme |
-| MVVM infrastructure | CommunityToolkit.Mvvm |
-| Windows integration | Win32 APIs and Windows Event Log |
-| Automated tests | xUnit |
-
-The presentation project targets `net10.0-windows`. The Core, Infrastructure, and test projects target `net10.0`.
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>Monitor &amp; Uppy 2.0</h3>
+      <ul>
+        <li><strong>Live Session Tracking:</strong> real-time boot duration, boot timestamp, personal uptime record, and a 7-day maintenance ruler.</li>
+        <li><strong>OLED Standby:</strong> automatic or on-demand burn-in-safe screensaver with 45s pixel-shift, clock, uptime, and battery status.</li>
+        <li><strong>Uppy 2.0 Mascot:</strong> interactive companion across all views with 6 reactive moods, speech bubbles, and an optional guided tour.</li>
+        <li><strong>Mini-HUD &amp; Spotify Widget:</strong> compact always-on-top HUD and live media/Spotify overlay.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>Stability &amp; Crash Radar</h3>
+      <ul>
+        <li><strong>30-Day Stability Score:</strong> analyzes Windows boot, clean shutdown, and unexpected power-loss events into a visual timeline.</li>
+        <li><strong>BSOD &amp; Event Explainer:</strong> translates kernel bugcheck codes and critical System/Application errors into plain language.</li>
+        <li><strong>Crash Radar &amp; Network Watchdog:</strong> surfaces recent app hangs/crashes and tracks gateway latency and connection drops.</li>
+        <li><strong>One-Click Export:</strong> export full stability reports in JSON or CSV.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>Operations &amp; Laptop Intelligence</h3>
+      <ul>
+        <li><strong>Power Controls:</strong> Clean Restart (bypasses Fast Startup), Full Shutdown, Reboot to UEFI/BIOS, and scheduled shutdown timer.</li>
+        <li><strong>Workspace Restore:</strong> optionally saves open apps and Explorer folders before a Clean Restart and restores them on login.</li>
+        <li><strong>Smart Caffeine &amp; Power Autopilot:</strong> keeps the PC awake manually, by timer, or by running process (with low-battery guard), and auto-switches power plans on idle.</li>
+        <li><strong>Battery, Sleep, Startup &amp; RAM:</strong> inspects battery wear &amp; cycle count, detects sleep blockers, lists startup impact, and safely trims idle RAM working sets.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>Wallpapers, Uptime AI &amp; Ecosystem</h3>
+      <ul>
+        <li><strong>Community Wallpapers &amp; Studio:</strong> browse, preview, publish, and apply community backgrounds with adjustable dimming in Live Preview Studio.</li>
+        <li><strong>Uptime AI:</strong> built-in assistant for stability, battery, and power troubleshooting with optional local PC context snapshot.</li>
+        <li><strong>Live State Bridge &amp; Rainmeter:</strong> exports live telemetry to <code>state.json</code> / <code>state.ini</code> alongside a Rainmeter skin.</li>
+        <li><strong>Polished Desktop Integration:</strong> custom color themes, IT/EN/RU localization, Discord Rich Presence, <code>Win + Alt + U</code> hotkey, tray quick panel, and SHA-256 verified auto-updates.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ## Architecture
 
-The solution is organized into three application projects with separate responsibilities:
+PC Uptime follows a clean layered architecture separating pure domain logic from Windows APIs, Avalonia UI, and packaging:
 
-| Project | Responsibility |
+| Project | Target | Responsibility |
+| --- | --- | --- |
+| `Uptime.Core` | `net10.0` | Domain models, stability &amp; uptime analyzers, atomic JSON persistence, localization (`IT` / `EN` / `RU`), and service contracts. |
+| `Uptime.Infrastructure` | `net10.0-windows10.0.19041.0` | Win32/WinRT implementations for uptime, idle detection, battery IOCTL, Event Log, power plans, sleep blockers, RAM trim, startup apps, workspace restore, and Community Wallpapers. |
+| `Uptime.Presentation` | `net10.0-windows10.0.19041.0` | Avalonia 11.3 desktop UI, MVVM view models (`CommunityToolkit.Mvvm`), Uppy mascot &amp; OLED Standby, tray icon, global hotkeys, Discord RPC, Uptime AI, and SHA-256 updater. |
+| `Uptime.Installer` | `net10.0-windows10.0.19041.0` | Self-extracting Windows installer &amp; uninstaller (`UptimeSetup.exe`). |
+| `Uptime.Core.Tests` | `net10.0` | Automated xUnit test suite covering persistence, stability analysis, bugcheck explanations, localization, and update validation. |
+
+## Tech Stack
+
+| Layer | Technology |
 | --- | --- |
-| `Uptime.Core` | Domain models, uptime and stability logic, service abstractions, localization, and core persistence utilities. |
-| `Uptime.Infrastructure` | Windows-specific implementations for uptime and idle-time providers, event log access, power operations, and startup configuration. |
-| `Uptime.Presentation` | Avalonia desktop application, views, view models, UI controls, application diagnostics, tray-related integration, and global hotkey handling. |
-| `Uptime.Core.Tests` | Automated tests for core application logic. |
+| Language &amp; Runtime | C# 13 / .NET 10 |
+| Desktop UI | Avalonia UI 11.3 (Fluent Theme, compiled XAML bindings) |
+| Architecture | MVVM (`CommunityToolkit.Mvvm`) + Dependency Injection |
+| Windows Integration | Win32 P/Invoke, Device IOCTL, WinRT Power APIs, Windows Event Log |
+| Packaging &amp; Hardening | Single-file self-contained `win-x64` + Obfuscar |
+| Testing | xUnit (`28` automated tests) |
 
-The presentation layer consumes Core abstractions and Infrastructure implementations. This separation keeps domain logic distinct from Windows-specific operations and UI concerns.
+## Get Started
 
-## Get started
+1. Download **PC Uptime** from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN) or via the official [website](https://uptime-pc.vercel.app/).
+2. Launch **Uptime** from the Start menu to open the **Monitor** dashboard.
+3. Minimize to the system tray at any time and press `Win` + `Alt` + `U` (or click the tray icon) to toggle the window.
 
-Install PC Uptime from the [Microsoft Store](https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN), then launch it from the Start menu. The Monitor, Stability, and Operations sections provide the main dashboard, session and event history, and system controls.
+### System Requirements
 
-Use the notification-area icon or `Win` + `Alt` + `U` to bring the application back when it is minimized.
+- **OS:** Windows 10 (version 2004 / build 19041) or Windows 11
+- **Architecture:** 64-bit (`x64`)
+- **Privacy Note:** Monitoring, Event Log analysis, and system controls run locally on your machine with zero background telemetry.
 
-For usage help and troubleshooting, visit the [support page](https://uptime-pc.vercel.app/support/) or ask questions in the [Uptime Discord server](https://discord.gg/88qrhwjBDP).
-
-## System requirements
-
-- Windows 10 (version 2004 / build 19041) or later
-- 64-bit (x64) Windows
-- Internet access is required to download or install the application; monitoring runs locally
-
-## Build from source
+## Build from Source
 
 ### Prerequisites
 
-- Windows x64
+- Windows 10/11 `x64`
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - Git
 
-### Restore and build
-
-Run the following commands from the repository root in PowerShell:
+### Restore, Build &amp; Test
 
 ```powershell
 dotnet restore .\Uptime.slnx
-dotnet build .\Uptime.slnx --configuration Release
+dotnet build .\Uptime.slnx -c Release
+dotnet test .\tests\Uptime.Core.Tests\Uptime.Core.Tests.csproj -c Release
 ```
 
-### Run tests
+### Publish Self-Contained `Uptime.exe` &amp; Installer
 
 ```powershell
-dotnet test .\tests\Uptime.Core.Tests\Uptime.Core.Tests.csproj --configuration Release
+dotnet publish .\src\Uptime.Presentation\Uptime.Presentation.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:DebugSymbols=false -o .\artifacts\Uptime-Release
+powershell -ExecutionPolicy Bypass -File .\build-installer.ps1
 ```
 
-### Publish a self-contained Windows x64 build
+The single-file executable is generated in `artifacts\Uptime-Release\Uptime.exe` and the setup executable in `artifacts\Uptime-Installer\UptimeSetup.exe`.
 
-```powershell
-dotnet publish .\src\Uptime.Presentation\Uptime.Presentation.csproj --configuration Release --runtime win-x64 --self-contained true
-```
-
-The publish output is generated under the presentation project's `bin\Release\net10.0-windows\win-x64\publish` directory.
-
-## Repository layout
+## Repository Layout
 
 ```text
 .
 ├── docs/
-│   ├── screenshots/
+│   ├── screenshots/        # Native 2560x1400 UI screenshots
 │   └── Uptime-Logo.png
 ├── src/
 │   ├── Uptime.Core/
 │   ├── Uptime.Infrastructure/
-│   └── Uptime.Presentation/
+│   ├── Uptime.Presentation/
+│   └── Uptime.Installer/
 ├── tests/
 │   └── Uptime.Core.Tests/
+├── trailer/                # Remotion source for the Uppy 2.0 trailer
+├── build-installer.ps1
 └── Uptime.slnx
 ```
 
-## Privacy
+## Privacy &amp; Support
 
-PC Uptime reads Windows system information and event history to show uptime and stability. Monitoring records and event details are processed locally; the app does not send telemetry. You control any exported records and should review them before choosing to share them.
+PC Uptime processes system uptime, Event Log history, and power diagnostics locally on your PC. External requests only occur when you explicitly open Community Wallpapers, ask Uptime AI, check for updates, or submit an in-app bug report. Read the [Privacy Policy &amp; Terms](https://uptime-pc.vercel.app/privacy/) for full details.
 
-Read the [Privacy Policy and Terms of Service](https://uptime-pc.vercel.app/privacy/) for details about the app and website.
-
-## Project status
-
-PC Uptime is an independent project maintained in the open. This repository contains the application source code; the Microsoft Store is the recommended channel for installing the published application. Follow the [website](https://uptime-pc.vercel.app/) or [Discord](https://discord.gg/88qrhwjBDP) for project updates. To report a problem, open a [GitHub issue](https://github.com/ildenteproibito/PC-Uptime/issues).
+- **Help Center:** [uptime-pc.vercel.app/support](https://uptime-pc.vercel.app/support/)
+- **Community:** [Uptime Discord Server](https://discord.gg/88qrhwjBDP)
+- **Issues:** [GitHub Issues](https://github.com/ildenteproibito/PC-Uptime/issues)
 
 ## License
 
-All rights reserved. The source is published for transparency and review; it is not licensed for redistribution or commercial use.
+All rights reserved. The source code is published for transparency and review; it is not licensed for redistribution or commercial use.
 
 Maintained by [@ildenteproibito](https://github.com/ildenteproibito).
