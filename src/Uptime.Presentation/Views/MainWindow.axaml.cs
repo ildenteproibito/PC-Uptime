@@ -86,6 +86,14 @@ public partial class MainWindow : Window
             else ClampMascotPosition();
         };
         MascotBubbleBorder.SizeChanged += (_, _) => UpdateMascotBubblePlacement();
+        KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape && DataContext is ViewModels.MainViewModel vm && vm.IsWallpaperFocusActive)
+            {
+                vm.Monitor.IsWallpaperFocus = false;
+                e.Handled = true;
+            }
+        };
     }
 
     private void AnchorMascotBottomRight()

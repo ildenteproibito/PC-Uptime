@@ -36,7 +36,7 @@
 
     <!-- Main Window Structure -->
     <Grid RowDefinitions="56,*" PointerPressed="OnWindowDragPointerPressed">
-    <Border Grid.Row="0" Padding="18,0">
+    <Border Grid.Row="0" Padding="18,0" IsVisible="{Binding ShowChromeOverlay}">
       <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
         <!-- Left: Logo & App Title -->
         <StackPanel x:Name="HeaderLeftPanel" Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -140,7 +140,7 @@
 
       <!-- Global Draggable OLED Mascot Overlay across all tabs -->
       <Canvas x:Name="MascotLayer" ClipToBounds="False"
-              IsVisible="{Binding Monitor.ShowMascot}">
+              IsVisible="{Binding ShowMascotOverlay}">
         <Grid x:Name="MascotOverlay" Background="Transparent" Cursor="Hand"
               ClipToBounds="False"
               PointerPressed="OnMascotPointerPressed"
