@@ -1,40 +1,36 @@
-# PC Uptime
-
-See how long your PC has been running, review recent sessions, and understand unexpected shutdowns from one focused Windows desktop application.
-
-**PC Uptime** is an independent Windows utility for monitoring system uptime, reviewing session history, assessing system stability, and accessing essential power-management operations. Monitoring data is processed locally and presented through a native-feeling desktop interface.
-
-<p align="center">
-  <img src="docs/Uptime-Logo.png" alt="PC Uptime logo" width="360" />
-</p>
-
-<p align="center">
-  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN"><img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" height="48" /></a>
-</p>
-
-<p align="center">
-  <a href="https://uptime-pc.vercel.app/"><img src="https://img.shields.io/badge/Website-PC%20Uptime-7BC4A8?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=161B22" alt="PC Uptime Website" height="28" /></a>&nbsp;&nbsp;<a href="https://uptime-pc.vercel.app/wallpapers/"><img src="https://img.shields.io/badge/Wallpapers-Community%20Gallery-3B82F6?style=for-the-badge&logo=icloud&logoColor=white&labelColor=161B22" alt="Community Wallpapers" height="28" /></a>&nbsp;&nbsp;<a href="https://uptime-pc.vercel.app/support/"><img src="https://img.shields.io/badge/Support-Help%20Center-475569?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=161B22" alt="PC Uptime Support" height="28" /></a>&nbsp;&nbsp;<a href="https://discord.gg/88qrhwjBDP"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=161B22" alt="Join Discord Community" height="28" /></a>&nbsp;&nbsp;<img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20x64-0078D6?style=for-the-badge&logo=windows&logoColor=white&labelColor=161B22" alt="Windows 10 and 11 x64" height="28" />
-</p>
+<div align="center">
+  <img src="docs/Uptime-Logo.png" alt="Uptime 2.0 logo" width="320" />
+  <h1>Uptime 2.0</h1>
+  <p>
+    <strong>Windows uptime, stability diagnostics, laptop power intelligence, and OLED Standby in one lightweight desktop app.</strong>
+  </p>
+  <p>
+    <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN"><img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" height="48" /></a>
+  </p>
+  <p>
+    <a href="https://uptime-pc.vercel.app/"><img src="https://img.shields.io/badge/Website-Uptime-7BC4A8?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=161B22" alt="Uptime Website" height="28" /></a>&nbsp;&nbsp;<a href="https://uptime-pc.vercel.app/wallpapers/"><img src="https://img.shields.io/badge/Wallpapers-Community%20Gallery-3B82F6?style=for-the-badge&logo=icloud&logoColor=white&labelColor=161B22" alt="Community Wallpapers" height="28" /></a>&nbsp;&nbsp;<a href="https://uptime-pc.vercel.app/support/"><img src="https://img.shields.io/badge/Support-Help%20Center-475569?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=161B22" alt="Uptime Support" height="28" /></a>&nbsp;&nbsp;<a href="https://discord.gg/88qrhwjBDP"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=161B22" alt="Join Discord Community" height="28" /></a>&nbsp;&nbsp;<img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20x64-0078D6?style=for-the-badge&logo=windows&logoColor=white&labelColor=161B22" alt="Windows 10 and 11 x64" height="28" />
+  </p>
+</div>
 
 ## Screenshots
 
-The screenshots below show all 7 main views of PC Uptime 2.0: Monitor, Stability, Operations, Wallpapers, Settings, Uptime AI, and About.
-
 <table>
   <tr>
-    <td align="center" width="33%"><a href="docs/screenshots/monitor.png"><img src="docs/screenshots/monitor.png" alt="PC Uptime Monitor view showing the current session, timeline, and Uppy" width="100%"></a><br><sub>Monitor</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/stability.png"><img src="docs/screenshots/stability.png" alt="PC Uptime Stability view showing the stability score, boot history, and logs" width="100%"></a><br><sub>Stability</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/operations.png"><img src="docs/screenshots/operations.png" alt="PC Uptime Operations view showing power actions, Smart Caffeine, and Autopilot" width="100%"></a><br><sub>Operations</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/monitor.png"><img src="docs/screenshots/monitor.png" alt="Uptime Monitor view showing the current session, timeline, and Uppy" width="100%"></a><br><sub>Monitor</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/stability.png"><img src="docs/screenshots/stability.png" alt="Uptime Stability view showing the stability score, boot history, and logs" width="100%"></a><br><sub>Stability</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/operations.png"><img src="docs/screenshots/operations.png" alt="Uptime Operations view showing power actions, Smart Caffeine, and Autopilot" width="100%"></a><br><sub>Operations</sub></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><a href="docs/screenshots/wallpapers.png"><img src="docs/screenshots/wallpapers.png" alt="PC Uptime Community Wallpapers gallery" width="100%"></a><br><sub>Wallpapers</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="PC Uptime Settings view showing languages, themes, and widgets" width="100%"></a><br><sub>Settings</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.png"><img src="docs/screenshots/uptime-ai.png" alt="PC Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="3"><a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="PC Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/wallpapers.png"><img src="docs/screenshots/wallpapers.png" alt="Uptime Community Wallpapers gallery" width="100%"></a><br><sub>Wallpapers</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Uptime Settings view showing languages, themes, and widgets" width="100%"></a><br><sub>Settings</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.png"><img src="docs/screenshots/uptime-ai.png" alt="Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
   </tr>
 </table>
+
+<p align="center">
+  <a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="Uptime About view showing changelog and team credits" width="48%"></a><br>
+  <sub>About &amp; Team Credits</sub>
+</p>
 
 ## Features
 
