@@ -29,18 +29,18 @@ The screenshots below show all 7 main views of PC Uptime 2.0: Monitor, Stability
 
 <table>
   <tr>
-    <td align="center" width="33%"><a href="docs/screenshots/monitor.jpg"><img src="docs/screenshots/monitor.jpg" alt="PC Uptime Monitor view showing the current session, timeline, and Uppy" width="100%"></a><br><sub>Monitor</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/stability.jpg"><img src="docs/screenshots/stability.jpg" alt="PC Uptime Stability view showing the stability score, boot history, and logs" width="100%"></a><br><sub>Stability</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/operations.jpg"><img src="docs/screenshots/operations.jpg" alt="PC Uptime Operations view showing power actions, Smart Caffeine, and Autopilot" width="100%"></a><br><sub>Operations</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/monitor.png"><img src="docs/screenshots/monitor.png" alt="PC Uptime Monitor view showing the current session, timeline, and Uppy" width="100%"></a><br><sub>Monitor</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/stability.png"><img src="docs/screenshots/stability.png" alt="PC Uptime Stability view showing the stability score, boot history, and logs" width="100%"></a><br><sub>Stability</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/operations.png"><img src="docs/screenshots/operations.png" alt="PC Uptime Operations view showing power actions, Smart Caffeine, and Autopilot" width="100%"></a><br><sub>Operations</sub></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><a href="docs/screenshots/wallpapers.jpg"><img src="docs/screenshots/wallpapers.jpg" alt="PC Uptime Community Wallpapers gallery" width="100%"></a><br><sub>Wallpapers</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/settings.jpg"><img src="docs/screenshots/settings.jpg" alt="PC Uptime Settings view showing languages, themes, and widgets" width="100%"></a><br><sub>Settings</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.jpg"><img src="docs/screenshots/uptime-ai.jpg" alt="PC Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/wallpapers.png"><img src="docs/screenshots/wallpapers.png" alt="PC Uptime Community Wallpapers gallery" width="100%"></a><br><sub>Wallpapers</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="PC Uptime Settings view showing languages, themes, and widgets" width="100%"></a><br><sub>Settings</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.png"><img src="docs/screenshots/uptime-ai.png" alt="PC Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
   </tr>
   <tr>
     <td></td>
-    <td align="center" width="33%"><a href="docs/screenshots/about.jpg"><img src="docs/screenshots/about.jpg" alt="PC Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="PC Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About</sub></td>
     <td></td>
   </tr>
 </table>
