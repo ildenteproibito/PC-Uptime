@@ -131,7 +131,9 @@ public static class BsodExplainer
     {
         var lang = language ?? Localizer.Instance.Language;
         var isIt = string.Equals(lang, "it", StringComparison.OrdinalIgnoreCase);
-        var hex = "0x" + code.ToString("X8");
+        var hex = code < 0 && code >= int.MinValue
+            ? "0x" + unchecked((uint)code).ToString("X8")
+            : "0x" + code.ToString("X8");
 
         if (code == 0)
         {
@@ -202,11 +204,12 @@ public static class StabilityAnalyzer
             }
 
             var next = boots[i + 1];
+            var hasCrash = crashEvents.Any(c => c.Time >= next.AddMinutes(-1) && c.Time <= next.AddMinutes(10));
             var clean = cleanDown.Where(t => t > start && t <= next).Cast<DateTime?>().LastOrDefault();
-            if (clean is { } cleanEnd)
-                sessions.Add(new BootSession(start, cleanEnd, SessionOutcome.Clean));
-            else if (crashEvents.Any(c => c.Time >= next.AddMinutes(-1) && c.Time <= next.AddMinutes(10)))
+            if (hasCrash)
                 sessions.Add(new BootSession(start, next, SessionOutcome.Unexpected));
+            else if (clean is { } cleanEnd)
+                sessions.Add(new BootSession(start, cleanEnd, SessionOutcome.Clean));
             else
                 sessions.Add(new BootSession(start, next, SessionOutcome.Unknown));
         }

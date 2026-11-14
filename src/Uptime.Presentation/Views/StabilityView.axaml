@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization"
              xmlns:c="using:Uptime.Presentation.Controls"
              xmlns:vm="using:Uptime.Presentation.ViewModels"
-             x:Class="Uptime.Presentation.Views.StabilityView">
+             x:Class="Uptime.Presentation.Views.StabilityView"
+             x:DataType="vm:StabilityViewModel">
   <Grid RowDefinitions="*,62">
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
       <Grid ColumnDefinitions="300,*" ColumnSpacing="72" Margin="56,40,56,24">
@@ -47,40 +48,88 @@
 
           <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblIncidents" />
           <TextBlock Classes="muted" FontSize="14" i18n:Localize.TextKey="NoIncidents" IsVisible="{Binding HasNoIncidents}" />
-          <ItemsControl ItemsSource="{Binding Incidents}">
+          <ItemsControl ItemsSource="{Binding SystemEventLogs}">
             <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:IncidentRow">
-                <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                        CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
+              <DataTemplate x:DataType="vm:SystemEventLogRow">
+                <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                        CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
                   <StackPanel Spacing="6">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="{Binding EventSummary}" FontSize="13" Foreground="#C4C8CF" FontWeight="Medium" />
-                      <Border Grid.Column="1" Background="#222730" CornerRadius="4" Padding="6,2" IsVisible="{Binding HasExplanation}">
-                        <TextBlock Text="{Binding BugcheckHex}" FontSize="11" Foreground="{DynamicResource OrangeBrush}" FontFamily="Consolas, monospace" />
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                      <Border Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding LevelText}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding LevelBrush}" />
+                      </Border>
+                      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Provider}" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="·" FontSize="13" Foreground="{DynamicResource DimBrush}" />
+                        <TextBlock Text="{Binding DateText}" FontSize="12" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                      </StackPanel>
+                      <Border Grid.Column="2" Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding EventIdText}" FontSize="11" Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas, monospace" />
                       </Border>
                     </Grid>
-
-                    <StackPanel Spacing="4" Margin="0,4,0,0" IsVisible="{Binding HasExplanation}">
-                      <TextBlock Text="{Binding BugcheckName}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource OrangeBrush}" />
-                      <TextBlock Text="{Binding Meaning}" FontSize="13" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" LineHeight="18" />
-                      <Border Background="#1C212A" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                              CornerRadius="6" Padding="12,8" Margin="0,4,0,0">
-                        <StackPanel Spacing="3">
-                          <TextBlock Text="ADVICE" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" LetterSpacing="0.8" />
-                          <TextBlock Text="{Binding Advice}" FontSize="12" Foreground="#C8CED6" TextWrapping="Wrap" LineHeight="17" />
-                        </StackPanel>
-                      </Border>
-                    </StackPanel>
+                    <TextBlock Text="{Binding Message}" FontSize="12" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" LineHeight="17" />
                   </StackPanel>
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
+
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblAppCrashes" />
+          <TextBlock Classes="muted" FontSize="14" i18n:Localize.TextKey="NoAppCrashes" IsVisible="{Binding HasNoAppCrashes}" />
+          <ItemsControl ItemsSource="{Binding AppCrashes}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:AppCrashRow">
+                <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                        CornerRadius="8" Padding="12,8" Margin="0,0,0,8">
+                  <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Border Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding KindText}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding KindBrush}" />
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{Binding AppName}" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Text="{Binding ModuleText}" FontSize="11" Foreground="{DynamicResource MutedBrush}" IsVisible="{Binding ModuleText.Length}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="{Binding DateText}" FontSize="12" Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblNetworkWatchdog" />
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                <Border Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding NetworkStatusText}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding NetworkStatusBrush}" />
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                  <TextBlock Text="{Binding NetworkGatewayText}" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" />
+                  <TextBlock Text="{Binding NetworkDropsCountText}" FontSize="11" Foreground="{DynamicResource MutedBrush}" />
+                </StackPanel>
+                <Button Grid.Column="2" Classes="ghost" MinHeight="28" Height="28" Padding="10,0" FontSize="12"
+                        i18n:Localize.ContentKey="BtnNetProbe" Command="{Binding ProbeNetworkNowCommand}" />
+              </Grid>
+              <TextBlock Classes="muted" FontSize="12" i18n:Localize.TextKey="NetNoDrops" IsVisible="{Binding HasNoNetworkDrops}" />
+              <ItemsControl ItemsSource="{Binding NetworkDrops}" IsVisible="{Binding NetworkDrops.Count}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:NetworkDropRow">
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2,0,0" ColumnSpacing="8">
+                      <TextBlock Text="{Binding TimeText}" FontSize="11" Foreground="{DynamicResource DimBrush}" FontFamily="Consolas, monospace" />
+                      <TextBlock Grid.Column="1" Text="{Binding Target}" FontSize="11" Foreground="{DynamicResource MutedBrush}" />
+                      <TextBlock Grid.Column="2" Text="{Binding Reason}" FontSize="11" Foreground="{DynamicResource OrangeBrush}" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
         </StackPanel>
       </Grid>
     </ScrollViewer>
 
-    <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource LineBrush}" Padding="28,0">
+    <Border Grid.Row="1" Padding="28,0">
       <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" HorizontalAlignment="Left">
         <Button Classes="ghost" i18n:Localize.ContentKey="ActionReload" Command="{Binding ReloadCommand}"
                 IsEnabled="{Binding !IsLoading}" />

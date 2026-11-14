@@ -14,6 +14,7 @@ public sealed class AtomicJsonStore<T> where T : class
 {
     private readonly string _path;
     private readonly JsonSerializerOptions _options;
+    private readonly object _sync = new();
 
     public AtomicJsonStore(string path, JsonSerializerOptions? options = null)
     {
@@ -26,45 +27,60 @@ public sealed class AtomicJsonStore<T> where T : class
 
     public void Save(T value)
     {
-        var dir = Path.GetDirectoryName(_path);
-        if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(value, _options);
-        using (var fs = new FileStream(TempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+        lock (_sync)
         {
-            fs.Write(bytes, 0, bytes.Length);
-            fs.Flush(true); // force write to disk before swap
-        }
+            var dir = Path.GetDirectoryName(_path);
+            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
 
-        if (File.Exists(_path))
-            File.Replace(TempPath, _path, BackupPath, ignoreMetadataErrors: true);
-        else
-            File.Move(TempPath, _path);
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(value, _options);
+            using (var fs = new FileStream(TempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                fs.Write(bytes, 0, bytes.Length);
+                fs.Flush(true); // force write to disk before swap
+            }
+
+            if (File.Exists(_path))
+                File.Replace(TempPath, _path, BackupPath, ignoreMetadataErrors: true);
+            else
+                File.Move(TempPath, _path);
+        }
     }
 
     public LoadResult<T> Load()
     {
-        TryDelete(TempPath); // remnant of an interrupted write: primary was untouched
-
-        var primaryExists = File.Exists(_path);
-        var backupExists = File.Exists(BackupPath);
-        if (!primaryExists && !backupExists)
-            return new LoadResult<T>(null, LoadStatus.Missing, Array.Empty<string>());
-
-        if (primaryExists && TryRead(_path) is { } ok)
-            return new LoadResult<T>(ok, LoadStatus.Ok, Array.Empty<string>());
-
-        var quarantined = new List<string>();
-        if (primaryExists) quarantined.Add(Quarantine(_path));
-
-        if (backupExists && TryRead(BackupPath) is { } fromBackup)
+        lock (_sync)
         {
-            File.Copy(BackupPath, _path, overwrite: true);
-            return new LoadResult<T>(fromBackup, LoadStatus.RecoveredFromBackup, quarantined);
-        }
+            TryDelete(TempPath); // remnant of an interrupted write: primary was untouched
 
-        if (backupExists) quarantined.Add(Quarantine(BackupPath));
-        return new LoadResult<T>(null, LoadStatus.Unrecoverable, quarantined);
+            var primaryExists = File.Exists(_path);
+            var backupExists = File.Exists(BackupPath);
+            if (!primaryExists && !backupExists)
+                return new LoadResult<T>(null, LoadStatus.Missing, Array.Empty<string>());
+
+            if (primaryExists && TryRead(_path) is { } ok)
+                return new LoadResult<T>(ok, LoadStatus.Ok, Array.Empty<string>());
+
+            var quarantined = new List<string>();
+            if (primaryExists && Quarantine(_path) is { } qp) quarantined.Add(qp);
+
+            if (backupExists && TryRead(BackupPath) is { } fromBackup)
+            {
+                try
+                {
+                    // Write backup atomically via TempPath so power loss mid-copy never truncates _path
+                    File.Copy(BackupPath, TempPath, overwrite: true);
+                    File.Move(TempPath, _path, overwrite: true);
+                }
+                catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+                {
+                    TryDelete(TempPath);
+                }
+                return new LoadResult<T>(fromBackup, LoadStatus.RecoveredFromBackup, quarantined);
+            }
+
+            if (backupExists && Quarantine(BackupPath) is { } qb) quarantined.Add(qb);
+            return new LoadResult<T>(null, LoadStatus.Unrecoverable, quarantined);
+        }
     }
 
     private T? TryRead(string file)
@@ -80,15 +96,23 @@ public sealed class AtomicJsonStore<T> where T : class
         }
     }
 
-    private static string Quarantine(string file)
+    private static string? Quarantine(string file)
     {
-        var target = $"{file}.corrupt-{DateTime.Now:yyyyMMddHHmmssfff}";
-        File.Move(file, target, overwrite: true);
-        return target;
+        try
+        {
+            var target = $"{file}.corrupt-{DateTime.Now:yyyyMMddHHmmssfff}";
+            File.Move(file, target, overwrite: true);
+            return target;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 
     private static void TryDelete(string file)
     {
-        try { if (File.Exists(file)) File.Delete(file); } catch (IOException) { }
+        try { if (File.Exists(file)) File.Delete(file); }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
     }
 }

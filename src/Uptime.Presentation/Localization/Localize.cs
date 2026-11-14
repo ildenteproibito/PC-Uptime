@@ -19,6 +19,7 @@ public sealed class Localize
     public static readonly AttachedProperty<string?> OnKeyProperty = AvaloniaProperty.RegisterAttached<Localize, Control, string?>("OnKey");
     public static readonly AttachedProperty<string?> OffKeyProperty = AvaloniaProperty.RegisterAttached<Localize, Control, string?>("OffKey");
     public static readonly AttachedProperty<string?> AutomationNameKeyProperty = AvaloniaProperty.RegisterAttached<Localize, Control, string?>("AutomationNameKey");
+    public static readonly AttachedProperty<string?> WatermarkKeyProperty = AvaloniaProperty.RegisterAttached<Localize, Control, string?>("WatermarkKey");
     private static readonly AttachedProperty<bool> IsHookedProperty =
         AvaloniaProperty.RegisterAttached<Localize, Control, bool>("IsHooked");
     private static readonly HashSet<Control> AttachedControls = new();
@@ -31,6 +32,7 @@ public sealed class Localize
         OnKeyProperty.Changed.AddClassHandler<Control, string?>((control, _) => Configure(control));
         OffKeyProperty.Changed.AddClassHandler<Control, string?>((control, _) => Configure(control));
         AutomationNameKeyProperty.Changed.AddClassHandler<Control, string?>((control, _) => Configure(control));
+        WatermarkKeyProperty.Changed.AddClassHandler<Control, string?>((control, _) => Configure(control));
         Localizer.Instance.LanguageChanged += (_, _) =>
         {
             foreach (var control in AttachedControls.ToArray()) Apply(control);
@@ -49,6 +51,8 @@ public sealed class Localize
     public static void SetOffKey(Control control, string? value) => control.SetValue(OffKeyProperty, value);
     public static string? GetAutomationNameKey(Control control) => control.GetValue(AutomationNameKeyProperty);
     public static void SetAutomationNameKey(Control control, string? value) => control.SetValue(AutomationNameKeyProperty, value);
+    public static string? GetWatermarkKey(Control control) => control.GetValue(WatermarkKeyProperty);
+    public static void SetWatermarkKey(Control control, string? value) => control.SetValue(WatermarkKeyProperty, value);
 
     private static void Configure(Control control)
     {
@@ -90,5 +94,7 @@ public sealed class Localize
             toggleOff.OffContent = l[offKey];
         if (GetAutomationNameKey(control) is { } automationKey)
             AutomationProperties.SetName(control, l[automationKey]);
+        if (GetWatermarkKey(control) is { } watermarkKey && control is TextBox textBox)
+            textBox.Watermark = l[watermarkKey];
     }
 }

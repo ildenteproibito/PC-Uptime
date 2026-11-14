@@ -1,18 +1,23 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i18n="using:Uptime.Presentation.Localization"
-        xmlns:v="using:Uptime.Presentation.Views"
+        xmlns:c="using:Uptime.Presentation.Controls"
+        xmlns:vm="using:Uptime.Presentation.ViewModels"
         x:Class="Uptime.Presentation.Views.MiniHudWindow"
+        x:DataType="vm:MonitorViewModel"
         Title="Uptime Mini-HUD"
-        Width="420" Height="210" MinWidth="380" MinHeight="190"
-        CanResize="False" Topmost="True"
+        Width="384" Height="188"
+        CanResize="False" Topmost="True" ShowInTaskbar="False"
         SystemDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="NoChrome"
         TransparencyLevelHint="Transparent"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
-        PointerPressed="OnWindowPointerPressed">
+        PointerPressed="OnWindowPointerPressed"
+        DoubleTapped="OnWindowDoubleTapped"
+        PointerEntered="OnWindowPointerEntered"
+        PointerExited="OnWindowPointerExited">
   <Window.Styles>
     <Style Selector="Button.hud-btn">
       <Setter Property="Width" Value="24" />
@@ -20,12 +25,19 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Foreground" Value="#9AA0A9" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.hud-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#20242B" />
+      <Setter Property="Background" Value="#2E7BC4A8" />
+    </Style>
+    <Style Selector="Button.hud-btn:pointerover">
+      <Setter Property="Foreground" Value="#FFFFFF" />
+    </Style>
+    <Style Selector="Button.hud-btn.active">
+      <Setter Property="Foreground" Value="#7BC4A8" />
     </Style>
     <Style Selector="Button.hud-btn.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#C42B1C" />
@@ -33,61 +45,94 @@
     <Style Selector="Button.hud-btn.close:pointerover Path">
       <Setter Property="Stroke" Value="#FFFFFF" />
     </Style>
-    <Style Selector="Button.hud-btn:pointerover Rectangle">
-      <Setter Property="Fill" Value="#FFFFFF" />
-    </Style>
   </Window.Styles>
-  <Border Background="#111418" BorderBrush="#30363D" BorderThickness="1"
-          CornerRadius="14" Padding="20">
-    <Grid RowDefinitions="32,*,Auto" RowSpacing="14">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
-        <Image Width="22" Height="22" Source="/Assets/uptime.png" Stretch="Uniform"
-               VerticalAlignment="Center" />
-        <TextBlock Grid.Column="1" Text="Uptime" FontSize="14" FontWeight="SemiBold"
-                   VerticalAlignment="Center" />
-        <Border Grid.Column="2" Background="#20242A" CornerRadius="12" Padding="10,5"
-                VerticalAlignment="Center">
-          <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
-            <Ellipse Width="7" Height="7" Fill="{Binding StatusBrush}" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#DCE8E2"
-                       VerticalAlignment="Center" />
+
+  <Border x:Name="HudShell" Background="#E6111418" BorderBrush="#26FFFFFF" BorderThickness="1"
+          CornerRadius="16" Opacity="0.72">
+    <Border.Transitions>
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.18" />
+      </Transitions>
+    </Border.Transitions>
+
+    <Grid>
+      <!-- Expanded Card Mode -->
+      <Grid x:Name="CardRoot" Margin="18,14,18,14" RowDefinitions="28,*,Auto" RowSpacing="10">
+        <!-- Header -->
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+          <Image Width="20" Height="20" Source="/Assets/uptime.png" Stretch="Uniform" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" Text="Uptime" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+
+          <Border Grid.Column="2" Background="#22FFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1"
+                  CornerRadius="11" Padding="9,4" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Ellipse Width="7" Height="7" Fill="{Binding StatusBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#E6F0EC" VerticalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center" Margin="2,0,0,0">
+            <Button x:Name="GhostButton" Classes="hud-btn active" Click="OnToggleGhostClick"
+                    i18n:Localize.TipKey="HudToggleGhost" i18n:Localize.AutomationNameKey="HudToggleGhost">
+              <TextBlock Text="◐" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+            <Button Classes="hud-btn" Click="OnTogglePillClick"
+                    i18n:Localize.TipKey="HudTogglePill" i18n:Localize.AutomationNameKey="HudTogglePill">
+              <Path Data="M4,10 L8,6 L12,10" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" />
+            </Button>
+            <Button Classes="hud-btn close" Click="OnCloseClick"
+                    i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose">
+              <Path Data="M4.5,4.5 L11.5,11.5 M11.5,4.5 L4.5,11.5" Stroke="#9AA0A9" StrokeThickness="1.4" />
+            </Button>
           </StackPanel>
-        </Border>
-        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="1" VerticalAlignment="Center" Margin="4,0,0,0">
-          <Button Classes="hud-btn"
-                  i18n:Localize.TipKey="ToolMinimize" i18n:Localize.AutomationNameKey="ToolMinimize" Click="OnMinimizeClick">
-            <Rectangle Width="9" Height="1.5" Fill="#9AA0A9" RadiusX="0.75" RadiusY="0.75" />
-          </Button>
-          <Button Classes="hud-btn close"
-                  i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose" Click="OnCloseClick">
-            <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#9AA0A9" StrokeThickness="1.5" />
-          </Button>
-        </StackPanel>
-      </Grid>
-
-      <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="16" VerticalAlignment="Center">
-        <StackPanel Spacing="-2" VerticalAlignment="Center">
-          <TextBlock Text="{Binding PrimaryText}" FontSize="46" FontWeight="Light"
-                     LetterSpacing="-1.2" />
-          <TextBlock Text="{Binding SecondaryText}" FontSize="13" Foreground="#AEB5BD" />
-        </StackPanel>
-        <StackPanel Grid.Column="1" Spacing="5" HorizontalAlignment="Right" VerticalAlignment="Center">
-          <TextBlock Classes="lbl" i18n:Localize.TextKey="HudTarget" Margin="0" FontSize="10"
-                     HorizontalAlignment="Right" />
-          <TextBlock Text="{Binding HudThresholdText}" FontSize="20" FontWeight="Medium"
-                     HorizontalAlignment="Right" />
-        </StackPanel>
-      </Grid>
-
-      <StackPanel Grid.Row="2" Spacing="7">
-        <ProgressBar Minimum="0" Maximum="168" Value="{Binding FilledTicks}"
-                     Height="6" Background="#292F35" Foreground="#7BC4A8" />
-        <Grid ColumnDefinitions="*,Auto">
-          <TextBlock Classes="muted" FontSize="10" i18n:Localize.TextKey="RulerStart" />
-          <TextBlock Grid.Column="1" Classes="muted" FontSize="10"
-                     Text="{Binding HudThresholdText}" />
         </Grid>
-      </StackPanel>
+
+        <!-- Primary Uptime + Live Telemetry -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="14" VerticalAlignment="Center">
+          <StackPanel Spacing="-2" VerticalAlignment="Center">
+            <TextBlock Text="{Binding PrimaryText}" FontSize="40" FontWeight="Light" LetterSpacing="-1.2" />
+            <TextBlock Text="{Binding SecondaryText}" FontSize="12" Foreground="#AEB5BD" />
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Spacing="5" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+              <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="RowStarted" />
+              <TextBlock Text="{Binding StartedText}" FontSize="11" FontWeight="Medium" Foreground="#E4E9EF" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+              <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="RowIdle" />
+              <TextBlock Text="{Binding IdleText}" FontSize="11" FontWeight="Medium" Foreground="#7BC4A8" />
+            </StackPanel>
+          </StackPanel>
+        </Grid>
+
+        <!-- Compact TimeRuler -->
+        <StackPanel Grid.Row="2" Spacing="4">
+          <c:TimeRuler Height="28" TotalTicks="42" MajorEvery="6" GoodTicks="18"
+                       FilledTicks="{Binding HudRulerTicks}" />
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Classes="muted" FontSize="10" i18n:Localize.TextKey="RulerStart" />
+            <TextBlock Grid.Column="1" Classes="muted" FontSize="10" Text="{Binding HudThresholdText}" />
+          </Grid>
+        </StackPanel>
+      </Grid>
+
+      <!-- Compact Dynamic Island Pill Mode -->
+      <Grid x:Name="PillRoot" IsVisible="False" Margin="14,0,10,0" ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+        <Ellipse Width="8" Height="8" Fill="{Binding StatusBrush}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding PrimaryText}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="{Binding SecondaryText}" FontSize="12" Foreground="#9AA3AE" VerticalAlignment="Center" />
+        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+          <Button Classes="hud-btn" Click="OnTogglePillClick"
+                  i18n:Localize.TipKey="HudTogglePill" i18n:Localize.AutomationNameKey="HudTogglePill">
+            <Path Data="M4,6 L8,10 L12,6" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" />
+          </Button>
+          <Button Classes="hud-btn close" Click="OnCloseClick"
+                  i18n:Localize.TipKey="HudClose" i18n:Localize.AutomationNameKey="HudClose">
+            <Path Data="M4.5,4.5 L11.5,11.5 M11.5,4.5 L4.5,11.5" Stroke="#9AA0A9" StrokeThickness="1.4" />
+          </Button>
+        </StackPanel>
+      </Grid>
     </Grid>
   </Border>
 </Window>

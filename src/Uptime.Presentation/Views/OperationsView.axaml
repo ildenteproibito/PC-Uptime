@@ -1,7 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization"
              xmlns:c="using:Uptime.Presentation.Controls"
-             x:Class="Uptime.Presentation.Views.OperationsView">
+             xmlns:core="using:Uptime.Core"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:Class="Uptime.Presentation.Views.OperationsView"
+             x:DataType="vm:OperationsViewModel">
   <Grid RowDefinitions="*,76">
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
       <Grid ColumnDefinitions="*,*" ColumnSpacing="72" Margin="56,32,56,24">
@@ -55,7 +58,7 @@
 
           <!-- Power and battery status -->
           <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblBattery" />
-          <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
                   CornerRadius="8" Padding="14,12">
             <StackPanel Spacing="8">
               <Grid ColumnDefinitions="*,Auto">
@@ -80,6 +83,46 @@
                   <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="BatteryHealth" />
                   <TextBlock Text="{Binding BatteryHealthText}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" />
                 </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Smart Caffeine (Keep-Awake) -->
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblKeepAwake" />
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="KeepAwakeToggle" />
+                  <TextBlock Classes="hint" Text="{Binding KeepAwakeStatusText}" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
+                              IsChecked="{Binding IsKeepAwakeManual}" />
+              </Grid>
+
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Classes="ghost" MinHeight="28" Height="28" Padding="10,0" FontSize="12"
+                        i18n:Localize.ContentKey="BtnAwakeIndefinite" Command="{Binding StartKeepAwakeTimerCommand}" CommandParameter="0" />
+                <Button Classes="ghost" MinHeight="28" Height="28" Padding="10,0" FontSize="12"
+                        Content="30 m" Command="{Binding StartKeepAwakeTimerCommand}" CommandParameter="30" />
+                <Button Classes="ghost" MinHeight="28" Height="28" Padding="10,0" FontSize="12"
+                        Content="1 h" Command="{Binding StartKeepAwakeTimerCommand}" CommandParameter="60" />
+                <Button Classes="ghost" MinHeight="28" Height="28" Padding="10,0" FontSize="12"
+                        Content="2 h" Command="{Binding StartKeepAwakeTimerCommand}" CommandParameter="120" />
+              </StackPanel>
+
+              <StackPanel Spacing="4">
+                <TextBlock Classes="muted" FontSize="11" i18n:Localize.TextKey="KeepAwakeAppLabel" />
+                <TextBox Text="{Binding KeepAwakeProcessName}" FontSize="12" CornerRadius="6"
+                         Background="#30000000" BorderBrush="{DynamicResource LineBrush}"
+                         Watermark="obs64, blender, steam..." />
+              </StackPanel>
+
+              <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasBattery}">
+                <TextBlock Classes="muted" FontSize="12" VerticalAlignment="Center" i18n:Localize.TextKey="KeepAwakeBatteryGuard" />
+                <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
+                              IsChecked="{Binding KeepAwakeBatteryGuard}" />
               </Grid>
             </StackPanel>
           </Border>
@@ -114,9 +157,42 @@
                           IsChecked="{Binding RunAtStartup, Mode=OneWay}" />
           </Grid></Border>
 
+          <Border Classes="row"><Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel>
+              <TextBlock Classes="title" i18n:Localize.TextKey="PrefWorkspaceRestore" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefWorkspaceRestoreDesc" TextWrapping="Wrap" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
+                          IsChecked="{Binding RestoreWorkspaceOnReboot}" />
+          </Grid></Border>
+
+          <!-- Power Plan Autopilot -->
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblPowerPlan" />
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="10">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Classes="nav" Classes.on="{Binding IsPowerPlanBalanced}" Padding="10,5" FontSize="12"
+                        i18n:Localize.ContentKey="PowerPlanBalanced" Command="{Binding SetPowerPlanCommand}" CommandParameter="Balanced" />
+                <Button Classes="nav" Classes.on="{Binding IsPowerPlanHighPerf}" Padding="10,5" FontSize="12"
+                        i18n:Localize.ContentKey="PowerPlanHighPerf" Command="{Binding SetPowerPlanCommand}" CommandParameter="HighPerformance" />
+                <Button Classes="nav" Classes.on="{Binding IsPowerPlanSaver}" Padding="10,5" FontSize="12"
+                        i18n:Localize.ContentKey="PowerPlanSaver" Command="{Binding SetPowerPlanCommand}" CommandParameter="PowerSaver" />
+              </StackPanel>
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel>
+                  <TextBlock Classes="title" FontSize="13" i18n:Localize.TextKey="PowerPlanAutopilot" />
+                  <TextBlock Classes="hint" FontSize="11" i18n:Localize.TextKey="PowerPlanAutopilotDesc" TextWrapping="Wrap" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
+                              IsChecked="{Binding PowerPlanAutopilot}" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
           <!-- Sleep Inspector -->
           <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblSleepInspector" />
-          <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
                   CornerRadius="8" Padding="14,10">
             <StackPanel Spacing="6">
               <Grid ColumnDefinitions="*,Auto">
@@ -134,7 +210,7 @@
 
               <ItemsControl ItemsSource="{Binding SleepBlockers}" IsVisible="{Binding SleepBlockers.Count}">
                 <ItemsControl.ItemTemplate>
-                  <DataTemplate>
+                  <DataTemplate x:DataType="core:SleepBlockerItem">
                     <Border Background="#1C2027" CornerRadius="6" Padding="10,6" Margin="0,4,0,0">
                       <Grid ColumnDefinitions="Auto,*">
                         <Border Background="#252B35" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
@@ -147,20 +223,20 @@
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
 
-              <TextBlock Text="{Binding L[SleepRequiresAdmin]}" FontSize="11" Foreground="{DynamicResource DimBrush}"
+              <TextBlock i18n:Localize.TextKey="SleepRequiresAdmin" FontSize="11" Foreground="{DynamicResource DimBrush}"
                          IsVisible="{Binding ShowAdminNotice}" TextWrapping="Wrap" />
             </StackPanel>
           </Border>
 
           <!-- Startup Applications -->
           <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblStartupApps" />
-          <Border Background="#16191F" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
                   CornerRadius="8" Padding="14,12">
             <StackPanel Spacing="6">
               <TextBlock Classes="muted" FontSize="13" i18n:Localize.TextKey="StartupNoApps" IsVisible="{Binding !StartupApps.Count}" />
               <ItemsControl ItemsSource="{Binding StartupApps}">
                 <ItemsControl.ItemTemplate>
-                  <DataTemplate>
+                  <DataTemplate x:DataType="vm:StartupAppRow">
                     <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource LineBrush}" Padding="0,6">
                       <Grid ColumnDefinitions="*,Auto">
                         <StackPanel Spacing="2">
@@ -177,11 +253,36 @@
               </ItemsControl>
             </StackPanel>
           </Border>
+
+          <!-- RAM Working-Set Trim -->
+          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblRamTrim" />
+          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                  CornerRadius="8" Padding="14,12">
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="2">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Classes="title" i18n:Localize.TextKey="RamTrimTitle" />
+                    <Border Background="#1D222A" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding MemoryPercentText}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                    </Border>
+                  </StackPanel>
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="RamTrimDesc" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding MemorySummaryText}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" MinHeight="32" Height="32" Padding="14,0" FontSize="12"
+                        VerticalAlignment="Center" i18n:Localize.ContentKey="BtnTrimRam"
+                        Command="{Binding TrimMemoryCommand}" IsEnabled="{Binding !IsTrimmingMemory}" />
+              </Grid>
+              <TextBlock Text="{Binding MemoryTrimResultText}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
+                         IsVisible="{Binding MemoryTrimResultText.Length}" />
+            </StackPanel>
+          </Border>
         </StackPanel>
       </Grid>
     </ScrollViewer>
 
-    <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource LineBrush}" Padding="28,0">
+    <Border Grid.Row="1" Padding="28,0">
       <Grid>
         <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center" IsVisible="{Binding IsConfirming}">
           <TextBlock Text="{Binding ConfirmText}" FontSize="14" VerticalAlignment="Center" />

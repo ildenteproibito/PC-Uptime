@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Uptime.Core;
 using Uptime.Infrastructure;
+using Uptime.Presentation.Services;
 using Uptime.Presentation.ViewModels;
 using Uptime.Presentation.Views;
 
@@ -14,13 +15,27 @@ namespace Uptime.Presentation;
 public partial class App : Application
 {
     private bool _exitRequested;
-    private System.Windows.Forms.NotifyIcon? _uptimeTrayIcon;
-    private System.Drawing.Icon? _trayImage;
+    private Win32TrayIcon? _uptimeTrayIcon;
     private TrayMenuWindow? _trayMenuWindow;
 
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        try
+        {
+            var settingsPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Uptime", "settings.json");
+            if (System.IO.File.Exists(settingsPath))
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(settingsPath));
+                if (doc.RootElement.TryGetProperty("ThemeId", out var elem))
+                {
+                    var id = elem.GetString();
+                    if (!string.IsNullOrWhiteSpace(id))
+                        ThemeManager.ApplyTheme(id);
+                }
+            }
+        }
+        catch { }
         AppDiagnostics.Write("Information", $"Uptime starting. Version {typeof(App).Assembly.GetName().Version}; Windows {Environment.OSVersion}; language {Localizer.Instance.Language}.");
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             AppDiagnostics.Write("Fatal", $"Unhandled exception (terminating={args.IsTerminating}).", args.ExceptionObject as Exception);
@@ -32,14 +47,11 @@ public partial class App : Application
         Dispatcher.UIThread.UnhandledException += (_, args) =>
             AppDiagnostics.Write("Error", "Unhandled UI dispatcher exception.", args.Exception);
         using (var iconStream = AssetLoader.Open(new Uri("avares://Uptime/Assets/uptime.ico")))
-            _trayImage = new System.Drawing.Icon(iconStream);
-        _uptimeTrayIcon = new System.Windows.Forms.NotifyIcon
         {
-            Icon = _trayImage,
-            Text = Localizer.Instance["TrayTooltip"],
-            Visible = true
-        };
-        _uptimeTrayIcon.MouseUp += OnTrayMouseUp;
+            _uptimeTrayIcon = new Win32TrayIcon(iconStream, Localizer.Instance["TrayTooltip"]);
+        }
+        _uptimeTrayIcon.LeftClicked += () => Dispatcher.UIThread.Post(() => ShowMainWindow_OnClick(this, EventArgs.Empty));
+        _uptimeTrayIcon.RightClicked += (x, y) => Dispatcher.UIThread.Post(() => ShowTrayMenu(new PixelPoint(x, y)));
         Localizer.Instance.PropertyChanged += OnLanguageChanged;
         UpdateTrayLanguage();
     }
@@ -49,9 +61,8 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel(
+            var wallpaperService = new SupabaseWallpaperService();
+            var mainVm = new MainViewModel(
                     new Win32UptimeProvider(),
                     new Win32IdleProvider(),
                     new WindowsEventLogService(),
@@ -60,7 +71,28 @@ public partial class App : Application
                     new WindowsBatteryService(),
                     new WindowsSleepBlockerService(),
                     new WindowsStartupAppsService(),
-                    new WindowsMediaService())
+                    new WindowsMediaService(),
+                    new WindowsKeepAwakeService(),
+                    new WindowsPowerPlanService(),
+                    new WindowsWorkspaceRestoreService(),
+                    new WindowsAppCrashService(),
+                    new WindowsMemoryService(),
+                    new WindowsNetworkWatchdogService(),
+                    wallpaperService);
+            var bridgeServer = new Services.LocalWallpaperBridgeServer(wallpaperService, mainVm.Settings);
+            bridgeServer.Start();
+            desktop.Exit += (_, _) =>
+            {
+                _exitRequested = true;
+                Localizer.Instance.PropertyChanged -= OnLanguageChanged;
+                DisposeTrayIcon();
+                bridgeServer.Dispose();
+                mainVm.DisposeDiscordRpc();
+            };
+
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = mainVm
             };
             desktop.MainWindow.Closing += (_, e) =>
             {
@@ -78,27 +110,20 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window })
         {
             window.Show();
-            window.WindowState = WindowState.Normal;
+            if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             window.Activate();
         }
     }
 
-    private void Exit_OnClick(object? sender, EventArgs e)
+    public void RequestExit()
     {
         _exitRequested = true;
         DisposeTrayIcon();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.Shutdown();
+            desktop.Shutdown(0);
     }
 
-    private void OnTrayMouseUp(object? sender, System.Windows.Forms.MouseEventArgs e)
-    {
-        var cursor = System.Windows.Forms.Cursor.Position;
-        if (e.Button == System.Windows.Forms.MouseButtons.Right)
-            Dispatcher.UIThread.Post(() => ShowTrayMenu(new PixelPoint(cursor.X, cursor.Y)));
-        else if (e.Button == System.Windows.Forms.MouseButtons.Left)
-            Dispatcher.UIThread.Post(() => ShowMainWindow_OnClick(sender, EventArgs.Empty));
-    }
+    private void Exit_OnClick(object? sender, EventArgs e) => RequestExit();
 
     private void ShowTrayMenu(PixelPoint pointer)
     {
@@ -107,8 +132,11 @@ public partial class App : Application
 
         _trayMenuWindow?.Close();
         var menu = new TrayMenuWindow(main.Monitor,
-            () => ShowMainWindow_OnClick(this, EventArgs.Empty), OpenSettingsFromTray,
-            () => Exit_OnClick(this, EventArgs.Empty));
+            () => ShowMainWindow_OnClick(this, EventArgs.Empty),
+            OpenSettingsFromTray,
+            () => Exit_OnClick(this, EventArgs.Empty),
+            () => main.OpenStandByMode(),
+            OpenAssistantFromTray);
         var screen = owner.Screens.ScreenFromPoint(pointer);
         var scale = screen?.Scaling ?? 1;
         var work = screen?.WorkingArea;
@@ -138,17 +166,17 @@ public partial class App : Application
             main.OpenSettingsCommand.Execute(null);
     }
 
+    private void OpenAssistantFromTray()
+    {
+        ShowMainWindow_OnClick(this, EventArgs.Empty);
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { DataContext: MainViewModel main } })
+            main.OpenAssistantCommand.Execute(null);
+    }
+
     private void DisposeTrayIcon()
     {
-        if (_uptimeTrayIcon is not null)
-        {
-            _uptimeTrayIcon.MouseUp -= OnTrayMouseUp;
-            _uptimeTrayIcon.Visible = false;
-            _uptimeTrayIcon.Dispose();
-            _uptimeTrayIcon = null;
-        }
-        _trayImage?.Dispose();
-        _trayImage = null;
+        _uptimeTrayIcon?.Dispose();
+        _uptimeTrayIcon = null;
     }
 
     private void OnLanguageChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

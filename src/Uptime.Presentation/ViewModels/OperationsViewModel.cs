@@ -23,9 +23,18 @@ public partial class OperationsViewModel : ObservableObject
     private readonly IBatteryService? _battery;
     private readonly ISleepBlockerService? _sleepBlocker;
     private readonly IStartupAppsService? _startupApps;
+    private readonly IKeepAwakeService? _keepAwake;
+    private readonly IPowerPlanService? _powerPlan;
+    private readonly IWorkspaceRestoreService? _workspaceRestore;
+    private readonly IIdleProvider? _idle;
+    private readonly SettingsViewModel? _settings;
+    private readonly IMemoryService? _memory;
     private readonly DispatcherTimer _tick = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly DispatcherTimer _autopilotTick = new() { Interval = TimeSpan.FromSeconds(5) };
     private Pending _pending = Pending.None;
     private DateTime? _timerEnd;
+    private DateTime? _keepAwakeEnd;
+    private PowerPlanKind? _preAutopilotPlan;
 
     public Localizer L => Localizer.Instance;
     public IReadOnlyList<string> TimerLabels { get; } = new[] { "0", "30 m", "60 m", "90 m", "120 m" };
@@ -59,6 +68,84 @@ public partial class OperationsViewModel : ObservableObject
     // Startup Applications
     public ObservableCollection<StartupAppRow> StartupApps { get; } = new();
 
+    // RAM Working-Set Trim
+    [ObservableProperty] private string _memorySummaryText = "—";
+    [ObservableProperty] private string _memoryPercentText = "—";
+    [ObservableProperty] private string _memoryTrimResultText = "";
+    [ObservableProperty] private bool _isTrimmingMemory;
+
+    // Smart Caffeine (Keep-Awake)
+    [ObservableProperty] private bool _isKeepAwakeManual;
+    [ObservableProperty] private bool _isKeepAwakeActuallyActive;
+    [ObservableProperty] private string _keepAwakeStatusText = "";
+
+    public string KeepAwakeProcessName
+    {
+        get => _settings?.KeepAwakeProcessName ?? "";
+        set
+        {
+            if (_settings == null || _settings.KeepAwakeProcessName == value) return;
+            _settings.KeepAwakeProcessName = value;
+            OnPropertyChanged();
+            EvaluateAutomation();
+        }
+    }
+
+    public bool KeepAwakeBatteryGuard
+    {
+        get => _settings?.KeepAwakeBatteryGuard ?? true;
+        set
+        {
+            if (_settings == null || _settings.KeepAwakeBatteryGuard == value) return;
+            _settings.KeepAwakeBatteryGuard = value;
+            OnPropertyChanged();
+            EvaluateAutomation();
+        }
+    }
+
+    // Power Plan Autopilot
+    [ObservableProperty] private PowerPlanKind _activePowerPlan;
+    [ObservableProperty] private string _activePowerPlanText = "";
+    public string ActivePowerPlanName => _powerPlan?.GetActivePlanName() ?? ActivePowerPlan.ToString();
+    public bool IsPowerPlanBalanced => ActivePowerPlan == PowerPlanKind.Balanced;
+    public bool IsPowerPlanHighPerf => ActivePowerPlan == PowerPlanKind.HighPerformance;
+    public bool IsPowerPlanSaver => ActivePowerPlan == PowerPlanKind.PowerSaver;
+
+    partial void OnActivePowerPlanChanged(PowerPlanKind value)
+    {
+        OnPropertyChanged(nameof(IsPowerPlanBalanced));
+        OnPropertyChanged(nameof(IsPowerPlanHighPerf));
+        OnPropertyChanged(nameof(IsPowerPlanSaver));
+    }
+
+    public bool PowerPlanAutopilot
+    {
+        get => _settings?.PowerPlanAutopilot ?? false;
+        set
+        {
+            if (_settings == null || _settings.PowerPlanAutopilot == value) return;
+            _settings.PowerPlanAutopilot = value;
+            OnPropertyChanged();
+            if (!value && _preAutopilotPlan is { } prev)
+            {
+                _powerPlan?.SetActivePlan(prev);
+                _preAutopilotPlan = null;
+                RefreshPowerPlan();
+            }
+        }
+    }
+
+    public bool RestoreWorkspaceOnReboot
+    {
+        get => _settings?.RestoreWorkspaceOnReboot ?? false;
+        set
+        {
+            if (_settings == null || _settings.RestoreWorkspaceOnReboot == value) return;
+            _settings.RestoreWorkspaceOnReboot = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool ShowFooterInfo => !IsConfirming;
 
     public OperationsViewModel(
@@ -66,25 +153,52 @@ public partial class OperationsViewModel : ObservableObject
         IStartupService startup,
         IBatteryService? battery = null,
         ISleepBlockerService? sleepBlocker = null,
-        IStartupAppsService? startupApps = null)
+        IStartupAppsService? startupApps = null,
+        IKeepAwakeService? keepAwake = null,
+        IPowerPlanService? powerPlan = null,
+        IWorkspaceRestoreService? workspaceRestore = null,
+        IIdleProvider? idle = null,
+        SettingsViewModel? settings = null,
+        IMemoryService? memory = null)
     {
         _power = power;
         _startup = startup;
         _battery = battery;
         _sleepBlocker = sleepBlocker;
         _startupApps = startupApps;
+        _keepAwake = keepAwake;
+        _powerPlan = powerPlan;
+        _workspaceRestore = workspaceRestore;
+        _idle = idle;
+        _settings = settings;
+        _memory = memory;
 
         Localizer.Instance.PropertyChanged += OnLanguageChanged;
         _tick.Tick += (_, _) => UpdateTimer();
-        ReadPreferences();
+        _autopilotTick.Tick += (_, _) =>
+        {
+            EvaluateAutomation();
+            RefreshMemory();
+        };
+        try { ReadPreferences(); } catch (Exception ex) { AppDiagnostics.Write("Warning", "ReadPreferences failed on startup.", ex); }
         UpdateTimer();
 
-        RefreshBattery();
-        LoadStartupApps();
+        try { RefreshBattery(); } catch (Exception ex) { AppDiagnostics.Write("Warning", "RefreshBattery failed on startup.", ex); }
+        try { LoadStartupApps(); } catch (Exception ex) { AppDiagnostics.Write("Warning", "LoadStartupApps failed on startup.", ex); }
+        try { RefreshPowerPlan(); } catch (Exception ex) { AppDiagnostics.Write("Warning", "RefreshPowerPlan failed on startup.", ex); }
+        try { RefreshMemory(); } catch (Exception ex) { AppDiagnostics.Write("Warning", "RefreshMemory failed on startup.", ex); }
+        try { EvaluateAutomation(); } catch (Exception ex) { AppDiagnostics.Write("Warning", "EvaluateAutomation failed on startup.", ex); }
+        _autopilotTick.Start();
         _ = CheckSleepBlockers();
     }
 
     partial void OnIsConfirmingChanged(bool value) => OnPropertyChanged(nameof(ShowFooterInfo));
+
+    partial void OnIsKeepAwakeManualChanged(bool value)
+    {
+        if (!value) _keepAwakeEnd = null;
+        EvaluateAutomation();
+    }
 
     private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -93,7 +207,10 @@ public partial class OperationsViewModel : ObservableObject
         UpdateTimer();
         RefreshBattery();
         LoadStartupApps();
+        RefreshPowerPlan();
+        EvaluateAutomation();
         FormattedLastWake = string.IsNullOrWhiteSpace(LastWakeText) ? "" : L.Format("SleepLastWakeValue", LastWakeText);
+        if (!IsSleepLoading && SleepBlockers.Count == 0) SleepStatusText = L["SleepNoBlockers"];
         if (!string.IsNullOrWhiteSpace(StatusMessage)) StatusMessage = L["PowerFailed"];
         if (IsConfirming) ConfirmText = ConfirmFor(_pending);
     }
@@ -142,7 +259,10 @@ public partial class OperationsViewModel : ObservableObject
         {
             switch (action)
             {
-                case Pending.Restart: _power.CleanReboot(); break;
+                case Pending.Restart:
+                    if (RestoreWorkspaceOnReboot) _workspaceRestore?.SaveWorkspaceSnapshot();
+                    _power.CleanReboot();
+                    break;
                 case Pending.Shutdown: _power.FullShutdown(); break;
                 case Pending.Uefi: _power.RebootToUefi(); break;
             }
@@ -155,7 +275,11 @@ public partial class OperationsViewModel : ObservableObject
         if (!int.TryParse(minutes, out var m) || m <= 0) return;
         Run(() =>
         {
-            if (_timerEnd is not null) _power.CancelShutdownTimer(); // single active timer at a time
+            if (_timerEnd is not null)
+            {
+                _power.CancelShutdownTimer(); // single active timer at a time
+                _timerEnd = null;
+            }
             _power.StartShutdownTimer(m, L["ShutdownComment"]);
             _timerEnd = DateTime.Now.AddMinutes(m);
         });
@@ -206,12 +330,28 @@ public partial class OperationsViewModel : ObservableObject
 
     public async Task SetFastStartupAsync(bool desired)
     {
+        if (IsBusy) return;
         IsBusy = true;
         FastStartupEnabled = desired; // optimistic update; re-aligned to actual state subsequently
-        var ok = await Task.Run(() => _power.SetFastStartup(desired));
-        FastStartupEnabled = _power.IsFastStartupEnabled() ?? false;
-        StatusMessage = ok ? "" : L["PowerFailed"];
-        IsBusy = false;
+        try
+        {
+            var (ok, actual) = await Task.Run(() =>
+            {
+                var setOk = _power.SetFastStartup(desired);
+                return (setOk, _power.IsFastStartupEnabled() ?? false);
+            });
+            FastStartupEnabled = actual;
+            StatusMessage = ok ? "" : L["PowerFailed"];
+        }
+        catch (Exception ex)
+        {
+            AppDiagnostics.Write("Error", "SetFastStartupAsync failed.", ex);
+            StatusMessage = L["PowerFailed"];
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     public void RefreshBattery()
@@ -301,5 +441,177 @@ public partial class OperationsViewModel : ObservableObject
             StatusMessage = L["PowerFailed"];
         }
         RunAtStartup = _startup.IsEnabled;
+    }
+
+    [RelayCommand]
+    private void StartKeepAwakeTimer(string minutes)
+    {
+        if (!int.TryParse(minutes, out var m) || m <= 0)
+        {
+            _keepAwakeEnd = null;
+            IsKeepAwakeManual = true;
+        }
+        else
+        {
+            _keepAwakeEnd = DateTime.Now.AddMinutes(m);
+            IsKeepAwakeManual = true;
+        }
+        EvaluateAutomation();
+    }
+
+    [RelayCommand]
+    private void SetPowerPlan(string planName)
+    {
+        if (_powerPlan == null) return;
+        if (Enum.TryParse<PowerPlanKind>(planName, out var plan))
+        {
+            _preAutopilotPlan = null;
+            _powerPlan.SetActivePlan(plan);
+            RefreshPowerPlan();
+        }
+    }
+
+    private void RefreshPowerPlan()
+    {
+        if (_powerPlan == null) return;
+        var plan = _powerPlan.GetActivePlan();
+        ActivePowerPlan = plan;
+        var customName = _powerPlan.GetActivePlanName();
+        ActivePowerPlanText = plan switch
+        {
+            PowerPlanKind.Balanced => L["PowerPlanBalanced"],
+            PowerPlanKind.HighPerformance => L["PowerPlanHighPerf"],
+            PowerPlanKind.PowerSaver => L["PowerPlanSaver"],
+            _ => !string.IsNullOrWhiteSpace(customName) && customName != PowerPlanKind.Unknown.ToString()
+                ? customName
+                : L["PowerPlanUnknown"]
+        };
+    }
+
+    private bool _evaluatingAutomation;
+
+    private void EvaluateAutomation()
+    {
+        if (_evaluatingAutomation) return;
+        _evaluatingAutomation = true;
+        try
+        {
+            // 1. Smart Caffeine (Keep-Awake)
+            if (_keepAwake != null)
+        {
+            if (_keepAwakeEnd is { } end && DateTime.Now >= end)
+            {
+                _keepAwakeEnd = null;
+                IsKeepAwakeManual = false;
+            }
+
+            var processActive = !string.IsNullOrWhiteSpace(KeepAwakeProcessName) &&
+                                _keepAwake.IsProcessRunning(KeepAwakeProcessName);
+            var desired = IsKeepAwakeManual || processActive;
+
+            var pausedByBattery = false;
+            if (desired && KeepAwakeBatteryGuard && _battery != null)
+            {
+                var bat = _battery.GetBatteryStatus();
+                if (bat.HasBattery && !bat.IsCharging && bat.Percent is > 0 and < 20)
+                {
+                    pausedByBattery = true;
+                    desired = false;
+                }
+            }
+
+            _keepAwake.SetAwake(desired, keepDisplayOn: true);
+            IsKeepAwakeActuallyActive = _keepAwake.IsActive;
+
+            if (pausedByBattery)
+            {
+                KeepAwakeStatusText = L["KeepAwakePausedBattery"];
+            }
+            else if (!desired)
+            {
+                KeepAwakeStatusText = L["KeepAwakeOff"];
+            }
+            else if (_keepAwakeEnd is { } activeEnd)
+            {
+                var rem = Math.Max(1, (int)Math.Ceiling((activeEnd - DateTime.Now).TotalMinutes));
+                KeepAwakeStatusText = L.Format("KeepAwakeActiveFor", rem);
+            }
+            else if (processActive && !IsKeepAwakeManual)
+            {
+                KeepAwakeStatusText = L.Format("KeepAwakeActiveApp", KeepAwakeProcessName.Trim());
+            }
+            else
+            {
+                KeepAwakeStatusText = L["KeepAwakeActive"];
+            }
+        }
+
+        // 2. Power Plan Autopilot
+        if (_powerPlan != null)
+        {
+            if (PowerPlanAutopilot && _idle != null)
+            {
+                var idle = _idle.GetIdleTime();
+                if (idle >= TimeSpan.FromMinutes(5))
+                {
+                    var current = _powerPlan.GetActivePlan();
+                    if (current != PowerPlanKind.PowerSaver && current != PowerPlanKind.Unknown)
+                    {
+                        _preAutopilotPlan = current;
+                        _powerPlan.SetActivePlan(PowerPlanKind.PowerSaver);
+                    }
+                }
+                else if (idle < TimeSpan.FromSeconds(15) && _preAutopilotPlan is { } prev)
+                {
+                    _powerPlan.SetActivePlan(prev);
+                    _preAutopilotPlan = null;
+                }
+            }
+            RefreshPowerPlan();
+        }
+        }
+        finally
+        {
+            _evaluatingAutomation = false;
+        }
+    }
+
+    private void RefreshMemory()
+    {
+        if (_memory is null) return;
+        try
+        {
+            var info = _memory.GetStatus();
+            MemoryPercentText = $"{info.UsedPercent}%";
+            MemorySummaryText = $"{info.UsedGb:F1} / {info.TotalGb:F1} GB";
+        }
+        catch { }
+    }
+
+    public Action<long>? OnMemoryTrimmed { get; set; }
+
+    [RelayCommand]
+    private async Task TrimMemoryAsync()
+    {
+        if (_memory is null || IsTrimmingMemory) return;
+        IsTrimmingMemory = true;
+        MemoryTrimResultText = L["RamTrimming"];
+        try
+        {
+            var res = await Task.Run(() => _memory.TrimBackgroundWorkingSets());
+            MemoryPercentText = $"{res.After.UsedPercent}%";
+            MemorySummaryText = $"{res.After.UsedGb:F1} / {res.After.TotalGb:F1} GB";
+            MemoryTrimResultText = L.Format("RamTrimResult", res.FreedMb, res.TrimmedProcessCount);
+            OnMemoryTrimmed?.Invoke(res.FreedMb);
+        }
+        catch (Exception ex)
+        {
+            AppDiagnostics.Write("Warning", "Failed to trim RAM working sets.", ex);
+            MemoryTrimResultText = "";
+        }
+        finally
+        {
+            IsTrimmingMemory = false;
+        }
     }
 }
