@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/Uptime-Logo.png" alt="Uptime 2.0 logo" width="320" />
+  <img src="docs/Uptime-Icon.png" alt="Uptime 2.0 logo" width="112" />
   <h1>Uptime 2.0</h1>
   <p>
     <strong>Windows uptime, stability diagnostics, laptop power intelligence, and OLED Standby in one lightweight desktop app.</strong>
