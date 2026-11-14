@@ -9,18 +9,11 @@ See how long your PC has been running, review recent sessions, and understand un
 </p>
 
 <p align="center">
-  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN">
-    <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" width="220" />
-  </a>
-  &nbsp; <a href="https://uptime-pc.vercel.app/">
-    <img src="https://img.shields.io/badge/Website-PC%20Uptime-3B82F6?style=flat&labelColor=20242C" alt="PC Uptime website" />
-  </a>
-  &nbsp; <a href="https://uptime-pc.vercel.app/support/">
-    <img src="https://img.shields.io/badge/Support-Help%20Center-64748B?style=flat&labelColor=20242C" alt="PC Uptime help and support" />
-  </a>
-  &nbsp; <a href="https://discord.gg/88qrhwjBDP">
-    <img src="https://img.shields.io/badge/Discord-Join%20community-5865F2?style=flat&logo=discord&logoColor=white&labelColor=20242C" alt="Join our Discord server" />
-  </a>
+  <a href="https://apps.microsoft.com/detail/9p7h0nn62hk0?hl=en-GB&gl=EN"><img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" height="48" /></a>
+</p>
+
+<p align="center">
+  <a href="https://uptime-pc.vercel.app/"><img src="https://img.shields.io/badge/Website-PC%20Uptime-7BC4A8?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=161B22" alt="PC Uptime Website" height="28" /></a>&nbsp;&nbsp;<a href="https://uptime-pc.vercel.app/wallpapers/"><img src="https://img.shields.io/badge/Wallpapers-Community%20Gallery-3B82F6?style=for-the-badge&logo=icloud&logoColor=white&labelColor=161B22" alt="Community Wallpapers" height="28" /></a>&nbsp;&nbsp;<a href="https://uptime-pc.vercel.app/support/"><img src="https://img.shields.io/badge/Support-Help%20Center-475569?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=161B22" alt="PC Uptime Support" height="28" /></a>&nbsp;&nbsp;<a href="https://discord.gg/88qrhwjBDP"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=161B22" alt="Join Discord Community" height="28" /></a>&nbsp;&nbsp;<img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20x64-0078D6?style=for-the-badge&logo=windows&logoColor=white&labelColor=161B22" alt="Windows 10 and 11 x64" height="28" />
 </p>
 
 ## Screenshots
@@ -39,9 +32,7 @@ The screenshots below show all 7 main views of PC Uptime 2.0: Monitor, Stability
     <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.png"><img src="docs/screenshots/uptime-ai.png" alt="PC Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
   </tr>
   <tr>
-    <td></td>
-    <td align="center" width="33%"><a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="PC Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About</sub></td>
-    <td></td>
+    <td align="center" colspan="3"><a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="PC Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About</sub></td>
   </tr>
 </table>
 
