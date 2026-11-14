@@ -59,6 +59,12 @@ public partial class MonitorView : UserControl
             main.OpenStandByMode();
     }
 
+    private void OnToggleWallpaperFocusClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MonitorViewModel vm)
+            vm.IsWallpaperFocus = !vm.IsWallpaperFocus;
+    }
+
     private void OnSettingsClick(object? sender, RoutedEventArgs e)
     {
         if (TopLevel.GetTopLevel(this) is MainWindow window && window.DataContext is MainViewModel main)

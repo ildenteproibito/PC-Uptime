@@ -65,21 +65,20 @@
     </ScrollViewer>
 
     <Border Grid.Row="1" Padding="28,0">
-      <Grid ColumnDefinitions="*,Auto">
-        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" IsVisible="{Binding IsUiVisible}">
+      <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" IsVisible="{Binding IsUiVisible}">
           <Button Classes="ghost" i18n:Localize.ContentKey="ActionCopy" Click="OnCopyClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="ActionBadge" Click="OnBadgeClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="ActionHud" Click="OnHudClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="ActionStandBy" Click="OnStandByClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="NavSettings" Click="OnSettingsClick" />
+          <Button Classes="ghost" i18n:Localize.ContentKey="ActionHideUi" i18n:Localize.TipKey="TipHideUi"
+                  Click="OnToggleWallpaperFocusClick" />
         </StackPanel>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-          <Button Classes="ghost" IsVisible="{Binding IsUiVisible}" Command="{Binding ToggleWallpaperFocusCommand}"
-                  i18n:Localize.ContentKey="ActionHideUi" i18n:Localize.TipKey="TipHideUi" />
-          <Button Classes="ghost" IsVisible="{Binding IsWallpaperFocus}" Opacity="0.78" Command="{Binding ToggleWallpaperFocusCommand}"
-                  i18n:Localize.ContentKey="ActionShowUi" i18n:Localize.TipKey="TipShowUi" />
-        </StackPanel>
-      </Grid>
+        <Button Classes="ghost" IsVisible="{Binding IsWallpaperFocus}" Opacity="0.78"
+                i18n:Localize.ContentKey="ActionShowUi" i18n:Localize.TipKey="TipShowUi"
+                Click="OnToggleWallpaperFocusClick" />
+      </StackPanel>
     </Border>
   </Grid>
 </UserControl>
