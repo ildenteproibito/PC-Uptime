@@ -50,6 +50,16 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
         _ = UpdateSessionAndTrackAsync();
     }
 
+    private static bool IsSpotifySession(GlobalSystemMediaTransportControlsSession? session)
+    {
+        if (session == null) return false;
+        var aumid = session.SourceAppUserModelId;
+        if (string.IsNullOrWhiteSpace(aumid)) return false;
+
+        // Strictly verify that the session belongs to Spotify (desktop app or Microsoft Store package)
+        return aumid.Contains("spotify", StringComparison.OrdinalIgnoreCase);
+    }
+
     private async Task UpdateSessionAndTrackAsync()
     {
         if (_disposed || _manager == null) return;
@@ -57,11 +67,14 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
         try
         {
             var sessions = _manager.GetSessions();
-            var spotifySession = sessions.FirstOrDefault(s =>
-                !string.IsNullOrEmpty(s.SourceAppUserModelId) &&
-                s.SourceAppUserModelId.Contains("spotify", StringComparison.OrdinalIgnoreCase));
+            var spotifySessions = sessions.Where(IsSpotifySession).ToList();
+            var targetSession = spotifySessions.FirstOrDefault(s => s.GetPlaybackInfo()?.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
+                                ?? spotifySessions.FirstOrDefault();
 
-            var targetSession = spotifySession ?? _manager.GetCurrentSession();
+            if (targetSession == null && IsSpotifySession(_manager.GetCurrentSession()))
+            {
+                targetSession = _manager.GetCurrentSession();
+            }
 
             if (_currentSession != null && !ReferenceEquals(_currentSession, targetSession))
             {
@@ -108,7 +121,7 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
 
     private async Task FetchPropertiesAsync(bool quiet = false)
     {
-        if (_currentSession == null)
+        if (_currentSession == null || !IsSpotifySession(_currentSession))
         {
             CurrentTrack = new MediaTrackInfo(false, "", "", "", false, "", null);
             TrackChanged?.Invoke(CurrentTrack);

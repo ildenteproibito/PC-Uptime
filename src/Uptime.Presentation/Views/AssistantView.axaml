@@ -1,0 +1,132 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             x:Class="Uptime.Presentation.Views.AssistantView"
+             x:DataType="vm:AssistantViewModel">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="56,34" MaxWidth="920">
+    <!-- Header -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,0,0,16">
+      <StackPanel Spacing="4">
+        <TextBlock Classes="lbl" i18n:Localize.TextKey="LblAssistant" />
+        <TextBlock Classes="hint" i18n:Localize.TextKey="AssistantSubtitle" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <CheckBox IsChecked="{Binding IncludeSystemContext}"
+                  i18n:Localize.ContentKey="AssistantIncludeContext"
+                  i18n:Localize.TipKey="AssistantIncludeContextDesc"
+                  VerticalAlignment="Center" />
+        <Button Classes="ghost" Command="{Binding ClearConversationCommand}"
+                i18n:Localize.ContentKey="AssistantClear"
+                Padding="12,6" />
+      </StackPanel>
+    </Grid>
+
+    <!-- Quick Prompt Chips -->
+    <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,14">
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipHealth"
+              i18n:Localize.ContentKey="AssistantChipHealth" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipBattery"
+              i18n:Localize.ContentKey="AssistantChipBattery" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipStability"
+              i18n:Localize.ContentKey="AssistantChipStability" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipBug"
+              i18n:Localize.ContentKey="AssistantChipBug" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipPowerPlan"
+              i18n:Localize.ContentKey="AssistantChipPowerPlan" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipSleep"
+              i18n:Localize.ContentKey="AssistantChipSleep" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipRam"
+              i18n:Localize.ContentKey="AssistantChipRam" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipNetwork"
+              i18n:Localize.ContentKey="AssistantChipNetwork" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipWallpapers"
+              i18n:Localize.ContentKey="AssistantChipWallpapers" />
+      <Button Classes="ghost" Margin="0,0,8,8" Padding="12,6" CornerRadius="999"
+              Command="{Binding UsePromptChipCommand}" CommandParameter="AssistantChipUppy"
+              i18n:Localize.ContentKey="AssistantChipUppy" />
+    </WrapPanel>
+
+    <!-- Conversation Feed -->
+    <Border Grid.Row="2" Classes="row" Padding="16" Margin="0,0,0,14">
+      <ScrollViewer x:Name="ChatScroll" VerticalScrollBarVisibility="Hidden">
+        <ItemsControl ItemsSource="{Binding Messages}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:AiChatMessage">
+              <Grid Margin="0,0,0,12">
+                <!-- User Bubble -->
+                <Border IsVisible="{Binding IsUser}"
+                        HorizontalAlignment="Right"
+                        MaxWidth="640"
+                        CornerRadius="12"
+                        Padding="14,10"
+                        Background="#287BC4A8"
+                        BorderBrush="#557BC4A8"
+                        BorderThickness="1">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" FontSize="13.5"
+                               Foreground="{DynamicResource TextBrush}" />
+                    <TextBlock Text="{Binding Timestamp}" FontSize="10.5"
+                               Foreground="{DynamicResource MutedBrush}"
+                               HorizontalAlignment="Right" />
+                  </StackPanel>
+                </Border>
+
+                <!-- Assistant Bubble -->
+                <Border IsVisible="{Binding IsAssistant}"
+                        HorizontalAlignment="Left"
+                        MaxWidth="680"
+                        CornerRadius="12"
+                        Padding="14,10"
+                        Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource OutlineBrush}"
+                        BorderThickness="1">
+                  <StackPanel Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <TextBlock Text="Uptime AI" FontSize="11" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{Binding Timestamp}" FontSize="10.5"
+                                 Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" FontSize="13.5"
+                               Foreground="{DynamicResource TextBrush}" />
+                  </StackPanel>
+                </Border>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Border>
+
+    <!-- Status + Input Bar -->
+    <StackPanel Grid.Row="3" Spacing="8">
+      <TextBlock Text="{Binding StatusText}"
+                 IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                 FontSize="12"
+                 Foreground="{DynamicResource MutedBrush}"
+                 TextWrapping="Wrap" />
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+        <TextBox x:Name="PromptInput"
+                 Text="{Binding InputText, Mode=TwoWay}"
+                 i18n:Localize.WatermarkKey="AssistantPlaceholder"
+                 KeyDown="OnPromptKeyDown"
+                 Padding="12,10" />
+        <Button Grid.Column="1"
+                Classes="accent"
+                Command="{Binding SendMessageCommand}"
+                i18n:Localize.ContentKey="AssistantSend"
+                Padding="18,10" />
+      </Grid>
+    </StackPanel>
+  </Grid>
+</UserControl>

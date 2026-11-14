@@ -1,0 +1,69 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Uptime.Installer.App"
+             RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <SolidColorBrush x:Key="BgBrush" Color="#0F1114" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#1B1E24" />
+    <SolidColorBrush x:Key="LineBrush" Color="#1D2026" />
+    <SolidColorBrush x:Key="OutlineBrush" Color="#2A2E36" />
+    <SolidColorBrush x:Key="TextBrush" Color="#E8EAED" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#9AA0A9" />
+    <SolidColorBrush x:Key="DimBrush" Color="#8D939C" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="OrangeBrush" Color="#E8845A" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="#0F1114" />
+    <FontFamily x:Key="UiFont">Segoe UI Variable, Segoe UI, Inter, sans-serif</FontFamily>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Dark" Accent="#7BC4A8" RegionColor="#0F1114" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
+    <Style Selector="Window">
+      <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+    <Style Selector="Button.ghost">
+      <Setter Property="Background" Value="#1B1E24" />
+      <Setter Property="Foreground" Value="#E8EAED" />
+      <Setter Property="BorderBrush" Value="#2A2E36" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#252932" />
+      <Setter Property="BorderBrush" Value="#3A404C" />
+    </Style>
+    <Style Selector="Button.accent">
+      <Setter Property="Background" Value="#7BC4A8" />
+      <Setter Property="Foreground" Value="#0F1114" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#8CD0B7" />
+      <Setter Property="Foreground" Value="#0F1114" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#E8845A" />
+      <Setter Property="Foreground" Value="#0F1114" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#15181D" />
+      <Setter Property="Foreground" Value="#E8EAED" />
+      <Setter Property="BorderBrush" Value="#2A2E36" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="12,8" />
+    </Style>
+  </Application.Styles>
+</Application>

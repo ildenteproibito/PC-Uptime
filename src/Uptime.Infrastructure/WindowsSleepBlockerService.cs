@@ -17,7 +17,9 @@ public sealed class WindowsSleepBlockerService : ISleepBlockerService
         {
             var requestsOutput = await RunPowerCfgAsync("/requests");
             if (requestsOutput.Contains("administrator privileges", StringComparison.OrdinalIgnoreCase) ||
-                requestsOutput.Contains("privilegi", StringComparison.OrdinalIgnoreCase))
+                requestsOutput.Contains("privilegi", StringComparison.OrdinalIgnoreCase) ||
+                requestsOutput.Contains("администратор", StringComparison.OrdinalIgnoreCase) ||
+                requestsOutput.Contains("elevated", StringComparison.OrdinalIgnoreCase))
             {
                 isElevated = false;
             }
@@ -26,9 +28,13 @@ public sealed class WindowsSleepBlockerService : ISleepBlockerService
                 ParseRequests(requestsOutput, blockers);
             }
         }
-        catch
+        catch (UnauthorizedAccessException)
         {
             isElevated = false;
+        }
+        catch
+        {
+            // Timeout or transient error should not falsely claim missing admin privileges
         }
 
         // Query last wake reason via powercfg /lastwake and EventLog
@@ -73,13 +79,11 @@ public sealed class WindowsSleepBlockerService : ISleepBlockerService
                 continue;
             }
 
-            if (line.Equals("None.", StringComparison.OrdinalIgnoreCase) ||
-                line.Equals("Nessuno.", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
+            if (string.IsNullOrEmpty(currentCategory)) continue;
 
-            if (!string.IsNullOrEmpty(currentCategory))
+            // In all Windows locales, real active requests start with [DRIVER], [PROCESS], [SERVICE], etc.
+            // Lines like "None.", "Nessuno.", "Нет.", "Keine." have no brackets and are localized empty markers.
+            if (line.StartsWith('['))
             {
                 var detail = "";
                 var colonIdx = line.IndexOf(']');
@@ -88,6 +92,13 @@ public sealed class WindowsSleepBlockerService : ISleepBlockerService
                     detail = line[(colonIdx + 1)..].Trim();
                 }
                 blockers.Add(new SleepBlockerItem(currentCategory, line, detail));
+            }
+            else if (blockers.Count > 0 && blockers[^1].Category == currentCategory)
+            {
+                // Merge multi-line reason text into the preceding blocker instead of creating a duplicate card
+                var prev = blockers[^1];
+                var mergedDetail = string.IsNullOrWhiteSpace(prev.Detail) ? line : $"{prev.Detail} — {line}";
+                blockers[^1] = prev with { Detail = mergedDetail };
             }
         }
     }
@@ -138,7 +149,15 @@ public sealed class WindowsSleepBlockerService : ISleepBlockerService
         var stderrTask = proc.StandardError.ReadToEndAsync();
 
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-        await proc.WaitForExitAsync(cts.Token);
+        try
+        {
+            await proc.WaitForExitAsync(cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            try { proc.Kill(entireProcessTree: true); } catch { }
+            throw;
+        }
 
         var stdout = await stdoutTask;
         var stderr = await stderrTask;

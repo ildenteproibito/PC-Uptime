@@ -6,10 +6,10 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <RootNamespace>Uptime.Presentation</RootNamespace>
     <AssemblyName>Uptime</AssemblyName>
+    <Version>2.0.0</Version>
     <ApplicationIcon>Assets\uptime.ico</ApplicationIcon>
-    <UseWindowsForms>true</UseWindowsForms>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -25,6 +25,22 @@
     <ProjectReference Include="..\Uptime.Core\Uptime.Core.csproj" />
     <ProjectReference Include="..\Uptime.Infrastructure\Uptime.Infrastructure.csproj" />
   </ItemGroup>
+  <Target Name="ObfuscateBeforeReadyToRunAndBundle" BeforeTargets="_PrepareForReadyToRunCompilation;ComputeFilesToBundle" Condition="'$(Configuration)' == 'Release' And '$(PublishSingleFile)' == 'true'">
+    <PropertyGroup>
+      <_ObfInDir>$(IntermediateOutputPath)obf-in\</_ObfInDir>
+      <_ObfOutDir>$(IntermediateOutputPath)obf-out\</_ObfOutDir>
+      <_ObfConfig>$(IntermediateOutputPath)obfuscar.generated.xml</_ObfConfig>
+    </PropertyGroup>
+    <RemoveDir Directories="$(_ObfInDir);$(_ObfOutDir)" />
+    <MakeDir Directories="$(_ObfInDir);$(_ObfOutDir)" />
+    <Copy SourceFiles="@(ResolvedFileToPublish)" DestinationFolder="$(_ObfInDir)" Condition="'%(Extension)' == '.dll'" SkipUnchangedFiles="false" />
+    <WriteLinesToFile File="$(_ObfConfig)" Overwrite="true" Lines="&lt;?xml version='1.0'?&gt;;&lt;Obfuscator&gt;;  &lt;Var name=&quot;InPath&quot; value=&quot;$(_ObfInDir.TrimEnd('\'))&quot; /&gt;;  &lt;Var name=&quot;OutPath&quot; value=&quot;$(_ObfOutDir.TrimEnd('\'))&quot; /&gt;;  &lt;Var name=&quot;KeepPublicApi&quot; value=&quot;true&quot; /&gt;;  &lt;Var name=&quot;HidePrivateApi&quot; value=&quot;true&quot; /&gt;;  &lt;Var name=&quot;HideStrings&quot; value=&quot;true&quot; /&gt;;  &lt;Var name=&quot;OptimizeMethods&quot; value=&quot;true&quot; /&gt;;  &lt;Var name=&quot;ReuseNames&quot; value=&quot;false&quot; /&gt;;  &lt;Var name=&quot;UseUnicodeNames&quot; value=&quot;false&quot; /&gt;;  &lt;Var name=&quot;SuppressIldasm&quot; value=&quot;true&quot; /&gt;;  &lt;AssemblySearchPath path=&quot;$(_ObfInDir.TrimEnd('\'))&quot; /&gt;;  &lt;Module file=&quot;$(_ObfInDir)Uptime.Core.dll&quot; /&gt;;  &lt;Module file=&quot;$(_ObfInDir)Uptime.Infrastructure.dll&quot; /&gt;;  &lt;Module file=&quot;$(_ObfInDir)Uptime.dll&quot; /&gt;;&lt;/Obfuscator&gt;" />
+    <Exec Command="obfuscar.console &quot;$(_ObfConfig)&quot;" />
+    <ItemGroup>
+      <_ObfTargetFiles Include="@(ResolvedFileToPublish)" Condition="'%(Filename)%(Extension)' == 'Uptime.Core.dll' Or '%(Filename)%(Extension)' == 'Uptime.Infrastructure.dll' Or '%(Filename)%(Extension)' == 'Uptime.dll'" />
+    </ItemGroup>
+    <Copy SourceFiles="$(_ObfOutDir)%(Filename)%(Extension)" DestinationFiles="@(_ObfTargetFiles->'%(FullPath)')" />
+  </Target>
   <Target Name="RemoveUnsupportedCultureSatellites" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
     <RemoveDir Directories="$(PublishDir)cs;$(PublishDir)de;$(PublishDir)es;$(PublishDir)fr;$(PublishDir)ja;$(PublishDir)ko;$(PublishDir)pl;$(PublishDir)pt-BR;$(PublishDir)ru;$(PublishDir)tr;$(PublishDir)zh-Hans;$(PublishDir)zh-Hant" />
   </Target>

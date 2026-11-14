@@ -1,7 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization"
              xmlns:c="using:Uptime.Presentation.Controls"
-             x:Class="Uptime.Presentation.Views.MonitorView">
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:Class="Uptime.Presentation.Views.MonitorView"
+             x:DataType="vm:MonitorViewModel">
   <Grid RowDefinitions="*,76">
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
       <StackPanel Margin="56,40,56,24" Spacing="36">
@@ -62,11 +64,12 @@
       </StackPanel>
     </ScrollViewer>
 
-    <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource LineBrush}" Padding="28,0">
+    <Border Grid.Row="1" Padding="28,0">
       <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
         <Button Classes="ghost" i18n:Localize.ContentKey="ActionCopy" Click="OnCopyClick" />
         <Button Classes="ghost" i18n:Localize.ContentKey="ActionBadge" Click="OnBadgeClick" />
         <Button Classes="ghost" i18n:Localize.ContentKey="ActionHud" Click="OnHudClick" />
+        <Button Classes="ghost" i18n:Localize.ContentKey="ActionStandBy" Click="OnStandByClick" />
         <Button Classes="ghost" i18n:Localize.ContentKey="NavSettings" Click="OnSettingsClick" />
       </StackPanel>
     </Border>

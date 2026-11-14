@@ -10,19 +10,22 @@ public sealed class Win32PowerService : IPowerService
 {
     private const string PowerKey = @"SYSTEM\CurrentControlSet\Control\Session Manager\Power";
 
-    // Reboot is always clean (bypasses Fast Startup). Shutdown requires /full,
-    // otherwise with Fast Startup enabled Windows performs a hybrid shutdown.
-    public void CleanReboot() => RunShutdown("/r /t 0");
-    public void FullShutdown() => RunShutdown("/s /full /t 0");
+    // Reboot is always clean. Full shutdown uses /s (hybrid shutdown requires /hybrid);
+    // /full is not a valid shutdown.exe flag and caused shutdown.exe to fail silently.
+    // /f forces running apps (including fullscreen windows) to close when the timer expires.
+    public void CleanReboot() => RunShutdown("/r /f /t 0");
+    public void FullShutdown() => RunShutdown("/s /f /t 0");
     public void RebootToUefi() => RunShutdown("/r /fw /t 0");
 
     public void StartShutdownTimer(int minutes, string comment)
     {
+        var clampedMinutes = Math.Clamp(minutes, 1, 5256000);
         var safeComment = comment.Replace("\"", "");
-        RunShutdown($"/s /full /t {minutes * 60} /c \"{safeComment}\"");
+        if (safeComment.Length > 512) safeComment = safeComment[..512];
+        RunShutdown($"/s /f /t {clampedMinutes * 60} /c \"{safeComment}\"");
     }
 
-    public void CancelShutdownTimer() => RunShutdown("/a");
+    public void CancelShutdownTimer() => RunShutdown("/a", ignoreFailure: true);
 
     public bool? IsFastStartupEnabled()
     {
@@ -50,7 +53,7 @@ public sealed class Win32PowerService : IPowerService
             };
             using var process = Process.Start(psi);
             if (process is null) return false;
-            process.WaitForExit();
+            if (!process.WaitForExit(15000)) return false;
             return process.ExitCode == 0;
         }
         catch (Win32Exception)
@@ -59,12 +62,21 @@ public sealed class Win32PowerService : IPowerService
         }
     }
 
-    private static void RunShutdown(string arguments)
+    private static void RunShutdown(string arguments, bool ignoreFailure = false)
     {
         using var process = Process.Start(new ProcessStartInfo("shutdown.exe", arguments)
         {
             UseShellExecute = false,
             CreateNoWindow = true,
         });
+        if (process is null)
+        {
+            throw new InvalidOperationException("Failed to start shutdown.exe.");
+        }
+
+        if (process.WaitForExit(3000) && process.ExitCode != 0 && !ignoreFailure)
+        {
+            throw new InvalidOperationException($"shutdown.exe exited with code {process.ExitCode}.");
+        }
     }
 }

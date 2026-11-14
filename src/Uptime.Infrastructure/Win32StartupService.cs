@@ -13,8 +13,15 @@ public sealed class Win32StartupService : IStartupService
     {
         get
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RunKey);
-            return key?.GetValue(ValueName) is not null;
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RunKey);
+                return key?.GetValue(ValueName) is not null;
+            }
+            catch (Exception e) when (e is UnauthorizedAccessException or System.Security.SecurityException or IOException)
+            {
+                return false;
+            }
         }
     }
 

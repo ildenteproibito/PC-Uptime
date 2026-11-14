@@ -1,0 +1,214 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:DataType="vm:MainViewModel"
+             x:Class="Uptime.Presentation.Views.AboutView">
+  <ScrollViewer VerticalScrollBarVisibility="Hidden">
+    <StackPanel Margin="56,36" Spacing="20" MaxWidth="860" HorizontalAlignment="Center">
+      <!-- 1. Project & Version Banner -->
+      <Border Classes="row" Padding="20">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
+          <Image Source="/Assets/uptime.png" Width="56" Height="56" Stretch="Uniform"
+                 RenderOptions.BitmapInterpolationMode="HighQuality" />
+          <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+              <TextBlock Text="Uptime" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Border CornerRadius="999" Padding="10,2" Background="#247BC4A8" BorderBrush="#667BC4A8" BorderThickness="1" VerticalAlignment="Center">
+                <TextBlock x:Name="VersionBadgeText" Text="v2.0.0" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+              </Border>
+            </StackPanel>
+            <TextBlock Classes="hint" i18n:Localize.TextKey="AboutProjectTagline" TextWrapping="Wrap" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- 2. Complete Changelog (High-Readability Container) -->
+      <Border Padding="22" CornerRadius="12" Background="#DE0B0F15" BorderBrush="#40FFFFFF" BorderThickness="1">
+        <StackPanel Spacing="14">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblChangelog" Foreground="{DynamicResource AccentBrush}" />
+          <TextBlock i18n:Localize.TextKey="AboutChangelogFull"
+                     Foreground="#F3F4F6"
+                     FontSize="13.5"
+                     TextWrapping="Wrap"
+                     LineHeight="24" />
+          <Border Height="1" Background="#24FFFFFF" Margin="0,4" />
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblRemoved" Foreground="#F87171" />
+          <TextBlock i18n:Localize.TextKey="AboutRemovedFull"
+                     Foreground="#E5E7EB"
+                     FontSize="13.5"
+                     TextWrapping="Wrap"
+                     LineHeight="24" />
+        </StackPanel>
+      </Border>
+
+      <!-- 3. Quick Links & Community -->
+      <Border Classes="row" Padding="20">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblCommunityLinks" />
+          <WrapPanel Orientation="Horizontal">
+            <Button Classes="ghost" Margin="0,0,10,6" Padding="14,8" Click="OnOpenWebsiteClick"
+                    i18n:Localize.ContentKey="AboutBtnWebsite" />
+            <Button Classes="ghost" Margin="0,0,10,6" Padding="14,8" Click="OnOpenWallpapersClick"
+                    i18n:Localize.ContentKey="AboutBtnWallpapers" />
+            <Button Margin="0,0,0,6" Padding="14,8" Click="OnOpenDiscordClick"
+                    Background="#5865F2" BorderBrush="#7983F5" BorderThickness="1" CornerRadius="8">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Image Source="avares://Uptime/Assets/discord-logo.png" Width="16" Height="16"
+                       VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                <TextBlock i18n:Localize.TextKey="AboutBtnDiscord" Foreground="#FFFFFF"
+                           FontWeight="SemiBold" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Team & Credits Header -->
+      <StackPanel Spacing="6" Margin="0,6,0,0">
+        <TextBlock Classes="lbl" i18n:Localize.TextKey="LblAbout" />
+        <TextBlock Classes="hint" i18n:Localize.TextKey="AboutSubtitle" FontSize="13.5" />
+      </StackPanel>
+
+      <!-- Moderator 1: ShadowEddyx12 -->
+      <Border Classes="row" Padding="18">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
+          <Ellipse Width="72" Height="72"
+                   Stroke="{DynamicResource OutlineBrush}" StrokeThickness="1.5"
+                   RenderOptions.BitmapInterpolationMode="HighQuality">
+            <Ellipse.Fill>
+              <ImageBrush Source="avares://Uptime/Assets/avatar-shadoweddyx12.webp" Stretch="UniformToFill" />
+            </Ellipse.Fill>
+          </Ellipse>
+          <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <TextBlock Text="ShadowEddyx12" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Image Source="avares://Uptime/Assets/mod-icon.png" Width="15" Height="15" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <Border CornerRadius="999" Padding="9,2" Background="#1F5865F2" BorderBrush="#665865F2" BorderThickness="1" VerticalAlignment="Center">
+                <TextBlock i18n:Localize.TextKey="AboutRoleMod" FontSize="11" FontWeight="SemiBold" Foreground="#A5B4FC" />
+              </Border>
+            </StackPanel>
+            <TextBlock Classes="hint" i18n:Localize.TextKey="AboutModShadowDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- Moderator 2: Luke -->
+      <Border Classes="row" Padding="18">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
+          <Ellipse Width="72" Height="72"
+                   Stroke="{DynamicResource OutlineBrush}" StrokeThickness="1.5"
+                   RenderOptions.BitmapInterpolationMode="HighQuality">
+            <Ellipse.Fill>
+              <ImageBrush Source="avares://Uptime/Assets/avatar-luke.png" Stretch="UniformToFill" />
+            </Ellipse.Fill>
+          </Ellipse>
+          <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <TextBlock Text="Luke" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Image Source="avares://Uptime/Assets/mod-icon.png" Width="15" Height="15" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <Border CornerRadius="999" Padding="9,2" Background="#1F5865F2" BorderBrush="#665865F2" BorderThickness="1" VerticalAlignment="Center">
+                <TextBlock i18n:Localize.TextKey="AboutRoleMod" FontSize="11" FontWeight="SemiBold" Foreground="#A5B4FC" />
+              </Border>
+            </StackPanel>
+            <TextBlock Classes="hint" i18n:Localize.TextKey="AboutModLukeDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- Dynamic Discord Beta Testers (inserted directly below Luke) -->
+      <ItemsControl ItemsSource="{Binding BetaTesters}" IsVisible="{Binding HasBetaTesters}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="20" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:BetaTesterCard">
+            <Border Classes="row" Padding="18">
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
+                <Ellipse Width="72" Height="72"
+                         Stroke="#6638BDF8" StrokeThickness="1.5"
+                         RenderOptions.BitmapInterpolationMode="HighQuality">
+                  <Ellipse.Fill>
+                    <ImageBrush Source="{Binding AvatarBitmap}" Stretch="UniformToFill" />
+                  </Ellipse.Fill>
+                </Ellipse>
+                <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+                    <Image Source="avares://Uptime/Assets/mod-icon.png" Width="15" Height="15" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" IsVisible="{Binding IsModerator}" />
+                    <Border CornerRadius="999" Padding="9,2" Background="#1F5865F2" BorderBrush="#665865F2" BorderThickness="1" VerticalAlignment="Center" IsVisible="{Binding IsModerator}">
+                      <TextBlock i18n:Localize.TextKey="AboutRoleMod" FontSize="11" FontWeight="SemiBold" Foreground="#A5B4FC" />
+                    </Border>
+                    <Border CornerRadius="999" Padding="9,2" Background="#1F38BDF8" BorderBrush="#6638BDF8" BorderThickness="1" VerticalAlignment="Center" IsVisible="{Binding !IsModerator}">
+                      <TextBlock i18n:Localize.TextKey="AboutRoleBetaTester" FontSize="11" FontWeight="SemiBold" Foreground="#38BDF8" />
+                    </Border>
+                  </StackPanel>
+                  <TextBlock Classes="hint" Text="{Binding Description}" TextWrapping="Wrap" HorizontalAlignment="Left" />
+                </StackPanel>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <!-- Developer (Android & iOS): Koi -->
+      <Border Classes="row" Padding="18">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
+          <Border Width="72" Height="72" CornerRadius="999"
+                  Background="#1FA855F7" BorderBrush="#88A855F7" BorderThickness="1.5"
+                  ClipToBounds="True">
+            <Grid>
+              <TextBlock Text="K" FontSize="24" FontWeight="Bold" Foreground="#C084FC"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         IsVisible="{Binding MobileDevAvatar, Converter={x:Static ObjectConverters.IsNull}}" />
+              <Ellipse Width="72" Height="72"
+                       RenderOptions.BitmapInterpolationMode="HighQuality"
+                       IsVisible="{Binding MobileDevAvatar, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <Ellipse.Fill>
+                  <ImageBrush Source="{Binding MobileDevAvatar}" Stretch="UniformToFill" />
+                </Ellipse.Fill>
+              </Ellipse>
+            </Grid>
+          </Border>
+          <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <TextBlock Text="{Binding MobileDevName}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Viewbox Width="15" Height="15" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="#C084FC" Data="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm5 16.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM7 5v11h10V5H7z" />
+              </Viewbox>
+              <Border CornerRadius="999" Padding="9,2" Background="#1FA855F7" BorderBrush="#73A855F7" BorderThickness="1" VerticalAlignment="Center">
+                <TextBlock i18n:Localize.TextKey="AboutRoleMobileDev" FontSize="11" FontWeight="SemiBold" Foreground="#C084FC" />
+              </Border>
+            </StackPanel>
+            <TextBlock Classes="hint" i18n:Localize.TextKey="AboutMobileDevDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- Owner: IL DENTE PROIBITO -->
+      <Border Classes="row" Padding="18">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
+          <Ellipse Width="72" Height="72"
+                   Stroke="#88F5C451" StrokeThickness="1.5"
+                   RenderOptions.BitmapInterpolationMode="HighQuality">
+            <Ellipse.Fill>
+              <ImageBrush Source="avares://Uptime/Assets/avatar-owner.jpg" Stretch="UniformToFill" />
+            </Ellipse.Fill>
+          </Ellipse>
+          <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <TextBlock Text="IL DENTE PROIBITO" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+              <Image Source="avares://Uptime/Assets/owner-icon.png" Width="15" Height="15" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <Border CornerRadius="999" Padding="9,2" Background="#1FF5C451" BorderBrush="#73F5C451" BorderThickness="1" VerticalAlignment="Center">
+                <TextBlock i18n:Localize.TextKey="AboutRoleOwner" FontSize="11" FontWeight="SemiBold" Foreground="#F5C451" />
+              </Border>
+            </StackPanel>
+            <TextBlock Classes="hint" i18n:Localize.TextKey="AboutOwnerDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

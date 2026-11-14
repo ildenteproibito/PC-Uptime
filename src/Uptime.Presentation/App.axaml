@@ -2,6 +2,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Uptime.Presentation.App"
              RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <SolidColorBrush x:Key="BgBrush" Color="#0F1114" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#1B1E24" />
+    <SolidColorBrush x:Key="LineBrush" Color="#1D2026" />
+    <SolidColorBrush x:Key="RowLineBrush" Color="#1A1D22" />
+    <SolidColorBrush x:Key="OutlineBrush" Color="#2A2E36" />
+    <SolidColorBrush x:Key="TextBrush" Color="#E8EAED" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#9AA0A9" />
+    <SolidColorBrush x:Key="DimBrush" Color="#8D939C" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="AmberBrush" Color="#E0A458" />
+    <SolidColorBrush x:Key="OrangeBrush" Color="#E8845A" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="#7BC4A8" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="#0F1114" />
+  </Application.Resources>
   <Application.Styles>
     <FluentTheme>
       <FluentTheme.Palettes>

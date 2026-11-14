@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Uptime.Core;
 using Uptime.Presentation.ViewModels;
 
 namespace Uptime.Presentation.Views;
@@ -14,14 +15,21 @@ public partial class StabilityView : UserControl
     {
         var top = TopLevel.GetTopLevel(this);
         if (DataContext is not StabilityViewModel vm || top is null) return;
-        var file = await top.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        try
         {
-            SuggestedFileName = $"uptime-stability.{format}",
-            FileTypeChoices = new[] { new FilePickerFileType(format.ToUpperInvariant()) { Patterns = new[] { $"*.{format}" } } }
-        });
-        if (file is null) return;
-        await using var stream = await file.OpenWriteAsync();
-        await using var writer = new StreamWriter(stream);
-        await writer.WriteAsync(format == "json" ? vm.ExportJson() : vm.ExportCsv());
+            var file = await top.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                SuggestedFileName = $"uptime-stability.{format}",
+                FileTypeChoices = new[] { new FilePickerFileType(format.ToUpperInvariant()) { Patterns = new[] { $"*.{format}" } } }
+            });
+            if (file is null) return;
+            await using var stream = await file.OpenWriteAsync();
+            await using var writer = new StreamWriter(stream);
+            await writer.WriteAsync(format == "json" ? vm.ExportJson() : vm.ExportCsv());
+        }
+        catch (Exception ex)
+        {
+            AppDiagnostics.Write("Error", $"Failed to export stability data as {format}", ex);
+        }
     }
 }
