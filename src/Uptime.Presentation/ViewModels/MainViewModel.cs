@@ -75,6 +75,9 @@ public partial class MainViewModel : ObservableObject
     public bool IsSettings => Page == "Settings";
     public bool IsAbout => Page == "About";
     public bool IsAssistant => Page == "Assistant";
+    public bool IsWallpaperFocusActive => IsMonitor && Monitor.IsWallpaperFocus;
+    public bool ShowChromeOverlay => !IsWallpaperFocusActive;
+    public bool ShowMascotOverlay => Monitor.ShowMascot && !IsWallpaperFocusActive;
 
     private static readonly string LiveStatePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -133,6 +136,15 @@ public partial class MainViewModel : ObservableObject
 
         Monitor.RequestIdleWindowOpen = OpenIdleWindow;
         Monitor.RequestIdleWindowClose = CloseIdleWindow;
+        Monitor.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(MonitorViewModel.IsWallpaperFocus) or nameof(MonitorViewModel.ShowMascot))
+            {
+                OnPropertyChanged(nameof(IsWallpaperFocusActive));
+                OnPropertyChanged(nameof(ShowChromeOverlay));
+                OnPropertyChanged(nameof(ShowMascotOverlay));
+            }
+        };
         Operations.OnMemoryTrimmed = mb => Monitor.FeedRamSnack(mb);
         Settings.RequestReplayTutorial = StartTutorial;
         Settings.RequestDiscordRpcRefresh = TriggerImmediateDiscordRpcUpdate;
@@ -509,7 +521,15 @@ public partial class MainViewModel : ObservableObject
         Page = "Monitor";
     }
 
-    partial void OnPageChanged(string value) => TriggerImmediateDiscordRpcUpdate();
+    partial void OnPageChanged(string value)
+    {
+        if (value != "Monitor" && Monitor.IsWallpaperFocus)
+            Monitor.IsWallpaperFocus = false;
+        OnPropertyChanged(nameof(IsWallpaperFocusActive));
+        OnPropertyChanged(nameof(ShowChromeOverlay));
+        OnPropertyChanged(nameof(ShowMascotOverlay));
+        TriggerImmediateDiscordRpcUpdate();
+    }
     partial void OnIsTutorialActiveChanged(bool value) => TriggerImmediateDiscordRpcUpdate();
 
     private void TriggerImmediateDiscordRpcUpdate()

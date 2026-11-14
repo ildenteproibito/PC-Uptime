@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Uptime.Core;
 
 namespace Uptime.Presentation.ViewModels;
@@ -60,6 +61,15 @@ public partial class MonitorViewModel : ObservableObject, IDisposable
     private string _mascotAccessoryBadge = "";
 
     public bool HasMascotAccessory => !string.IsNullOrEmpty(MascotAccessoryBadge);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsUiVisible))]
+    private bool _isWallpaperFocus;
+
+    public bool IsUiVisible => !IsWallpaperFocus;
+
+    [RelayCommand]
+    private void ToggleWallpaperFocus() => IsWallpaperFocus = !IsWallpaperFocus;
 
     private DateTime _lastNightCommentUtc = DateTime.MinValue;
     private string _lastSpotifyAnnouncedTitle = "";
