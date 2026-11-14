@@ -40,7 +40,8 @@
       <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
         <!-- Left: Logo & App Title -->
         <StackPanel x:Name="HeaderLeftPanel" Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Left">
-          <Image Width="32" Height="32" Source="/Assets/uptime.png" Stretch="Uniform" />
+          <Image Width="32" Height="32" Source="/Assets/uptime.png" Stretch="Uniform"
+                 RenderOptions.BitmapInterpolationMode="HighQuality" />
           <TextBlock Text="Uptime" FontWeight="SemiBold" FontSize="19" />
         </StackPanel>
 

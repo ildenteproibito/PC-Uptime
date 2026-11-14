@@ -283,27 +283,35 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
         }
     }
 
+    private static readonly object TokensLock = new();
+
     private static void SaveDeleteToken(string id, string token)
     {
-        try
+        lock (TokensLock)
         {
-            var map = GetSavedDeleteTokens();
-            map[id] = token;
-            Directory.CreateDirectory(Path.GetDirectoryName(TokensFilePath)!);
-            File.WriteAllText(TokensFilePath, JsonSerializer.Serialize(map));
+            try
+            {
+                var map = GetSavedDeleteTokens();
+                map[id] = token;
+                Directory.CreateDirectory(Path.GetDirectoryName(TokensFilePath)!);
+                File.WriteAllText(TokensFilePath, JsonSerializer.Serialize(map));
+            }
+            catch { }
         }
-        catch { }
     }
 
     private static void RemoveDeleteToken(string id)
     {
-        try
+        lock (TokensLock)
         {
-            var map = GetSavedDeleteTokens();
-            if (map.Remove(id))
-                File.WriteAllText(TokensFilePath, JsonSerializer.Serialize(map));
+            try
+            {
+                var map = GetSavedDeleteTokens();
+                if (map.Remove(id))
+                    File.WriteAllText(TokensFilePath, JsonSerializer.Serialize(map));
+            }
+            catch { }
         }
-        catch { }
     }
 
     private static readonly System.Text.RegularExpressions.Regex BlockedTermsRegex = new(

@@ -9,23 +9,33 @@ namespace Uptime.Presentation;
 
 internal static class DiagnosticArchive
 {
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
+    private sealed record DiagnosticAbout(
+        string Application,
+        string Version,
+        DateTimeOffset CreatedLocal,
+        string OperatingSystem,
+        string Architecture,
+        string Framework,
+        string Language,
+        int EventLogPeriodDays,
+        string Privacy);
+
     public static async Task WriteAsync(Stream destination)
     {
         await using var buffer = new MemoryStream();
         using (var archive = new ZipArchive(buffer, ZipArchiveMode.Create, leaveOpen: true, Encoding.UTF8))
         {
-            var about = new
-            {
-                Application = "Uptime",
-                Version = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "unknown",
-                CreatedLocal = DateTimeOffset.Now,
-                OperatingSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
-                Architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
-                Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
-                Language = Localizer.Instance.Language,
-                EventLogPeriodDays = 7,
-                Privacy = "Generated locally. No data is uploaded by Uptime."
-            };
+            var about = new DiagnosticAbout(
+                "Uptime",
+                Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "unknown",
+                DateTimeOffset.Now,
+                System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+                System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+                Localizer.Instance.Language,
+                7,
+                "Generated locally. No data is uploaded by Uptime.");
             await AddTextAsync(archive, "about.json", JsonSerializer.Serialize(about, new JsonSerializerOptions { WriteIndented = true }));
             await AddTextAsync(archive, "README.txt",
                 "Uptime support diagnostics\r\n\r\n" +

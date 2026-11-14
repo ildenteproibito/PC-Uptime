@@ -26,13 +26,12 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
     {
         try
         {
-            _manager = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
-            if (_manager != null)
-            {
-                _manager.CurrentSessionChanged += OnCurrentSessionChanged;
-                _manager.SessionsChanged += OnSessionsChanged;
-                await UpdateSessionAndTrackAsync();
-            }
+            var manager = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
+            if (_disposed || manager == null) return;
+            _manager = manager;
+            _manager.CurrentSessionChanged += OnCurrentSessionChanged;
+            _manager.SessionsChanged += OnSessionsChanged;
+            await UpdateSessionAndTrackAsync();
         }
         catch (Exception ex)
         {
@@ -106,22 +105,46 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
 
     private void OnMediaPropertiesChanged(GlobalSystemMediaTransportControlsSession sender, MediaPropertiesChangedEventArgs args)
     {
-        _ = FetchPropertiesAsync();
+        _ = FetchPropertiesSerializedAsync();
     }
 
     private void OnPlaybackInfoChanged(GlobalSystemMediaTransportControlsSession sender, PlaybackInfoChangedEventArgs args)
     {
-        _ = FetchPropertiesAsync();
+        _ = FetchPropertiesSerializedAsync();
     }
 
     private void OnTimelinePropertiesChanged(GlobalSystemMediaTransportControlsSession sender, TimelinePropertiesChangedEventArgs args)
     {
-        _ = FetchPropertiesAsync(quiet: true);
+        _ = FetchPropertiesSerializedAsync(quiet: true);
+    }
+
+    private async Task FetchPropertiesSerializedAsync(bool quiet = false)
+    {
+        if (_disposed) return;
+        try
+        {
+            await _gate.WaitAsync();
+        }
+        catch (ObjectDisposedException)
+        {
+            return;
+        }
+        try
+        {
+            if (!_disposed)
+                await FetchPropertiesAsync(quiet);
+        }
+        finally
+        {
+            if (!_disposed)
+                _gate.Release();
+        }
     }
 
     private async Task FetchPropertiesAsync(bool quiet = false)
     {
-        if (_currentSession == null || !IsSpotifySession(_currentSession))
+        var session = _currentSession;
+        if (_disposed || session == null || !IsSpotifySession(session))
         {
             CurrentTrack = new MediaTrackInfo(false, "", "", "", false, "", null);
             TrackChanged?.Invoke(CurrentTrack);
@@ -130,12 +153,13 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
 
         try
         {
-            var props = await _currentSession.TryGetMediaPropertiesAsync();
-            var playback = _currentSession.GetPlaybackInfo();
+            var props = await session.TryGetMediaPropertiesAsync();
+            if (_disposed) return;
+            var playback = session.GetPlaybackInfo();
             var isPlaying = playback?.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
             var isLooping = playback?.AutoRepeatMode is MediaPlaybackAutoRepeatMode.Track or MediaPlaybackAutoRepeatMode.List;
 
-            var timeline = _currentSession.GetTimelineProperties();
+            var timeline = session.GetTimelineProperties();
             var position = timeline?.Position ?? TimeSpan.Zero;
             var duration = timeline?.EndTime ?? TimeSpan.Zero;
 
@@ -154,7 +178,7 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
 
             if (props == null || (string.IsNullOrWhiteSpace(props.Title) && string.IsNullOrWhiteSpace(props.Artist)))
             {
-                CurrentTrack = new MediaTrackInfo(false, "", "", "", isPlaying, _currentSession.SourceAppUserModelId ?? "", null, position, duration, isLooping);
+                CurrentTrack = new MediaTrackInfo(false, "", "", "", isPlaying, session.SourceAppUserModelId ?? "", null, position, duration, isLooping);
             }
             else
             {
@@ -184,7 +208,7 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
                     props.Artist ?? "",
                     props.AlbumTitle ?? "",
                     isPlaying,
-                    _currentSession.SourceAppUserModelId ?? "",
+                    session.SourceAppUserModelId ?? "",
                     thumb,
                     position,
                     duration,

@@ -112,16 +112,23 @@ public partial class SpotifyViewModel : ObservableObject, IDisposable
             try
             {
                 using var ms = new MemoryStream(bytes);
-                CoverImage = new Bitmap(ms);
+                var nextCover = new Bitmap(ms);
+                var prevCover = CoverImage;
+                CoverImage = nextCover;
+                prevCover?.Dispose();
             }
             catch
             {
+                var prevCover = CoverImage;
                 CoverImage = null;
+                prevCover?.Dispose();
             }
         }
         else
         {
+            var prevCover = CoverImage;
             CoverImage = null;
+            prevCover?.Dispose();
         }
     }
 

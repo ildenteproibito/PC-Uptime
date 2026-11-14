@@ -38,7 +38,8 @@ public sealed class Win32IdleProvider : IIdleProvider
     private readonly object _gate = new();
     private POINT _lastPoint;
     private bool _hasLastPoint;
-    private TimeSpan _prevOsIdle = TimeSpan.Zero;
+    private TimeSpan _prevRawOsIdle = TimeSpan.Zero;
+    private TimeSpan _wakeOsIdleBaseline = TimeSpan.Zero;
     private DateTime _lastTickUtc = DateTime.UtcNow;
     private DateTime _lastInteractionUtc = DateTime.UtcNow;
 
@@ -49,8 +50,8 @@ public sealed class Win32IdleProvider : IIdleProvider
         lock (_gate)
         {
             var nowUtc = DateTime.UtcNow;
-            // Se il sistema è tornato da Sleep/Ibernazione (salto temporale > 5s), azzera appIdle per evitare popup immediati al risveglio
-            if ((nowUtc - _lastTickUtc).TotalSeconds > 5)
+            var wokeFromSleep = (nowUtc - _lastTickUtc).TotalSeconds > 5;
+            if (wokeFromSleep)
             {
                 _lastInteractionUtc = nowUtc;
                 _hasLastPoint = false;
@@ -58,14 +59,28 @@ public sealed class Win32IdleProvider : IIdleProvider
             _lastTickUtc = nowUtc;
 
             // 1. Legge il tempo di inattività dall'API di sistema standard (GetLastInputInfo) con sottrazione unsigned anti-wrap (49.7 giorni)
-            var osIdle = TimeSpan.Zero;
+            var rawOsIdle = TimeSpan.Zero;
             var info = new LASTINPUTINFO { cbSize = (uint)Marshal.SizeOf<LASTINPUTINFO>() };
             if (GetLastInputInfo(ref info))
             {
                 var tick = GetTickCount();
                 var elapsedMs = unchecked(tick - info.dwTime);
-                osIdle = TimeSpan.FromMilliseconds(elapsedMs);
+                rawOsIdle = TimeSpan.FromMilliseconds(elapsedMs);
             }
+
+            if (wokeFromSleep)
+            {
+                // GetLastInputInfo include il tempo di sospensione: imposta una baseline fino al primo input reale.
+                _wakeOsIdleBaseline = rawOsIdle;
+                _prevRawOsIdle = rawOsIdle;
+            }
+            else if (rawOsIdle < _wakeOsIdleBaseline)
+            {
+                _wakeOsIdleBaseline = TimeSpan.Zero;
+            }
+
+            var osIdle = rawOsIdle - _wakeOsIdleBaseline;
+            if (osIdle < TimeSpan.Zero) osIdle = TimeSpan.Zero;
 
             // 2. Distingue input reale (tastiera/click/rotellina oppure cursore > 2px) dal micro-jitter del sensore mouse (1-2px)
             var cursorMovedReal = false;
@@ -94,9 +109,9 @@ public sealed class Win32IdleProvider : IIdleProvider
                 }
             }
 
-            // Input da tastiera, click o rotellina: osIdle cala rispetto al tick precedente senza micro-jitter del cursore
-            var nonCursorInput = !cursorJitterOnly && osIdle < _prevOsIdle;
-            _prevOsIdle = osIdle;
+            // Input da tastiera, click o rotellina: rawOsIdle cala rispetto al tick precedente senza micro-jitter del cursore
+            var nonCursorInput = !cursorJitterOnly && rawOsIdle < _prevRawOsIdle;
+            _prevRawOsIdle = rawOsIdle;
 
             if (cursorMovedReal || nonCursorInput)
             {

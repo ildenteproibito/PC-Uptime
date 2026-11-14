@@ -20,8 +20,8 @@ public sealed class Win32PowerService : IPowerService
     public void StartShutdownTimer(int minutes, string comment)
     {
         var clampedMinutes = Math.Clamp(minutes, 1, 5256000);
-        var safeComment = comment.Replace("\"", "");
-        if (safeComment.Length > 512) safeComment = safeComment[..512];
+        var safeComment = comment.Replace("\"", "").TrimEnd('\\');
+        if (safeComment.Length > 512) safeComment = safeComment[..512].TrimEnd('\\');
         RunShutdown($"/s /f /t {clampedMinutes * 60} /c \"{safeComment}\"");
     }
 
@@ -64,7 +64,8 @@ public sealed class Win32PowerService : IPowerService
 
     private static void RunShutdown(string arguments, bool ignoreFailure = false)
     {
-        using var process = Process.Start(new ProcessStartInfo("shutdown.exe", arguments)
+        var shutdownExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shutdown.exe");
+        using var process = Process.Start(new ProcessStartInfo(shutdownExe, arguments)
         {
             UseShellExecute = false,
             CreateNoWindow = true,

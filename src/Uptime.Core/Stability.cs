@@ -6,7 +6,11 @@ public enum SessionOutcome { Clean, Unexpected, Unknown, InProgress }
 
 public sealed record BootSession(DateTime Start, DateTime? End, SessionOutcome Outcome)
 {
-    public TimeSpan DurationAt(DateTime now) => (End ?? now) - Start;
+    public TimeSpan DurationAt(DateTime now)
+    {
+        var d = (End ?? now) - Start;
+        return d < TimeSpan.Zero ? TimeSpan.Zero : d;
+    }
 }
 
 public enum IncidentConfidence { Medium, High }
@@ -204,7 +208,10 @@ public static class StabilityAnalyzer
             }
 
             var next = boots[i + 1];
-            var hasCrash = crashEvents.Any(c => c.Time >= next.AddMinutes(-1) && c.Time <= next.AddMinutes(10));
+            var crashWindowEnd = next.AddMinutes(10);
+            if (i + 2 < boots.Count && boots[i + 2] < crashWindowEnd)
+                crashWindowEnd = boots[i + 2];
+            var hasCrash = crashEvents.Any(c => c.Time >= next.AddMinutes(-1) && c.Time <= crashWindowEnd);
             var clean = cleanDown.Where(t => t > start && t <= next).Cast<DateTime?>().LastOrDefault();
             if (hasCrash)
                 sessions.Add(new BootSession(start, next, SessionOutcome.Unexpected));

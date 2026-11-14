@@ -87,7 +87,7 @@ public partial class App : Application
                 Localizer.Instance.PropertyChanged -= OnLanguageChanged;
                 DisposeTrayIcon();
                 bridgeServer.Dispose();
-                mainVm.DisposeDiscordRpc();
+                mainVm.Dispose();
             };
 
             desktop.MainWindow = new MainWindow

@@ -7,6 +7,7 @@ namespace Uptime.Infrastructure;
 public sealed class Win32StartupService : IStartupService
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string ApprovedKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
     private const string ValueName = "Uptime";
 
     public bool IsEnabled
@@ -16,7 +17,22 @@ public sealed class Win32StartupService : IStartupService
             try
             {
                 using var key = Registry.CurrentUser.OpenSubKey(RunKey);
-                return key?.GetValue(ValueName) is not null;
+                if (key?.GetValue(ValueName) is not string rawCmd || string.IsNullOrWhiteSpace(rawCmd))
+                    return false;
+
+                var currentPath = Environment.ProcessPath;
+                if (!string.IsNullOrEmpty(currentPath))
+                {
+                    var storedPath = rawCmd.Trim().Trim('"');
+                    if (!string.Equals(storedPath, currentPath, StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
+
+                using var approved = Registry.CurrentUser.OpenSubKey(ApprovedKey);
+                if (approved?.GetValue(ValueName) is byte[] bytes && bytes.Length > 0 && (bytes[0] & 1) != 0)
+                    return false;
+
+                return true;
             }
             catch (Exception e) when (e is UnauthorizedAccessException or System.Security.SecurityException or IOException)
             {
@@ -27,15 +43,27 @@ public sealed class Win32StartupService : IStartupService
 
     public void SetEnabled(bool enabled)
     {
-        using var key = Registry.CurrentUser.CreateSubKey(RunKey);
-        if (enabled)
+        try
         {
-            var path = Environment.ProcessPath ?? throw new InvalidOperationException("Process executable path is unknown.");
-            key.SetValue(ValueName, $"\"{path}\"");
+            if (enabled)
+            {
+                var path = Environment.ProcessPath ?? throw new InvalidOperationException("Process executable path is unknown.");
+                using var key = Registry.CurrentUser.CreateSubKey(RunKey);
+                key.SetValue(ValueName, $"\"{path}\"");
+
+                using var approved = Registry.CurrentUser.OpenSubKey(ApprovedKey, writable: true);
+                if (approved?.GetValue(ValueName) is not null)
+                    approved.SetValue(ValueName, new byte[] { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, RegistryValueKind.Binary);
+            }
+            else
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
+                key?.DeleteValue(ValueName, throwOnMissingValue: false);
+            }
         }
-        else
+        catch (Exception e) when (e is UnauthorizedAccessException or System.Security.SecurityException or IOException)
         {
-            key.DeleteValue(ValueName, throwOnMissingValue: false);
+            // Ignore permission-restricted registry failures safely
         }
     }
 }

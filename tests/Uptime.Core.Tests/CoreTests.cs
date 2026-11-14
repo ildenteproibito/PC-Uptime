@@ -221,19 +221,27 @@ public class BsodExplainerTests
     public void Localization_ThemeKeys_PresentInBothLanguages()
     {
         var loc = Localizer.Instance;
-        loc.Language = "it";
-        Assert.False(string.IsNullOrWhiteSpace(loc["LblThemes"]));
-        Assert.False(string.IsNullOrWhiteSpace(loc["ThemesDesc"]));
-        Assert.Equal("Attivo", loc["ThemeActive"]);
-        Assert.Equal("Scorri a sinistra", loc["TooltipScrollLeft"]);
-        Assert.Equal("Scorri a destra", loc["TooltipScrollRight"]);
+        var original = loc.Language;
+        try
+        {
+            loc.Language = "it";
+            Assert.False(string.IsNullOrWhiteSpace(loc["LblThemes"]));
+            Assert.False(string.IsNullOrWhiteSpace(loc["ThemesDesc"]));
+            Assert.Equal("Attivo", loc["ThemeActive"]);
+            Assert.Equal("Scorri a sinistra", loc["TooltipScrollLeft"]);
+            Assert.Equal("Scorri a destra", loc["TooltipScrollRight"]);
 
-        loc.Language = "en";
-        Assert.False(string.IsNullOrWhiteSpace(loc["LblThemes"]));
-        Assert.False(string.IsNullOrWhiteSpace(loc["ThemesDesc"]));
-        Assert.Equal("Active", loc["ThemeActive"]);
-        Assert.Equal("Scroll left", loc["TooltipScrollLeft"]);
-        Assert.Equal("Scroll right", loc["TooltipScrollRight"]);
+            loc.Language = "en";
+            Assert.False(string.IsNullOrWhiteSpace(loc["LblThemes"]));
+            Assert.False(string.IsNullOrWhiteSpace(loc["ThemesDesc"]));
+            Assert.Equal("Active", loc["ThemeActive"]);
+            Assert.Equal("Scroll left", loc["TooltipScrollLeft"]);
+            Assert.Equal("Scroll right", loc["TooltipScrollRight"]);
+        }
+        finally
+        {
+            loc.Language = original;
+        }
     }
 
     [Fact]
@@ -294,5 +302,47 @@ public class BsodExplainerTests
         Assert.Equal(2, report.Sessions.Count);
         Assert.Equal(SessionOutcome.Unexpected, report.Sessions[0].Outcome);
         Assert.Equal(1, report.UnexpectedCount);
+    }
+
+    [Fact]
+    public void StabilityAnalyzer_RapidRebootsWithin10Minutes_DoNotBleedCrashIntoEarlierCleanBoot()
+    {
+        var t0 = new DateTime(2026, 11, 14, 10, 0, 0);
+        var events = new[]
+        {
+            new LogEvent(t0, 12, "Microsoft-Windows-Kernel-General"),
+            new LogEvent(t0.AddMinutes(2), 13, "Microsoft-Windows-Kernel-General"),
+            new LogEvent(t0.AddMinutes(3), 12, "Microsoft-Windows-Kernel-General"),
+            new LogEvent(t0.AddMinutes(6), 12, "Microsoft-Windows-Kernel-General"),
+            new LogEvent(t0.AddMinutes(6).AddSeconds(10), 41, "Microsoft-Windows-Kernel-Power", 0x9F),
+        };
+
+        var report = StabilityAnalyzer.Analyze(events, t0.AddMinutes(15));
+        Assert.Equal(3, report.Sessions.Count);
+        Assert.Equal(SessionOutcome.Clean, report.Sessions[0].Outcome);
+        Assert.Equal(SessionOutcome.Unexpected, report.Sessions[1].Outcome);
+        Assert.Equal(SessionOutcome.InProgress, report.Sessions[2].Outcome);
+    }
+
+    [Fact]
+    public void UpdateManifestValidator_HandlesRevisionAndRejectsPreReleaseOrBareUrl()
+    {
+        Assert.True(UpdateManifestValidator.IsNewerVersion("1.0.0.1", "1.0.0.2"));
+        Assert.False(UpdateManifestValidator.IsNewerVersion("1.0.0", "1.0.1-alpha"));
+
+        var validSha = new string('a', 64);
+        Assert.False(UpdateManifestValidator.IsValidManifest(new UpdateManifest("1.0.1", "https://uptime-pc.vercel.app/", validSha)));
+        Assert.False(UpdateManifestValidator.IsValidManifest(new UpdateManifest("1.0.1", "https://uptime-pc.vercel.app/bad url.exe", validSha)));
+    }
+
+    [Fact]
+    public void Health_And_BootSession_ClampNegativeDurations()
+    {
+        var negative = TimeSpan.FromHours(-5);
+        Assert.Equal(7, Health.DaysUntilMaintenance(negative));
+
+        var start = new DateTime(2026, 11, 14, 12, 0, 0);
+        var session = new BootSession(start, null, SessionOutcome.InProgress);
+        Assert.Equal(TimeSpan.Zero, session.DurationAt(start.AddMinutes(-10)));
     }
 }
