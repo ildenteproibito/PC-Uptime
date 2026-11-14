@@ -23,15 +23,31 @@
         </Grid>
       </Border>
 
-      <!-- 2. Complete Changelog (High-Readability Container) -->
+      <!-- 2. Complete Categorized Changelog (High-Readability Container) -->
       <Border Padding="22" CornerRadius="12" Background="#DE0B0F15" BorderBrush="#40FFFFFF" BorderThickness="1">
         <StackPanel Spacing="14">
           <TextBlock Classes="lbl" i18n:Localize.TextKey="LblChangelog" Foreground="{DynamicResource AccentBrush}" />
-          <TextBlock i18n:Localize.TextKey="AboutChangelogFull"
-                     Foreground="#F3F4F6"
-                     FontSize="13.5"
-                     TextWrapping="Wrap"
-                     LineHeight="24" />
+
+          <StackPanel Spacing="4">
+            <TextBlock i18n:Localize.TextKey="LblChangelogMonitor" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock i18n:Localize.TextKey="ChangelogMonitorBody" Foreground="#F3F4F6" FontSize="13.5" TextWrapping="Wrap" LineHeight="24" />
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock i18n:Localize.TextKey="LblChangelogStability" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock i18n:Localize.TextKey="ChangelogStabilityBody" Foreground="#F3F4F6" FontSize="13.5" TextWrapping="Wrap" LineHeight="24" />
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock i18n:Localize.TextKey="LblChangelogPower" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock i18n:Localize.TextKey="ChangelogPowerBody" Foreground="#F3F4F6" FontSize="13.5" TextWrapping="Wrap" LineHeight="24" />
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock i18n:Localize.TextKey="LblChangelogExperience" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock i18n:Localize.TextKey="ChangelogExperienceBody" Foreground="#F3F4F6" FontSize="13.5" TextWrapping="Wrap" LineHeight="24" />
+          </StackPanel>
+
           <Border Height="1" Background="#24FFFFFF" Margin="0,4" />
           <TextBlock Classes="lbl" i18n:Localize.TextKey="LblRemoved" Foreground="#F87171" />
           <TextBlock i18n:Localize.TextKey="AboutRemovedFull"
@@ -51,6 +67,8 @@
                     i18n:Localize.ContentKey="AboutBtnWebsite" />
             <Button Classes="ghost" Margin="0,0,10,6" Padding="14,8" Click="OnOpenWallpapersClick"
                     i18n:Localize.ContentKey="AboutBtnWallpapers" />
+            <Button Classes="ghost" Margin="0,0,10,6" Padding="14,8" Click="OnOpenGitHubClick"
+                    i18n:Localize.ContentKey="AboutBtnGitHub" />
             <Button Margin="0,0,0,6" Padding="14,8" Click="OnOpenDiscordClick"
                     Background="#5865F2" BorderBrush="#7983F5" BorderThickness="1" CornerRadius="8">
               <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
@@ -61,6 +79,14 @@
               </StackPanel>
             </Button>
           </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- 4. Privacy & Local-First -->
+      <Border Classes="row" Padding="20">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPrivacyLocal" Foreground="{DynamicResource AccentBrush}" />
+          <TextBlock Classes="hint" i18n:Localize.TextKey="AboutPrivacyLocalBody" FontSize="13" TextWrapping="Wrap" LineHeight="21" />
         </StackPanel>
       </Border>
 
