@@ -22,6 +22,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _showAdvice = true;
     [ObservableProperty] private bool _showSystem = true;
     [ObservableProperty] private bool _showMascot = true;
+    [ObservableProperty] private bool _showGlassContainers = true;
     [ObservableProperty] private double? _mascotPosX;
     [ObservableProperty] private double? _mascotPosY;
     [ObservableProperty] private bool _nightReminder;
@@ -258,6 +259,7 @@ public partial class SettingsViewModel : ObservableObject
 
                 ShowSession = saved.ShowSession; ShowAdvice = saved.ShowAdvice; ShowSystem = saved.ShowSystem;
                 ShowMascot = saved.ShowMascot ?? true;
+                ShowGlassContainers = saved.ShowGlassContainers ?? true;
                 MascotPosX = saved.MascotPosX;
                 MascotPosY = saved.MascotPosY;
                 HasCompletedTutorial = saved.HasCompletedTutorial ?? false;
@@ -286,6 +288,7 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         ThemeManager.ApplyTheme(SelectedThemeId);
+        ThemeManager.SetGlassContainersEnabled(ShowGlassContainers);
         _isLoading = false;
         Save();
     }
@@ -306,6 +309,11 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnShowAdviceChanged(bool value) => Save();
     partial void OnShowSystemChanged(bool value) => Save();
     partial void OnShowMascotChanged(bool value) => Save();
+    partial void OnShowGlassContainersChanged(bool value)
+    {
+        ThemeManager.SetGlassContainersEnabled(value);
+        Save();
+    }
 
     public bool HasCompletedTutorial { get; private set; }
     public Action? RequestReplayTutorial { get; set; }
@@ -719,7 +727,7 @@ public partial class SettingsViewModel : ObservableObject
                 ShowSession, ShowAdvice, ShowSystem, NightReminder, SelectedPreset, L.Language, SelectedThemeId, CustomBackgroundPath,
                 LiveStateBridge, RestoreWorkspaceOnReboot, PowerPlanAutopilot, KeepAwakeProcessName, KeepAwakeBatteryGuard, AutoCheckUpdates,
                 BackgroundBlur, BackgroundDim, BackgroundVignette, ShowMascot, MascotPosX, MascotPosY, HasCompletedTutorial,
-                DiscordRichPresenceEnabled, DiscordApplicationId)));
+                DiscordRichPresenceEnabled, DiscordApplicationId, ShowGlassContainers)));
             File.Move(tmp, FilePath, true);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
@@ -904,7 +912,8 @@ public partial class SettingsViewModel : ObservableObject
         double? MascotPosY = null,
         bool? HasCompletedTutorial = null,
         bool? DiscordRichPresenceEnabled = null,
-        string? DiscordApplicationId = null);
+        string? DiscordApplicationId = null,
+        bool? ShowGlassContainers = null);
 }
 
 public sealed partial class CommunityWallpaperCard : ObservableObject

@@ -3,6 +3,9 @@
   <Styles.Resources>
     <SolidColorBrush x:Key="BgBrush" Color="#0F1114" />
     <SolidColorBrush x:Key="SurfaceBrush" Color="#1B1E24" />
+    <SolidColorBrush x:Key="GlassCardBgBrush" Color="#BA0B0F15" />
+    <SolidColorBrush x:Key="GlassCardBorderBrush" Color="#2EFFFFFF" />
+    <SolidColorBrush x:Key="GhostButtonBgBrush" Color="#A60B0F15" />
     <SolidColorBrush x:Key="LineBrush" Color="#1D2026" />
     <SolidColorBrush x:Key="RowLineBrush" Color="#1A1D22" />
     <SolidColorBrush x:Key="OutlineBrush" Color="#2A2E36" />
@@ -52,8 +55,8 @@
   </Style>
 
   <Style Selector="Border.glass-card">
-    <Setter Property="Background" Value="#BA0B0F15" />
-    <Setter Property="BorderBrush" Value="#2EFFFFFF" />
+    <Setter Property="Background" Value="{DynamicResource GlassCardBgBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource GlassCardBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="12" />
     <Setter Property="Padding" Value="18,16" />
@@ -106,7 +109,7 @@
 
   <!-- Outline ghost button -->
   <Style Selector="Button.ghost">
-    <Setter Property="Background" Value="#A60B0F15" />
+    <Setter Property="Background" Value="{DynamicResource GhostButtonBgBrush}" />
     <Setter Property="BorderBrush" Value="#667BC4A8" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
