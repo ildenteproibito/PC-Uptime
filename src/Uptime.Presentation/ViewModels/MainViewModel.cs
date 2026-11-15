@@ -525,6 +525,8 @@ public partial class MainViewModel : ObservableObject
     {
         if (value != "Monitor" && Monitor.IsWallpaperFocus)
             Monitor.IsWallpaperFocus = false;
+        if (value == "About")
+            _ = LoadBetaTestersAsync();
         OnPropertyChanged(nameof(IsWallpaperFocusActive));
         OnPropertyChanged(nameof(ShowChromeOverlay));
         OnPropertyChanged(nameof(ShowMascotOverlay));
