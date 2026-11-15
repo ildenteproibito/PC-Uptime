@@ -164,6 +164,9 @@
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
                     <Image Source="avares://Uptime/Assets/mod-icon.png" Width="15" Height="15" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" IsVisible="{Binding IsModerator}" />
+                    <Viewbox Width="15" Height="15" VerticalAlignment="Center" IsVisible="{Binding !IsModerator}">
+                      <Path Width="24" Height="24" Fill="#38BDF8" Data="M9,2V4H10V8.5L5.2,17.2C4.5,18.4 5.4,20 6.8,20H17.2C18.6,20 19.5,18.4 18.8,17.2L14,8.5V4H15V2H9M12,10.5L15.6,17H8.4L12,10.5Z" />
+                    </Viewbox>
                     <Border CornerRadius="999" Padding="9,2" Background="#1F5865F2" BorderBrush="#665865F2" BorderThickness="1" VerticalAlignment="Center" IsVisible="{Binding IsModerator}">
                       <TextBlock i18n:Localize.TextKey="AboutRoleMod" FontSize="11" FontWeight="SemiBold" Foreground="#A5B4FC" />
                     </Border>
