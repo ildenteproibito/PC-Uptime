@@ -6,21 +6,23 @@
              x:DataType="vm:AssistantViewModel">
   <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="56,34" MaxWidth="920">
     <!-- Header -->
-    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,0,0,16">
-      <StackPanel Spacing="4">
-        <TextBlock Classes="lbl" i18n:Localize.TextKey="LblAssistant" />
-        <TextBlock Classes="hint" i18n:Localize.TextKey="AssistantSubtitle" FontSize="13" TextWrapping="Wrap" />
-      </StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-        <CheckBox IsChecked="{Binding IncludeSystemContext}"
-                  i18n:Localize.ContentKey="AssistantIncludeContext"
-                  i18n:Localize.TipKey="AssistantIncludeContextDesc"
-                  VerticalAlignment="Center" />
-        <Button Classes="ghost" Command="{Binding ClearConversationCommand}"
-                i18n:Localize.ContentKey="AssistantClear"
-                Padding="12,6" />
-      </StackPanel>
-    </Grid>
+    <Border Grid.Row="0" Classes="glass-card" Padding="18,14" Margin="0,0,0,14">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+        <StackPanel Spacing="4">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblAssistant" />
+          <TextBlock Classes="hint" i18n:Localize.TextKey="AssistantSubtitle" FontSize="13" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <CheckBox IsChecked="{Binding IncludeSystemContext}"
+                    i18n:Localize.ContentKey="AssistantIncludeContext"
+                    i18n:Localize.TipKey="AssistantIncludeContextDesc"
+                    VerticalAlignment="Center" />
+          <Button Classes="ghost" Command="{Binding ClearConversationCommand}"
+                  i18n:Localize.ContentKey="AssistantClear"
+                  Padding="12,6" />
+        </StackPanel>
+      </Grid>
+    </Border>
 
     <!-- Quick Prompt Chips -->
     <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,14">
@@ -57,7 +59,7 @@
     </WrapPanel>
 
     <!-- Conversation Feed -->
-    <Border Grid.Row="2" Classes="row" Padding="16" Margin="0,0,0,14">
+    <Border Grid.Row="2" Classes="glass-card" Padding="16" Margin="0,0,0,14">
       <ScrollViewer x:Name="ChatScroll" VerticalScrollBarVisibility="Hidden">
         <ItemsControl ItemsSource="{Binding Messages}">
           <ItemsControl.ItemTemplate>
@@ -120,6 +122,9 @@
                  Text="{Binding InputText, Mode=TwoWay}"
                  i18n:Localize.WatermarkKey="AssistantPlaceholder"
                  KeyDown="OnPromptKeyDown"
+                 Background="#BA0B0F15"
+                 BorderBrush="#2EFFFFFF"
+                 CornerRadius="10"
                  Padding="12,10" />
         <Button Grid.Column="1"
                 Classes="accent"

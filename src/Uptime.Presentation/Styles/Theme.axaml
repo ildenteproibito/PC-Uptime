@@ -51,6 +51,14 @@
     <Setter Property="Padding" Value="0,11" />
   </Style>
 
+  <Style Selector="Border.glass-card">
+    <Setter Property="Background" Value="#BA0B0F15" />
+    <Setter Property="BorderBrush" Value="#2EFFFFFF" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="18,16" />
+  </Style>
+
   <!-- Navigation tabs -->
   <Style Selector="Button.nav">
     <Setter Property="Background" Value="Transparent" />
@@ -98,8 +106,8 @@
 
   <!-- Outline ghost button -->
   <Style Selector="Button.ghost">
-    <Setter Property="Background" Value="#147BC4A8" />
-    <Setter Property="BorderBrush" Value="#597BC4A8" />
+    <Setter Property="Background" Value="#A60B0F15" />
+    <Setter Property="BorderBrush" Value="#667BC4A8" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="FontSize" Value="13" />

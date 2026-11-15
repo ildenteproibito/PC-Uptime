@@ -7,7 +7,7 @@
   <ScrollViewer VerticalScrollBarVisibility="Hidden">
     <StackPanel Margin="56,36" Spacing="20" MaxWidth="860" HorizontalAlignment="Center">
       <!-- 1. Project & Version Banner -->
-      <Border Classes="row" Padding="20">
+      <Border Classes="glass-card" Padding="20">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Image Source="/Assets/uptime.png" Width="56" Height="56" Stretch="Uniform"
                  RenderOptions.BitmapInterpolationMode="HighQuality" />
@@ -59,7 +59,7 @@
       </Border>
 
       <!-- 3. Quick Links & Community -->
-      <Border Classes="row" Padding="20">
+      <Border Classes="glass-card" Padding="20">
         <StackPanel Spacing="12">
           <TextBlock Classes="lbl" i18n:Localize.TextKey="LblCommunityLinks" />
           <WrapPanel Orientation="Horizontal">
@@ -83,7 +83,7 @@
       </Border>
 
       <!-- 4. Privacy & Local-First -->
-      <Border Classes="row" Padding="20">
+      <Border Classes="glass-card" Padding="20">
         <StackPanel Spacing="8">
           <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPrivacyLocal" Foreground="{DynamicResource AccentBrush}" />
           <TextBlock Classes="hint" i18n:Localize.TextKey="AboutPrivacyLocalBody" FontSize="13" TextWrapping="Wrap" LineHeight="21" />
@@ -91,13 +91,15 @@
       </Border>
 
       <!-- Team & Credits Header -->
-      <StackPanel Spacing="6" Margin="0,6,0,0">
-        <TextBlock Classes="lbl" i18n:Localize.TextKey="LblAbout" />
-        <TextBlock Classes="hint" i18n:Localize.TextKey="AboutSubtitle" FontSize="13.5" />
-      </StackPanel>
+      <Border Classes="glass-card" Padding="18,14" Margin="0,6,0,0">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblAbout" />
+          <TextBlock Classes="hint" i18n:Localize.TextKey="AboutSubtitle" FontSize="13.5" />
+        </StackPanel>
+      </Border>
 
       <!-- Moderator 1: ShadowEddyx12 -->
-      <Border Classes="row" Padding="18">
+      <Border Classes="glass-card" Padding="18">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Ellipse Width="72" Height="72"
                    Stroke="{DynamicResource OutlineBrush}" StrokeThickness="1.5"
@@ -120,7 +122,7 @@
       </Border>
 
       <!-- Moderator 2: Luke -->
-      <Border Classes="row" Padding="18">
+      <Border Classes="glass-card" Padding="18">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Ellipse Width="72" Height="72"
                    Stroke="{DynamicResource OutlineBrush}" StrokeThickness="1.5"
@@ -151,7 +153,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:BetaTesterCard">
-            <Border Classes="row" Padding="18">
+            <Border Classes="glass-card" Padding="18">
               <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
                 <Ellipse Width="72" Height="72"
                          Stroke="#6638BDF8" StrokeThickness="1.5"
@@ -183,7 +185,7 @@
       </ItemsControl>
 
       <!-- Developer (Android & iOS): Koi -->
-      <Border Classes="row" Padding="18">
+      <Border Classes="glass-card" Padding="18">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Border Width="72" Height="72" CornerRadius="999"
                   Background="#1FA855F7" BorderBrush="#88A855F7" BorderThickness="1.5"
@@ -217,7 +219,7 @@
       </Border>
 
       <!-- Owner: IL DENTE PROIBITO -->
-      <Border Classes="row" Padding="18">
+      <Border Classes="glass-card" Padding="18">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Ellipse Width="72" Height="72"
                    Stroke="#88F5C451" StrokeThickness="1.5"

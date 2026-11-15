@@ -36,7 +36,8 @@
 
     <!-- Main Window Structure -->
     <Grid RowDefinitions="56,*" PointerPressed="OnWindowDragPointerPressed">
-    <Border Grid.Row="0" Padding="18,0" IsVisible="{Binding ShowChromeOverlay}">
+    <Border Grid.Row="0" Padding="18,0" IsVisible="{Binding ShowChromeOverlay}"
+            Background="#A60B0F15" BorderBrush="#24FFFFFF" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
         <!-- Left: Logo & App Title -->
         <StackPanel x:Name="HeaderLeftPanel" Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Left">
