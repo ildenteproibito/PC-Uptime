@@ -7,60 +7,63 @@
              x:DataType="vm:OperationsViewModel">
   <Grid RowDefinitions="*,76">
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
-      <Grid ColumnDefinitions="*,*" ColumnSpacing="72" Margin="56,32,56,24">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="28" Margin="56,32,56,24">
 
-        <StackPanel Grid.Column="0">
-          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPower" />
-
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="20">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="OpRestart" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="OpRestartDesc" />
-            </StackPanel>
-            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnRestart" Command="{Binding RequestRestartCommand}" />
-          </Grid></Border>
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPower" />
 
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
-            <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="OpShutdown" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="OpShutdownDesc" />
-            </StackPanel>
-            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnShutdown" Command="{Binding RequestShutdownCommand}" />
-          </Grid></Border>
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="OpRestart" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="OpRestartDesc" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnRestart" Command="{Binding RequestRestartCommand}" />
+              </Grid></Border>
 
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
-            <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="OpUefi" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="OpUefiDesc" />
-            </StackPanel>
-            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnUefi" Command="{Binding RequestUefiCommand}" />
-          </Grid></Border>
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="OpShutdown" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="OpShutdownDesc" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnShutdown" Command="{Binding RequestShutdownCommand}" />
+              </Grid></Border>
 
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
-            <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="OpTimer" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="OpTimerDesc" />
-            </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-              <Button Classes="ghost" Content="30 m" Command="{Binding StartTimerCommand}" CommandParameter="30" />
-              <Button Classes="ghost" Content="60 m" Command="{Binding StartTimerCommand}" CommandParameter="60" />
-              <Button Classes="ghost" Content="120 m" Command="{Binding StartTimerCommand}" CommandParameter="120" />
-            </StackPanel>
-          </Grid></Border>
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="OpUefi" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="OpUefiDesc" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnUefi" Command="{Binding RequestUefiCommand}" />
+              </Grid></Border>
 
-          <c:TimeRuler Height="64" Margin="0,16,0,0" TotalTicks="60" MajorEvery="15" GoodTicks="60"
-                       FilledTicks="{Binding TimerFilledTicks}" Labels="{Binding TimerLabels}" />
-          <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
-            <TextBlock Classes="muted" FontSize="13" VerticalAlignment="Center" Text="{Binding TimerText}" />
-            <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnCancel"
-                    Command="{Binding CancelTimerCommand}" IsVisible="{Binding TimerActive}" />
-          </Grid>
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="OpTimer" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="OpTimerDesc" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                  <Button Classes="ghost" Content="30 m" Command="{Binding StartTimerCommand}" CommandParameter="30" />
+                  <Button Classes="ghost" Content="60 m" Command="{Binding StartTimerCommand}" CommandParameter="60" />
+                  <Button Classes="ghost" Content="120 m" Command="{Binding StartTimerCommand}" CommandParameter="120" />
+                </StackPanel>
+              </Grid></Border>
+
+              <c:TimeRuler Height="64" Margin="0,16,0,0" TotalTicks="60" MajorEvery="15" GoodTicks="60"
+                           FilledTicks="{Binding TimerFilledTicks}" Labels="{Binding TimerLabels}" />
+              <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+                <TextBlock Classes="muted" FontSize="13" VerticalAlignment="Center" Text="{Binding TimerText}" />
+                <Button Grid.Column="1" Classes="ghost" i18n:Localize.ContentKey="BtnCancel"
+                        Command="{Binding CancelTimerCommand}" IsVisible="{Binding TimerActive}" />
+              </Grid>
+            </StackPanel>
+          </Border>
 
           <!-- Power and battery status -->
-          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblBattery" />
-          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                  CornerRadius="8" Padding="14,12">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel Spacing="8">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblBattery" />
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Spacing="2">
                   <TextBlock Text="{Binding BatteryStatusText}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
@@ -88,10 +91,9 @@
           </Border>
 
           <!-- Smart Caffeine (Keep-Awake) -->
-          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblKeepAwake" />
-          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                  CornerRadius="8" Padding="14,12">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel Spacing="10">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblKeepAwake" />
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel>
                   <TextBlock Classes="title" i18n:Localize.TextKey="KeepAwakeToggle" />
@@ -128,49 +130,52 @@
           </Border>
         </StackPanel>
 
-        <StackPanel Grid.Column="1">
-          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPrefs" />
-
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="1" Spacing="20">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="PrefFast" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefFastDesc" IsVisible="{Binding FastStartupAvailable}" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="FastUnknown" IsVisible="{Binding !FastStartupAvailable}" />
-            </StackPanel>
-            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnFastStartupClick"
-                          IsChecked="{Binding FastStartupEnabled, Mode=OneWay}">
-              <ToggleSwitch.IsEnabled>
-                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                  <Binding Path="FastStartupAvailable" />
-                  <Binding Path="!IsBusy" />
-                </MultiBinding>
-              </ToggleSwitch.IsEnabled>
-            </ToggleSwitch>
-          </Grid></Border>
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPrefs" />
 
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
-            <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="PrefStartup" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefStartupDesc" />
-            </StackPanel>
-            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnRunAtStartupClick"
-                          IsChecked="{Binding RunAtStartup, Mode=OneWay}" />
-          </Grid></Border>
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="PrefFast" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="PrefFastDesc" IsVisible="{Binding FastStartupAvailable}" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="FastUnknown" IsVisible="{Binding !FastStartupAvailable}" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnFastStartupClick"
+                              IsChecked="{Binding FastStartupEnabled, Mode=OneWay}">
+                  <ToggleSwitch.IsEnabled>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                      <Binding Path="FastStartupAvailable" />
+                      <Binding Path="!IsBusy" />
+                    </MultiBinding>
+                  </ToggleSwitch.IsEnabled>
+                </ToggleSwitch>
+              </Grid></Border>
 
-          <Border Classes="row"><Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-            <StackPanel>
-              <TextBlock Classes="title" i18n:Localize.TextKey="PrefWorkspaceRestore" />
-              <TextBlock Classes="hint" i18n:Localize.TextKey="PrefWorkspaceRestoreDesc" TextWrapping="Wrap" />
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="PrefStartup" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="PrefStartupDesc" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff" Click="OnRunAtStartupClick"
+                              IsChecked="{Binding RunAtStartup, Mode=OneWay}" />
+              </Grid></Border>
+
+              <Border Classes="row"><Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel>
+                  <TextBlock Classes="title" i18n:Localize.TextKey="PrefWorkspaceRestore" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="PrefWorkspaceRestoreDesc" TextWrapping="Wrap" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
+                              IsChecked="{Binding RestoreWorkspaceOnReboot}" />
+              </Grid></Border>
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
-                          IsChecked="{Binding RestoreWorkspaceOnReboot}" />
-          </Grid></Border>
+          </Border>
 
           <!-- Power Plan Autopilot -->
-          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblPowerPlan" />
-          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                  CornerRadius="8" Padding="14,12">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel Spacing="10">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblPowerPlan" />
               <StackPanel Orientation="Horizontal" Spacing="6">
                 <Button Classes="nav" Classes.on="{Binding IsPowerPlanBalanced}" Padding="10,5" FontSize="12"
                         i18n:Localize.ContentKey="PowerPlanBalanced" Command="{Binding SetPowerPlanCommand}" CommandParameter="Balanced" />
@@ -191,10 +196,9 @@
           </Border>
 
           <!-- Sleep Inspector -->
-          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblSleepInspector" />
-          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                  CornerRadius="8" Padding="14,10">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel Spacing="6">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblSleepInspector" />
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel VerticalAlignment="Center" Spacing="2">
                   <TextBlock Text="{Binding SleepStatusText}" FontSize="13" Foreground="{DynamicResource TextBrush}"
@@ -229,10 +233,9 @@
           </Border>
 
           <!-- Startup Applications -->
-          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblStartupApps" />
-          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                  CornerRadius="8" Padding="14,12">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel Spacing="6">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblStartupApps" />
               <TextBlock Classes="muted" FontSize="13" i18n:Localize.TextKey="StartupNoApps" IsVisible="{Binding !StartupApps.Count}" />
               <ItemsControl ItemsSource="{Binding StartupApps}">
                 <ItemsControl.ItemTemplate>
@@ -255,10 +258,9 @@
           </Border>
 
           <!-- RAM Working-Set Trim -->
-          <TextBlock Classes="lbl" Margin="0,28,0,10" i18n:Localize.TextKey="LblRamTrim" />
-          <Border Background="#38000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
-                  CornerRadius="8" Padding="14,12">
+          <Border Classes="glass-card" Padding="20,16">
             <StackPanel Spacing="8">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="LblRamTrim" />
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <StackPanel Spacing="2">
                   <StackPanel Orientation="Horizontal" Spacing="8">
@@ -282,7 +284,7 @@
       </Grid>
     </ScrollViewer>
 
-    <Border Grid.Row="1" Padding="28,0">
+    <Border Grid.Row="1" Padding="28,0" Background="#A60B0F15" BorderBrush="#24FFFFFF" BorderThickness="0,1,0,0">
       <Grid>
         <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center" IsVisible="{Binding IsConfirming}">
           <TextBlock Text="{Binding ConfirmText}" FontSize="14" VerticalAlignment="Center" />

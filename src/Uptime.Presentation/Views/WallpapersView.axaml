@@ -7,23 +7,25 @@
              x:DataType="vm:SettingsViewModel">
   <ScrollViewer x:Name="GalleryScrollViewer" VerticalScrollBarVisibility="Hidden">
     <StackPanel Margin="56,40" Spacing="24" HorizontalAlignment="Stretch">
-      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" MaxWidth="850" HorizontalAlignment="Left">
-        <StackPanel Spacing="4">
-          <TextBlock Classes="lbl" i18n:Localize.TextKey="LblCommunityWallpapers" />
-          <TextBlock Classes="hint" i18n:Localize.TextKey="CommunityDesc" TextWrapping="Wrap" />
-        </StackPanel>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-          <Button Classes="ghost" Padding="14,8" Command="{Binding OpenCurrentWallpaperStudioCommand}"
-                  IsVisible="{Binding HasCustomBackgroundImage}" i18n:Localize.ContentKey="WallpaperOpenStudio" />
-          <Button Classes="ghost" Padding="14,8" Command="{Binding RefreshCommunityWallpapersCommand}"
-                  IsEnabled="{Binding !IsCommunityBusy}" i18n:Localize.ContentKey="CommunityRefresh" />
-          <Button Classes="ghost" Padding="14,8" Command="{Binding OpenCommunityWebsiteCommand}"
-                  i18n:Localize.ContentKey="CommunityOpenSite" />
-        </StackPanel>
-      </Grid>
+      <Border Classes="glass-card" MaxWidth="850" HorizontalAlignment="Left">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="lbl" i18n:Localize.TextKey="LblCommunityWallpapers" />
+            <TextBlock Classes="hint" i18n:Localize.TextKey="CommunityDesc" TextWrapping="Wrap" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Button Classes="ghost" Padding="14,8" Command="{Binding OpenCurrentWallpaperStudioCommand}"
+                    IsVisible="{Binding HasCustomBackgroundImage}" i18n:Localize.ContentKey="WallpaperOpenStudio" />
+            <Button Classes="ghost" Padding="14,8" Command="{Binding RefreshCommunityWallpapersCommand}"
+                    IsEnabled="{Binding !IsCommunityBusy}" i18n:Localize.ContentKey="CommunityRefresh" />
+            <Button Classes="ghost" Padding="14,8" Command="{Binding OpenCommunityWebsiteCommand}"
+                    i18n:Localize.ContentKey="CommunityOpenSite" />
+          </StackPanel>
+        </Grid>
+      </Border>
 
       <!-- Upload & share wallpaper with preview -->
-      <Border Classes="row" Padding="14" MaxWidth="850" HorizontalAlignment="Left">
+      <Border Classes="glass-card" Padding="14" MaxWidth="850" HorizontalAlignment="Left">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
           <Border Width="208" Height="117" CornerRadius="10" ClipToBounds="True"
                   Background="#0D1014" BorderBrush="{DynamicResource OutlineBrush}" BorderThickness="1"
@@ -51,9 +53,11 @@
         </Grid>
       </Border>
 
-      <TextBlock Text="{Binding CommunityStatus}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
-                 IsVisible="{Binding CommunityStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                 TextWrapping="Wrap" />
+      <Border Classes="glass-card" Padding="14,10" HorizontalAlignment="Left"
+              IsVisible="{Binding CommunityStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+        <TextBlock Text="{Binding CommunityStatus}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
+                   TextWrapping="Wrap" />
+      </Border>
 
       <!-- Community gallery list with 16:9 image previews -->
       <ItemsControl ItemsSource="{Binding CommunityWallpapers}" HorizontalAlignment="Stretch">
