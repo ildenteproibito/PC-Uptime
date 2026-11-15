@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:i18n="using:Uptime.Presentation.Localization"
              xmlns:c="using:Uptime.Presentation.Controls"
+             xmlns:v="using:Uptime.Presentation.Views"
              xmlns:vm="using:Uptime.Presentation.ViewModels"
              x:Class="Uptime.Presentation.Views.StabilityView"
              x:DataType="vm:StabilityViewModel">
@@ -75,9 +76,15 @@
                             <TextBlock Text="·" FontSize="13" Foreground="{DynamicResource DimBrush}" />
                             <TextBlock Text="{Binding DateText}" FontSize="12" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
                           </StackPanel>
-                          <Border Grid.Column="2" Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding EventIdText}" FontSize="11" Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas, monospace" />
-                          </Border>
+                          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Border Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                              <TextBlock Text="{Binding EventIdText}" FontSize="11" Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas, monospace" />
+                            </Border>
+                            <Button Classes="ghost" MinHeight="24" Height="24" Padding="8,0" FontSize="11"
+                                    i18n:Localize.ContentKey="BtnCommunityFix"
+                                    Command="{Binding $parent[v:StabilityView].((vm:StabilityViewModel)DataContext).OpenFixForIncidentCommand}"
+                                    CommandParameter="{Binding}" />
+                          </StackPanel>
                         </Grid>
                         <TextBlock Text="{Binding Message}" FontSize="12" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" LineHeight="17" />
                       </StackPanel>
@@ -105,7 +112,13 @@
                           <TextBlock Text="{Binding AppName}" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" TextTrimming="CharacterEllipsis" />
                           <TextBlock Text="{Binding ModuleText}" FontSize="11" Foreground="{DynamicResource MutedBrush}" IsVisible="{Binding ModuleText.Length}" TextTrimming="CharacterEllipsis" />
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Text="{Binding DateText}" FontSize="12" Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding DateText}" FontSize="12" Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+                          <Button Classes="ghost" MinHeight="24" Height="24" Padding="8,0" FontSize="11"
+                                  i18n:Localize.ContentKey="BtnCommunityFix"
+                                  Command="{Binding $parent[v:StabilityView].((vm:StabilityViewModel)DataContext).OpenFixForCrashCommand}"
+                                  CommandParameter="{Binding}" />
+                        </StackPanel>
                       </Grid>
                     </Border>
                   </DataTemplate>
@@ -137,6 +150,98 @@
                       <TextBlock Grid.Column="1" Text="{Binding Target}" FontSize="11" Foreground="{DynamicResource MutedBrush}" />
                       <TextBlock Grid.Column="2" Text="{Binding Reason}" FontSize="11" Foreground="{DynamicResource OrangeBrush}" />
                     </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <!-- Community Fixes & Event ID Wiki -->
+          <Border x:Name="CommunityFixesCard" Classes="glass-card" Padding="20,16">
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="2">
+                  <TextBlock Classes="lbl" Margin="0" i18n:Localize.TextKey="LblCommunityFixes" />
+                  <TextBlock Classes="hint" FontSize="12" i18n:Localize.TextKey="CommunityFixesDesc" TextWrapping="Wrap" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" MinHeight="32" Height="32" Padding="12,0" FontSize="12"
+                        VerticalAlignment="Center"
+                        i18n:Localize.ContentKey="BtnShareFix"
+                        Command="{Binding ToggleFixSubmitCommand}" />
+              </Grid>
+
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox Text="{Binding FixesSearchQuery, Mode=TwoWay}"
+                         i18n:Localize.WatermarkKey="FixSearchWatermark"
+                         KeyDown="OnFixSearchKeyDown"
+                         Background="#40000000" BorderBrush="{DynamicResource LineBrush}" CornerRadius="8" />
+                <Button Grid.Column="1" Classes="ghost" MinHeight="34" Height="34" Padding="14,0" FontSize="12"
+                        i18n:Localize.ContentKey="BtnSearchFixes"
+                        Command="{Binding SearchFixesCommand}" IsEnabled="{Binding !IsFixesLoading}" />
+              </Grid>
+
+              <!-- Expandable Submit Fix Form -->
+              <Border Background="#52000000" BorderBrush="#24FFFFFF" BorderThickness="1" CornerRadius="10" Padding="14"
+                      IsVisible="{Binding IsFixSubmitOpen}">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="150,*" ColumnSpacing="8">
+                    <TextBox Text="{Binding NewFixEventId}" i18n:Localize.WatermarkKey="FixEventIdWatermark" MaxLength="12" />
+                    <TextBox Grid.Column="1" Text="{Binding NewFixProvider}" i18n:Localize.WatermarkKey="FixProviderWatermark" MaxLength="80" />
+                  </Grid>
+                  <TextBox Text="{Binding NewFixTitle}" i18n:Localize.WatermarkKey="FixTitleWatermark" MaxLength="120" />
+                  <TextBox Text="{Binding NewFixSteps}" i18n:Localize.WatermarkKey="FixStepsWatermark"
+                           AcceptsReturn="True" TextWrapping="Wrap" MinHeight="72" MaxLength="1600" />
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBox Text="{Binding NewFixAuthor}" i18n:Localize.WatermarkKey="FixAuthorWatermark" MaxLength="40" />
+                    <Button Grid.Column="1" Classes="ghost" MinHeight="34" Height="34" Padding="16,0" FontSize="12"
+                            i18n:Localize.ContentKey="BtnSubmitFix"
+                            Command="{Binding SubmitFixCommand}" IsEnabled="{Binding !IsFixSubmitting}" />
+                  </Grid>
+                </StackPanel>
+              </Border>
+
+              <TextBlock Text="{Binding FixesStatusText}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
+                         IsVisible="{Binding FixesStatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                         TextWrapping="Wrap" />
+              <TextBlock Classes="muted" FontSize="12.5" i18n:Localize.TextKey="FixesLoading" IsVisible="{Binding IsFixesLoading}" />
+              <TextBlock Classes="muted" FontSize="12.5" i18n:Localize.TextKey="FixesEmpty" IsVisible="{Binding HasNoFixes}" TextWrapping="Wrap" />
+
+              <ItemsControl ItemsSource="{Binding CommunityFixes}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:CommunityFixCard">
+                    <Border Background="#52000000" BorderBrush="#1FFFFFFF" BorderThickness="1"
+                            CornerRadius="8" Padding="14,12" Margin="0,0,0,8">
+                      <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                          <Border Background="#28000000" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding EventIdBadge}" FontSize="11" Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas, monospace" />
+                          </Border>
+                          <TextBlock Grid.Column="1" Text="{Binding Provider}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource MutedBrush}"
+                                     VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Button Classes="ghost" MinHeight="26" Height="26" Padding="10,0" FontSize="11.5"
+                                    Command="{Binding $parent[v:StabilityView].((vm:StabilityViewModel)DataContext).UpvoteFixCommand}"
+                                    CommandParameter="{Binding}">
+                              <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Text="▲" FontSize="10" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Upvotes}" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center" />
+                              </StackPanel>
+                            </Button>
+                            <Button Classes="ghost" MinHeight="26" Height="26" Padding="8,0" FontSize="11"
+                                    i18n:Localize.ContentKey="BtnReportFix"
+                                    Command="{Binding $parent[v:StabilityView].((vm:StabilityViewModel)DataContext).ReportFixCommand}"
+                                    CommandParameter="{Binding}" />
+                          </StackPanel>
+                        </Grid>
+                        <TextBlock Text="{Binding Title}" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Steps}" FontSize="12.5" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" LineHeight="18" />
+                        <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding Author}" FontSize="11.5" Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+                          <Image Source="{Binding RoleIcon}" IsVisible="{Binding HasRoleIcon}" Width="13" Height="13" VerticalAlignment="Center"
+                                 RenderOptions.BitmapInterpolationMode="HighQuality" />
+                        </StackPanel>
+                      </StackPanel>
+                    </Border>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>

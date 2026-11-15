@@ -130,7 +130,7 @@ public partial class MainViewModel : ObservableObject
         Settings = new SettingsViewModel(communityWallpapers);
         Spotify = mediaService != null ? new SpotifyViewModel(mediaService) : null;
         Monitor = new MonitorViewModel(uptime, idle, Settings, Spotify, keepAwake);
-        Stability = new StabilityViewModel(eventLog, appCrashes, networkWatchdog: networkWatchdog);
+        Stability = new StabilityViewModel(eventLog, appCrashes, networkWatchdog: networkWatchdog, communityFixes: new Uptime.Infrastructure.CommunityFixesService());
         Operations = new OperationsViewModel(power, startup, battery, sleepBlocker, startupApps, keepAwake, powerPlan, workspaceRestore, idle, Settings, memory);
         Assistant = new AssistantViewModel(uptime, idle, battery, Operations);
 
