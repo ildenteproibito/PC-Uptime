@@ -25,12 +25,12 @@
     <td align="center" width="33%"><a href="docs/screenshots/settings.png"><img src="docs/screenshots/settings.png" alt="Uptime Settings view showing languages, themes, and widgets" width="100%"></a><br><sub>Settings</sub></td>
     <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.png"><img src="docs/screenshots/uptime-ai.png" alt="Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
   </tr>
+  <tr>
+    <td align="center" width="33%"><a href="docs/screenshots/friends.jpg"><img src="docs/screenshots/friends.jpg" alt="Uptime Friends view showing Discord profiles, wallpaper showcase, and notes" width="100%"></a><br><sub>Friends</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/news.jpg"><img src="docs/screenshots/news.jpg" alt="Uptime News view showing official announcements, reactions, and discussion" width="100%"></a><br><sub>News</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About &amp; Team Credits</sub></td>
+  </tr>
 </table>
-
-<p align="center">
-  <a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="Uptime About view showing changelog and team credits" width="48%"></a><br>
-  <sub>About &amp; Team Credits</sub>
-</p>
 
 ## Features
 
@@ -98,7 +98,7 @@ PC Uptime follows a clean layered architecture separating pure domain logic from
 | Architecture | MVVM (`CommunityToolkit.Mvvm`) + Dependency Injection |
 | Windows Integration | Win32 P/Invoke, Device IOCTL, WinRT Power APIs, Windows Event Log |
 | Packaging &amp; Hardening | Single-file self-contained `win-x64` + Obfuscar |
-| Testing | xUnit (`28` automated tests) |
+| Testing | xUnit (`33` automated tests) |
 
 ## Get Started
 

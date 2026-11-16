@@ -48,14 +48,16 @@ public partial class IdleWidgetWindow : Window
         _bounceTimer.Start();
 
         // Small delay to prevent cursor movement on window opening from immediately closing it
-        var armTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(600) };
-        armTimer.Tick += (_, _) =>
+        _armTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(600) };
+        _armTimer.Tick += (_, _) =>
         {
             _readyForInput = true;
-            armTimer.Stop();
+            _armTimer?.Stop();
         };
-        armTimer.Start();
+        _armTimer.Start();
     }
+
+    private DispatcherTimer? _armTimer;
 
     private void ApplyOledPixelShift()
     {
@@ -225,6 +227,7 @@ public partial class IdleWidgetWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        _armTimer?.Stop();
         _clockTimer.Stop();
         _pixelShiftTimer.Stop();
         _bounceTimer.Stop();

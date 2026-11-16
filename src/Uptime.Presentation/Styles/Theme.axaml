@@ -102,7 +102,7 @@
   </Style>
   <Style Selector="Button.nav.top-tab">
     <Setter Property="CornerRadius" Value="0,0,14,14" />
-    <Setter Property="Padding" Value="18,8,18,10" />
+    <Setter Property="Padding" Value="11,7,11,9" />
     <Setter Property="MinHeight" Value="42" />
     <Setter Property="VerticalAlignment" Value="Top" />
   </Style>

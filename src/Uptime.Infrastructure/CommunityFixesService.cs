@@ -53,7 +53,9 @@ public sealed class CommunityFixesService : ICommunityFixesService
         {
             var req = new SubmitFixDto(eventId, provider.Trim(), title.Trim(), steps.Trim(), string.IsNullOrWhiteSpace(author) ? "Community Member" : author.Trim());
             using var resp = await Http.PostAsJsonAsync(Endpoint, req, JsonOpts, ct).ConfigureAwait(false);
-            var body = await resp.Content.ReadFromJsonAsync<ActionResponseDto>(JsonOpts, ct).ConfigureAwait(false);
+            ActionResponseDto? body = null;
+            try { body = await resp.Content.ReadFromJsonAsync<ActionResponseDto>(JsonOpts, ct).ConfigureAwait(false); }
+            catch (JsonException) { /* non-JSON error body */ }
             if (!resp.IsSuccessStatusCode)
             {
                 return new CommunityFixResult(false, body?.error ?? $"HTTP {(int)resp.StatusCode}");
@@ -71,7 +73,9 @@ public sealed class CommunityFixesService : ICommunityFixesService
         try
         {
             using var resp = await Http.PostAsJsonAsync($"{Endpoint}?action=upvote", new IdPayloadDto(fixId), JsonOpts, ct).ConfigureAwait(false);
-            var body = await resp.Content.ReadFromJsonAsync<ActionResponseDto>(JsonOpts, ct).ConfigureAwait(false);
+            ActionResponseDto? body = null;
+            try { body = await resp.Content.ReadFromJsonAsync<ActionResponseDto>(JsonOpts, ct).ConfigureAwait(false); }
+            catch (JsonException) { /* non-JSON error body */ }
             if (!resp.IsSuccessStatusCode)
             {
                 return new CommunityFixResult(false, body?.error ?? $"HTTP {(int)resp.StatusCode}");

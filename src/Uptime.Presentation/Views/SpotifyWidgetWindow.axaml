@@ -59,35 +59,15 @@
     </Style>
   </Window.Styles>
 
-  <Border CornerRadius="18" ClipToBounds="True" Background="#101318"
-          BorderBrush="#2CFFFFFF" BorderThickness="1"
-          BoxShadow="0 18 40 0 #85000000">
+  <Border CornerRadius="18" ClipToBounds="True" Background="#12151B"
+          BorderBrush="#222832" BorderThickness="1">
     <Panel>
-      <!-- Ambient blurred album art glow -->
-      <Image Source="{Binding CoverImage}" Stretch="UniformToFill" Opacity="0.34"
-             IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <Image.Effect>
-          <BlurEffect Radius="32" />
-        </Image.Effect>
-      </Image>
-
-      <!-- Dark frosted readability scrim -->
-      <Border>
-        <Border.Background>
-          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Offset="0" Color="#CE11141A" />
-            <GradientStop Offset="1" Color="#EA0D1015" />
-          </LinearGradientBrush>
-        </Border.Background>
-      </Border>
-
       <!-- Main content -->
       <Grid ColumnDefinitions="82,*" ColumnSpacing="14" Margin="14,12">
-        <!-- Album cover with subtle inner frame -->
+        <!-- Album cover -->
         <Border Width="82" Height="82" CornerRadius="12" ClipToBounds="True"
-                Background="#1A1F28" BorderBrush="#26FFFFFF" BorderThickness="1"
-                VerticalAlignment="Center" HorizontalAlignment="Center"
-                BoxShadow="0 8 18 0 #50000000">
+                Background="#1A1F28"
+                VerticalAlignment="Center" HorizontalAlignment="Center">
           <Panel>
             <Image Source="{Binding CoverImage}" Stretch="UniformToFill"
                    IsVisible="{Binding CoverImage, Converter={x:Static ObjectConverters.IsNotNull}}" />

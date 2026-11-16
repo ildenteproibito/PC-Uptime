@@ -82,7 +82,7 @@ public sealed partial class CommunityFixCard : ObservableObject
     }
 }
 
-public partial class StabilityViewModel : ObservableObject
+public partial class StabilityViewModel : ObservableObject, IDisposable
 {
     private static readonly IBrush Good = new SolidColorBrush(Color.Parse("#7BC4A8"));
     private static readonly IBrush Amber = new SolidColorBrush(Color.Parse("#E0A458"));
@@ -391,6 +391,7 @@ public partial class StabilityViewModel : ObservableObject
             var raw = (FixesSearchQuery ?? "").Trim();
             int? eventId = int.TryParse(raw, out var parsed) ? parsed : null;
             var items = await _communityFixes.FetchFixesAsync(eventId: eventId, query: eventId.HasValue ? null : raw);
+            foreach (var old in CommunityFixes) old.RoleIcon?.Dispose();
             CommunityFixes.Clear();
             foreach (var item in items) CommunityFixes.Add(new CommunityFixCard(item));
             HasNoFixes = CommunityFixes.Count == 0;
@@ -498,5 +499,12 @@ public partial class StabilityViewModel : ObservableObject
         if (_communityFixes is null || card is null) return;
         var res = await _communityFixes.ReportFixAsync(card.Id, $"Reported from Stability ({card.Provider})");
         FixesStatusText = res.Ok ? Localizer.Instance["FixReported"] : res.Message;
+    }
+
+    public void Dispose()
+    {
+        _networkTimer.Stop();
+        Localizer.Instance.PropertyChanged -= OnLanguageChanged;
+        foreach (var old in CommunityFixes) old.RoleIcon?.Dispose();
     }
 }

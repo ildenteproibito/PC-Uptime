@@ -13,7 +13,6 @@
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
-    <Content Include="Assets\favicon.svg" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.*" />
@@ -43,5 +42,10 @@
   </Target>
   <Target Name="RemoveUnsupportedCultureSatellites" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
     <RemoveDir Directories="$(PublishDir)cs;$(PublishDir)de;$(PublishDir)es;$(PublishDir)fr;$(PublishDir)ja;$(PublishDir)ko;$(PublishDir)pl;$(PublishDir)pt-BR;$(PublishDir)ru;$(PublishDir)tr;$(PublishDir)zh-Hans;$(PublishDir)zh-Hant" />
+    <RemoveDir Directories="$(PublishDir)Assets" />
+    <ItemGroup>
+      <_PdbFilesToDelete Include="$(PublishDir)*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(_PdbFilesToDelete)" />
   </Target>
 </Project>

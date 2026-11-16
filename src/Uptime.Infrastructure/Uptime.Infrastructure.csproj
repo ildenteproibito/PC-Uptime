@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.EventLog" Version="10.0.*" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.*" />
     <ProjectReference Include="..\Uptime.Core\Uptime.Core.csproj" />
   </ItemGroup>
 </Project>
