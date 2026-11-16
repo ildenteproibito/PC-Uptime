@@ -1,0 +1,592 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:Class="Uptime.Presentation.Views.FriendsView"
+             x:DataType="vm:SettingsViewModel">
+  <ScrollViewer VerticalScrollBarVisibility="Hidden">
+    <Panel Margin="56,36">
+      <!-- Signed Out Hero -->
+      <Border Classes="glass-card" Padding="28,24" MaxWidth="640" HorizontalAlignment="Center" VerticalAlignment="Top"
+              IsVisible="{Binding IsAccountSignedOut}">
+        <StackPanel Spacing="14">
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Border Width="38" Height="38" CornerRadius="11" Background="#1A7BC4A8" BorderBrush="#387BC4A8" BorderThickness="1">
+              <Viewbox Width="19" Height="19" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="#7BC4A8"
+                      Data="M16,11 C17.66,11 18.99,9.66 18.99,8 C18.99,6.34 17.66,5 16,5 C14.34,5 13,6.34 13,8 C13,9.66 14.34,11 16,11 Z M8,11 C9.66,11 10.99,9.66 10.99,8 C10.99,6.34 9.66,5 8,5 C6.34,5 5,6.34 5,8 C5,9.66 6.34,11 8,11 Z M8,13 C5.67,13 1,14.17 1,16.5 V19 H15 V16.5 C15,14.17 10.33,13 8,13 Z M16,13 C15.71,13 15.38,13.02 15.03,13.05 C16.19,13.89 17,15.02 17,16.5 V19 H23 V16.5 C23,14.17 18.33,13 16,13 Z" />
+              </Viewbox>
+            </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+              <TextBlock Classes="lbl" i18n:Localize.TextKey="FriendsTitle" />
+              <TextBlock Classes="hint" i18n:Localize.TextKey="FriendsDesc" TextWrapping="Wrap" />
+            </StackPanel>
+          </StackPanel>
+          <TextBlock Classes="hint" i18n:Localize.TextKey="FriendsSignInHint" TextWrapping="Wrap" />
+          <Button HorizontalAlignment="Left" Padding="18,10" CornerRadius="9" Cursor="Hand"
+                  Background="#5865F2" BorderBrush="#7983F5" BorderThickness="1"
+                  Command="{Binding LoginWithDiscordCommand}" IsEnabled="{Binding !IsAccountBusy}">
+            <TextBlock i18n:Localize.TextKey="ProfileSignInDiscord" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12.5" />
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <!-- Signed In 2-Column Workspace -->
+      <Grid ColumnDefinitions="1.02*,1.38*" ColumnSpacing="22" IsVisible="{Binding IsAccountSignedIn}">
+        <!-- LEFT COLUMN: Search, Requests, Friends, Discover -->
+        <StackPanel Grid.Column="0" Spacing="16">
+          <!-- Add Friend -->
+          <Border Classes="glass-card" Padding="20,16">
+            <StackPanel Spacing="12">
+              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Border Width="32" Height="32" CornerRadius="9" Background="#1A7BC4A8" BorderBrush="#387BC4A8" BorderThickness="1">
+                  <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="24" Height="24" Fill="#7BC4A8"
+                          Data="M16,11 C17.66,11 18.99,9.66 18.99,8 C18.99,6.34 17.66,5 16,5 C14.34,5 13,6.34 13,8 C13,9.66 14.34,11 16,11 Z M8,11 C9.66,11 10.99,9.66 10.99,8 C10.99,6.34 9.66,5 8,5 C6.34,5 5,6.34 5,8 C5,9.66 6.34,11 8,11 Z M8,13 C5.67,13 1,14.17 1,16.5 V19 H15 V16.5 C15,14.17 10.33,13 8,13 Z M16,13 C15.71,13 15.38,13.02 15.03,13.05 C16.19,13.89 17,15.02 17,16.5 V19 H23 V16.5 C23,14.17 18.33,13 16,13 Z" />
+                  </Viewbox>
+                </Border>
+                <StackPanel Spacing="1" VerticalAlignment="Center">
+                  <TextBlock Classes="lbl" i18n:Localize.TextKey="FriendsTitle" />
+                  <TextBlock Classes="hint" i18n:Localize.TextKey="FriendsDesc" TextWrapping="Wrap" FontSize="11.5" />
+                </StackPanel>
+              </StackPanel>
+
+              <StackPanel Spacing="7">
+                <TextBlock i18n:Localize.TextKey="FriendsAddLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                           Foreground="{DynamicResource MutedBrush}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <TextBox Text="{Binding FriendSearchQuery, Mode=TwoWay}" CornerRadius="9"
+                           Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1"
+                           i18n:Localize.WatermarkKey="FriendsSearchHint" />
+                  <Button Grid.Column="1" Padding="15,8" CornerRadius="9" Cursor="Hand"
+                          Background="#7BC4A8" BorderBrush="#9AD7BF" BorderThickness="1"
+                          Command="{Binding AddFriendCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                    <TextBlock i18n:Localize.TextKey="FriendsAddBtn" FontSize="12.5" FontWeight="SemiBold" Foreground="#0B0F15" />
+                  </Button>
+                </Grid>
+                <TextBlock Text="{Binding FriendActionStatus}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
+                           IsVisible="{Binding FriendActionStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- Incoming Friend Requests -->
+          <Border Classes="glass-card" Padding="20,16" IsVisible="{Binding HasIncomingRequests}">
+            <StackPanel Spacing="10">
+              <TextBlock i18n:Localize.TextKey="FriendsRequestsInLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                         Foreground="#7BC4A8" />
+              <ItemsControl ItemsSource="{Binding IncomingFriendRequests}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FriendCardItem">
+                    <Border Margin="0,0,0,7" Padding="10,8" CornerRadius="10"
+                            Background="#141E2B" BorderBrush="#337BC4A8" BorderThickness="1">
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Grid Width="34" Height="34">
+                          <Ellipse Width="34" Height="34" Fill="#0D1117" />
+                          <Ellipse Width="34" Height="34" Stroke="#33FFFFFF" StrokeThickness="1"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality">
+                            <Ellipse.Fill>
+                              <ImageBrush Source="{Binding AvatarBitmap}" Stretch="UniformToFill" />
+                            </Ellipse.Fill>
+                          </Ellipse>
+                        </Grid>
+                        <Button Grid.Column="1" Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                HorizontalContentAlignment="Left" VerticalAlignment="Center"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).SelectFriendCommand}"
+                                CommandParameter="{Binding}">
+                          <StackPanel Spacing="1">
+                            <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold" Foreground="#F1F5F9" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding UsernameLabel}" FontSize="10.5" Foreground="#8B949E" />
+                          </StackPanel>
+                        </Button>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                          <Button Padding="9,4" CornerRadius="7" Cursor="Hand"
+                                  Background="#7BC4A8" BorderThickness="0"
+                                  Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).AcceptFriendRequestCommand}"
+                                  CommandParameter="{Binding}">
+                            <TextBlock i18n:Localize.TextKey="FriendsAccept" FontSize="11" FontWeight="SemiBold" Foreground="#0B0F15" />
+                          </Button>
+                          <Button Padding="8,4" CornerRadius="7" Cursor="Hand"
+                                  Background="#1FFFFFFF" BorderThickness="0"
+                                  Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).DeclineFriendRequestCommand}"
+                                  CommandParameter="{Binding}">
+                            <TextBlock Text="✕" FontSize="11" Foreground="#94A3B8" />
+                          </Button>
+                        </StackPanel>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <!-- Your Friends -->
+          <Border Classes="glass-card" Padding="20,16">
+            <StackPanel Spacing="10">
+              <TextBlock i18n:Localize.TextKey="FriendsListLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                         Foreground="{DynamicResource MutedBrush}" />
+              <TextBlock i18n:Localize.TextKey="FriendsEmpty" Classes="hint" FontSize="11.5"
+                         IsVisible="{Binding !HasAccountFriends}" TextWrapping="Wrap" />
+              <ItemsControl ItemsSource="{Binding AccountFriends}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FriendCardItem">
+                    <Border Margin="0,0,0,7" Padding="10,8" CornerRadius="10"
+                            Background="#141B24" BorderBrush="#22FFFFFF" BorderThickness="1">
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Grid Width="36" Height="36">
+                          <Ellipse Width="36" Height="36" Fill="#0D1117" />
+                          <Ellipse Width="36" Height="36" Stroke="#33FFFFFF" StrokeThickness="1"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality">
+                            <Ellipse.Fill>
+                              <ImageBrush Source="{Binding AvatarBitmap}" Stretch="UniformToFill" />
+                            </Ellipse.Fill>
+                          </Ellipse>
+                        </Grid>
+                        <Button Grid.Column="1" Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                HorizontalContentAlignment="Left" VerticalAlignment="Center"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).SelectFriendCommand}"
+                                CommandParameter="{Binding}">
+                          <StackPanel Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                              <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="SemiBold" Foreground="#F1F5F9" TextTrimming="CharacterEllipsis" />
+                              <Border IsVisible="{Binding HasPrimaryBadge}" CornerRadius="999" Padding="6,0"
+                                      Background="{Binding PrimaryBadge.BgBrush}" BorderBrush="{Binding PrimaryBadge.BorderBrush}" BorderThickness="1">
+                                <TextBlock Text="{Binding PrimaryBadge.Label}" FontSize="9.5" FontWeight="SemiBold" Foreground="{Binding PrimaryBadge.TextBrush}" />
+                              </Border>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                              <TextBlock Text="{Binding UsernameLabel}" FontSize="10.5" Foreground="#8B949E" />
+                              <TextBlock Text="{Binding CustomStatus}" IsVisible="{Binding HasStatus}" FontSize="10.5" Foreground="#7BC4A8" TextTrimming="CharacterEllipsis" MaxWidth="150" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Button>
+                        <Button Grid.Column="2" Padding="7,4" CornerRadius="7" Cursor="Hand"
+                                Background="#14FFFFFF" BorderBrush="#20FFFFFF" BorderThickness="1"
+                                VerticalAlignment="Center"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).RemoveFriendCommand}"
+                                CommandParameter="{Binding}">
+                          <TextBlock Text="✕" FontSize="10.5" Foreground="#94A3B8" />
+                        </Button>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <!-- Sent Requests -->
+          <Border Classes="glass-card" Padding="20,16" IsVisible="{Binding HasOutgoingRequests}">
+            <StackPanel Spacing="8">
+              <TextBlock i18n:Localize.TextKey="FriendsRequestsOutLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                         Foreground="{DynamicResource MutedBrush}" />
+              <ItemsControl ItemsSource="{Binding OutgoingFriendRequests}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FriendCardItem">
+                    <Border Margin="0,0,0,6" Padding="9,7" CornerRadius="10"
+                            Background="#121820" BorderBrush="#1CFFFFFF" BorderThickness="1">
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Grid Width="30" Height="30">
+                          <Ellipse Width="30" Height="30" Fill="#0D1117" />
+                          <Ellipse Width="30" Height="30" Stroke="#26FFFFFF" StrokeThickness="1"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality">
+                            <Ellipse.Fill>
+                              <ImageBrush Source="{Binding AvatarBitmap}" Stretch="UniformToFill" />
+                            </Ellipse.Fill>
+                          </Ellipse>
+                        </Grid>
+                        <Button Grid.Column="1" Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                HorizontalContentAlignment="Left" VerticalAlignment="Center"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).SelectFriendCommand}"
+                                CommandParameter="{Binding}">
+                          <StackPanel Spacing="1">
+                            <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold" Foreground="#E2E8F0" />
+                            <TextBlock Text="{Binding UsernameLabel}" FontSize="10.5" Foreground="#8B949E" />
+                          </StackPanel>
+                        </Button>
+                        <Border Grid.Column="2" CornerRadius="999" Padding="9,3" Background="#18FFFFFF" BorderBrush="#26FFFFFF" BorderThickness="1" VerticalAlignment="Center">
+                          <TextBlock i18n:Localize.TextKey="FriendsPending" FontSize="10.5" Foreground="#94A3B8" />
+                        </Border>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <!-- Discover Uptime Users -->
+          <Border Classes="glass-card" Padding="20,16" IsVisible="{Binding HasDiscoverUsers}">
+            <StackPanel Spacing="10">
+              <TextBlock i18n:Localize.TextKey="FriendsDiscoverLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                         Foreground="{DynamicResource MutedBrush}" />
+              <ItemsControl ItemsSource="{Binding DiscoverUsers}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FriendCardItem">
+                    <Border Margin="0,0,0,7" Padding="10,8" CornerRadius="10"
+                            Background="#121820" BorderBrush="#1EFFFFFF" BorderThickness="1">
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Grid Width="34" Height="34">
+                          <Ellipse Width="34" Height="34" Fill="#0D1117" />
+                          <Ellipse Width="34" Height="34" Stroke="#28FFFFFF" StrokeThickness="1"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality">
+                            <Ellipse.Fill>
+                              <ImageBrush Source="{Binding AvatarBitmap}" Stretch="UniformToFill" />
+                            </Ellipse.Fill>
+                          </Ellipse>
+                        </Grid>
+                        <Button Grid.Column="1" Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                HorizontalContentAlignment="Left" VerticalAlignment="Center"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).SelectFriendCommand}"
+                                CommandParameter="{Binding}">
+                          <StackPanel Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                              <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold" Foreground="#F1F5F9" TextTrimming="CharacterEllipsis" />
+                              <Border IsVisible="{Binding HasPrimaryBadge}" CornerRadius="999" Padding="6,0"
+                                      Background="{Binding PrimaryBadge.BgBrush}" BorderBrush="{Binding PrimaryBadge.BorderBrush}" BorderThickness="1">
+                                <TextBlock Text="{Binding PrimaryBadge.Label}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding PrimaryBadge.TextBrush}" />
+                              </Border>
+                            </StackPanel>
+                            <TextBlock Text="{Binding UsernameLabel}" FontSize="10.5" Foreground="#8B949E" />
+                          </StackPanel>
+                        </Button>
+                        <Button Grid.Column="2" Padding="10,5" CornerRadius="8" Cursor="Hand"
+                                Background="#1C7BC4A8" BorderBrush="#447BC4A8" BorderThickness="1"
+                                VerticalAlignment="Center"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).SendFriendRequestToUserCommand}"
+                                CommandParameter="{Binding}">
+                          <TextBlock i18n:Localize.TextKey="FriendsAddShort" FontSize="11.5" FontWeight="SemiBold" Foreground="#7BC4A8" />
+                        </Button>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- RIGHT COLUMN: Profile Showcase + Wallpaper Sync + Quick Notes + Friends Feed -->
+        <StackPanel Grid.Column="1" Spacing="16">
+          <!-- Empty Selection State -->
+          <Border Classes="glass-card" Padding="28,36" IsVisible="{Binding !HasSelectedFriend}">
+            <StackPanel Spacing="10" HorizontalAlignment="Center" MaxWidth="360">
+              <Border Width="44" Height="44" CornerRadius="13" Background="#167BC4A8" BorderBrush="#347BC4A8" BorderThickness="1" HorizontalAlignment="Center">
+                <Viewbox Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Path Width="24" Height="24" Fill="#7BC4A8"
+                        Data="M12,12 C14.76,12 17,9.76 17,7 C17,4.24 14.76,2 12,2 C9.24,2 7,4.24 7,7 C7,9.76 9.24,12 12,12 Z M12,14 C7.58,14 4,15.79 4,18 V20 H20 V18 C20,15.79 16.42,14 12,14 Z" />
+                </Viewbox>
+              </Border>
+              <TextBlock i18n:Localize.TextKey="FriendsSelectPrompt" FontSize="13" Foreground="{DynamicResource MutedBrush}"
+                         TextAlignment="Center" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <!-- Friend Profile & Showcase Card -->
+          <Border Classes="glass-card" Padding="0" ClipToBounds="True" IsVisible="{Binding HasSelectedFriend}">
+            <StackPanel>
+              <!-- Banner -->
+              <Grid Height="106">
+                <Border Background="{Binding SelectedFriendBannerBrush}" />
+                <Image Source="{Binding SelectedFriendBannerBitmap}" Stretch="UniformToFill"
+                       IsVisible="{Binding HasSelectedFriendBanner}"
+                       RenderOptions.BitmapInterpolationMode="HighQuality" />
+                <Border>
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                      <GradientStop Offset="0" Color="#120B0F15" />
+                      <GradientStop Offset="1" Color="#D90B0F15" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                </Border>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="14,12">
+                  <Button Padding="12,5" CornerRadius="8" Cursor="Hand"
+                          Background="#227BC4A8" BorderBrush="#557BC4A8" BorderThickness="1"
+                          IsVisible="{Binding HasSelectedFriendSyncWallpaper}"
+                          Command="{Binding SyncFriendWallpaperCommand}">
+                    <TextBlock i18n:Localize.TextKey="FriendsSyncWallpaper" FontSize="11.5" FontWeight="SemiBold" Foreground="#7BC4A8" />
+                  </Button>
+                  <Button Padding="12,5" CornerRadius="8" Cursor="Hand"
+                          Background="#7BC4A8" BorderBrush="#9AD7BF" BorderThickness="1"
+                          IsVisible="{Binding SelectedFriendCanAdd}"
+                          Command="{Binding AddSelectedFriendCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                    <TextBlock i18n:Localize.TextKey="AuthorAddFriend" FontSize="11.5" FontWeight="SemiBold" Foreground="#0B0F15" />
+                  </Button>
+                  <Border CornerRadius="8" Padding="11,5" Background="#22FFFFFF" BorderBrush="#33FFFFFF" BorderThickness="1"
+                          IsVisible="{Binding SelectedFriendIsPendingOut}">
+                    <TextBlock i18n:Localize.TextKey="FriendsPending" FontSize="11.5" FontWeight="SemiBold" Foreground="#E2E8F0" />
+                  </Border>
+                  <Border CornerRadius="8" Padding="11,5" Background="#CC12281F" BorderBrush="#7BC4A8" BorderThickness="1"
+                          IsVisible="{Binding SelectedFriendIsFriend}">
+                    <TextBlock i18n:Localize.TextKey="AuthorAlreadyFriend" FontSize="11.5" FontWeight="SemiBold" Foreground="#7BC4A8" />
+                  </Border>
+                </StackPanel>
+              </Grid>
+
+              <!-- Inspector Body -->
+              <StackPanel Margin="22,-32,22,20" Spacing="14">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                  <Grid Width="68" Height="68">
+                    <Ellipse Width="68" Height="68" Fill="#0D1117" />
+                    <Ellipse Width="68" Height="68" Stroke="#0B0F15" StrokeThickness="3"
+                             RenderOptions.BitmapInterpolationMode="HighQuality">
+                      <Ellipse.Fill>
+                        <ImageBrush Source="{Binding SelectedFriendAvatar}" Stretch="UniformToFill" />
+                      </Ellipse.Fill>
+                    </Ellipse>
+                  </Grid>
+                  <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Bottom" Margin="0,0,0,2">
+                    <Border HorizontalAlignment="Left" CornerRadius="10" Padding="9,3"
+                            Background="#1B2430" BorderBrush="#33FFFFFF" BorderThickness="1"
+                            IsVisible="{Binding HasSelectedFriendStatus}">
+                      <TextBlock Text="{Binding SelectedFriendStatus}" FontSize="11.5" Foreground="#E6EDF3" TextTrimming="CharacterEllipsis" MaxWidth="280" />
+                    </Border>
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding SelectedFriendName}" FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                      <TextBlock Text="{Binding SelectedFriendUsername}" FontSize="12" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding SelectedFriendBadges}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProfileBadgeCard">
+                          <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,2,8,2" VerticalAlignment="Center">
+                            <Image Source="{Binding ImageIcon}" IsVisible="{Binding HasImageIcon}" Width="14" Height="14" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                            <Viewbox Width="14" Height="14" IsVisible="{Binding HasVectorIcon}">
+                              <Path Width="24" Height="24" Fill="{Binding TextBrush}" Data="{Binding VectorPath}" />
+                            </Viewbox>
+                            <Border CornerRadius="999" Padding="8,1" Background="{Binding BgBrush}" BorderBrush="{Binding BorderBrush}" BorderThickness="1">
+                              <TextBlock Text="{Binding Label}" FontSize="10.5" FontWeight="SemiBold" Foreground="{Binding TextBrush}" />
+                            </Border>
+                          </StackPanel>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </Grid>
+
+                <!-- Bio -->
+                <Border CornerRadius="11" Background="#121821" BorderBrush="#1FFFFFFF" BorderThickness="1" Padding="14,10">
+                  <StackPanel Spacing="5">
+                    <TextBlock i18n:Localize.TextKey="ProfileBioTitle" FontSize="10" FontWeight="SemiBold" LetterSpacing="1.1" Foreground="{DynamicResource MutedBrush}" />
+                    <ItemsControl ItemsSource="{Binding SelectedFriendBioLines}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:BioLineItem">
+                          <ItemsControl ItemsSource="{Binding Tokens}" Margin="0,1">
+                            <ItemsControl.ItemsPanel>
+                              <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="vm:BioTokenItem">
+                                <TextBlock Text="{Binding Text}" FontSize="12.5" Foreground="#E2E8F0" />
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </Border>
+
+                <!-- Connected Accounts -->
+                <StackPanel Spacing="6" IsVisible="{Binding HasSelectedFriendConnections}">
+                  <TextBlock i18n:Localize.TextKey="ProfileConnectionsTitle" FontSize="10" FontWeight="SemiBold" LetterSpacing="1.1" Foreground="{DynamicResource MutedBrush}" />
+                  <ItemsControl ItemsSource="{Binding SelectedFriendConnections}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:ConnectedAccountCard">
+                        <Border Margin="0,0,8,6" Padding="9,5" CornerRadius="9"
+                                Background="{Binding BrandBgBrush}" BorderBrush="{Binding BrandBorderBrush}" BorderThickness="1">
+                          <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Path Width="13" Height="13" Fill="{Binding BrandBrush}" Data="{Binding IconPath}" Stretch="Uniform" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Name}" FontSize="11.5" FontWeight="Medium" Foreground="#E2E8F0" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+
+                <!-- Friend Published Wallpapers Showcase -->
+                <StackPanel Spacing="7" IsVisible="{Binding HasSelectedFriendShowcase}">
+                  <TextBlock i18n:Localize.TextKey="ProfileShowcase" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                             Foreground="{DynamicResource MutedBrush}" />
+                  <ItemsControl ItemsSource="{Binding SelectedFriendShowcaseWallpapers}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                        <Button Padding="0" Margin="0,0,8,6" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).ApplyCommunityWallpaperCommand}"
+                                CommandParameter="{Binding}">
+                          <Border Width="138" Height="78" CornerRadius="9" ClipToBounds="True"
+                                  Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                            <Grid>
+                              <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                     RenderOptions.BitmapInterpolationMode="HighQuality" />
+                              <Border VerticalAlignment="Bottom" Height="30">
+                                <Border.Background>
+                                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#000B0F15" />
+                                    <GradientStop Offset="1" Color="#E60B0F15" />
+                                  </LinearGradientBrush>
+                                </Border.Background>
+                              </Border>
+                              <TextBlock Text="{Binding Item.Title}" FontSize="10.5" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                         VerticalAlignment="Bottom" Margin="7,0,7,5" TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                          </Border>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+
+                <!-- Friend Favorite Wallpapers -->
+                <StackPanel Spacing="7" IsVisible="{Binding HasSelectedFriendFavorites}">
+                  <TextBlock i18n:Localize.TextKey="ProfileFavoriteWallpapers" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                             Foreground="{DynamicResource MutedBrush}" />
+                  <ItemsControl ItemsSource="{Binding SelectedFriendFavoriteWallpapers}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                        <Button Padding="0" Margin="0,0,8,6" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).ApplyCommunityWallpaperCommand}"
+                                CommandParameter="{Binding}">
+                          <Border Width="138" Height="78" CornerRadius="9" ClipToBounds="True"
+                                  Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                            <Grid>
+                              <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                     RenderOptions.BitmapInterpolationMode="HighQuality" />
+                              <Border VerticalAlignment="Bottom" Height="30">
+                                <Border.Background>
+                                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#000B0F15" />
+                                    <GradientStop Offset="1" Color="#E60B0F15" />
+                                  </LinearGradientBrush>
+                                </Border.Background>
+                              </Border>
+                              <TextBlock Text="{Binding Item.Title}" FontSize="10.5" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                         VerticalAlignment="Bottom" Margin="7,0,7,5" TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                          </Border>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- Profile Notes / Guestbook (Compact, non-Discord style) -->
+          <Border Classes="glass-card" Padding="20,16" IsVisible="{Binding SelectedFriendIsFriend}">
+            <StackPanel Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <TextBlock i18n:Localize.TextKey="FriendsNotesLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                             Foreground="#7BC4A8" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding SelectedFriendName}" FontSize="11.5" FontWeight="Medium"
+                             Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+                <Button Grid.Column="1" Padding="9,4" CornerRadius="8" Cursor="Hand"
+                        Background="#14FFFFFF" BorderBrush="#22FFFFFF" BorderThickness="1"
+                        Command="{Binding LoadFriendChatCommand}">
+                  <TextBlock Text="↻" FontSize="12" Foreground="#CBD5E1" />
+                </Button>
+              </Grid>
+
+              <Border CornerRadius="10" Background="#0C1118" BorderBrush="#1EFFFFFF" BorderThickness="1"
+                      Padding="12,10" MinHeight="96" MaxHeight="180">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                  <Panel>
+                    <TextBlock i18n:Localize.TextKey="FriendsNotesEmpty" FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               IsVisible="{Binding !HasChatMessages}" />
+                    <ItemsControl ItemsSource="{Binding SelectedFriendChatMessages}" IsVisible="{Binding HasChatMessages}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FriendChatBubbleItem">
+                          <Border HorizontalAlignment="{Binding BubbleAlignment}" Margin="0,0,0,6" Padding="10,6"
+                                  CornerRadius="9" MaxWidth="380"
+                                  Background="{Binding BubbleBgBrush}" BorderBrush="{Binding BubbleBorderBrush}" BorderThickness="1">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                              <TextBlock Text="{Binding Text}" FontSize="12" Foreground="{Binding TextBrush}" TextWrapping="Wrap" />
+                              <TextBlock Grid.Column="1" Text="{Binding TimeLabel}" FontSize="9.5" Foreground="#8B949E" VerticalAlignment="Bottom" />
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </Panel>
+                </ScrollViewer>
+              </Border>
+
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox Text="{Binding ChatDraftText, Mode=TwoWay}" CornerRadius="9"
+                         Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1"
+                         i18n:Localize.WatermarkKey="FriendsNotesHint" MaxLength="500">
+                  <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding SendChatMessageCommand}" />
+                  </TextBox.KeyBindings>
+                </TextBox>
+                <Button Grid.Column="1" Padding="15,8" CornerRadius="9" Cursor="Hand"
+                        Background="#7BC4A8" BorderBrush="#9AD7BF" BorderThickness="1"
+                        Command="{Binding SendChatMessageCommand}" IsEnabled="{Binding !IsChatBusy}">
+                  <TextBlock i18n:Localize.TextKey="FriendsChatSend" FontSize="12" FontWeight="SemiBold" Foreground="#0B0F15" />
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Friends Wallpapers Feed -->
+          <Border Classes="glass-card" Padding="20,16" IsVisible="{Binding HasFriendsActivity}">
+            <StackPanel Spacing="10">
+              <TextBlock i18n:Localize.TextKey="FriendsActivityLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                         Foreground="{DynamicResource MutedBrush}" />
+              <ItemsControl ItemsSource="{Binding FriendsActivityWallpapers}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                    <Button Padding="0" Margin="0,0,10,8" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            Command="{Binding $parent[UserControl].((vm:SettingsViewModel)DataContext).ApplyCommunityWallpaperCommand}"
+                            CommandParameter="{Binding}">
+                      <Border Width="164" Height="94" CornerRadius="10" ClipToBounds="True"
+                              Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                        <Grid>
+                          <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                 RenderOptions.BitmapInterpolationMode="HighQuality" />
+                          <Border VerticalAlignment="Bottom" Height="38">
+                            <Border.Background>
+                              <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                <GradientStop Offset="0" Color="#000B0F15" />
+                                <GradientStop Offset="1" Color="#EB0B0F15" />
+                              </LinearGradientBrush>
+                            </Border.Background>
+                          </Border>
+                          <StackPanel VerticalAlignment="Bottom" Margin="8,0,8,6" Spacing="1">
+                            <TextBlock Text="{Binding Item.Title}" FontSize="11" FontWeight="SemiBold" Foreground="#F1F5F9" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding Item.Author}" FontSize="10" Foreground="#7BC4A8" TextTrimming="CharacterEllipsis" />
+                          </StackPanel>
+                        </Grid>
+                      </Border>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Grid>
+    </Panel>
+  </ScrollViewer>
+</UserControl>

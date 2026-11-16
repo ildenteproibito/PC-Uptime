@@ -264,6 +264,15 @@ public static class ThemeManager
         UpdateBrush("ToggleSwitchKnobFillOn", theme.BgColor);
     }
 
+    public static void SetGlassContainersEnabled(bool enabled)
+    {
+        if (Application.Current is null) return;
+
+        UpdateBrush("GlassCardBgBrush", enabled ? "#BA0B0F15" : "#00000000");
+        UpdateBrush("GlassCardBorderBrush", enabled ? "#2EFFFFFF" : "#00000000");
+        UpdateBrush("GhostButtonBgBrush", enabled ? "#A60B0F15" : "#147BC4A8");
+    }
+
     private static void UpdateBrush(string key, string hex)
     {
         if (Application.Current is null) return;

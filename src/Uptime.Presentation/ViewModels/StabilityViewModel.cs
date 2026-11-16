@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -29,12 +31,58 @@ public sealed record SystemEventLogRow(
     string LevelText,
     IBrush LevelBrush,
     string Provider,
-    string Message);
+    string Message,
+    int EventId);
 
 public sealed record AppCrashRow(string DateText, string AppName, string KindText, IBrush KindBrush, string ModuleText);
 public sealed record NetworkDropRow(string TimeText, string Target, string Reason);
 
-public partial class StabilityViewModel : ObservableObject
+public sealed partial class CommunityFixCard : ObservableObject
+{
+    public string Id { get; }
+    public int? EventId { get; }
+    public string EventIdBadge => EventId.HasValue ? $"ID {EventId.Value}" : "APP";
+    public string Provider { get; }
+    public string Title { get; }
+    public string Steps { get; }
+    public string Author { get; }
+    public Bitmap? RoleIcon { get; }
+    public bool HasRoleIcon => RoleIcon is not null;
+
+    [ObservableProperty] private int _upvotes;
+    [ObservableProperty] private bool _isVoted;
+
+    public CommunityFixCard(CommunityFixItem item)
+    {
+        Id = item.Id;
+        EventId = item.EventId;
+        Provider = item.Provider;
+        Title = item.Title;
+        Steps = item.Steps;
+        Author = item.Author;
+        _upvotes = item.Upvotes;
+        RoleIcon = LoadRoleIcon(item.AuthorRole);
+    }
+
+    private static Bitmap? LoadRoleIcon(string? role)
+    {
+        var uri = role?.Trim().ToLowerInvariant() switch
+        {
+            "owner" => "avares://Uptime/Assets/owner-icon.png",
+            "moderator" or "developer" => "avares://Uptime/Assets/mod-icon.png",
+            _ => null
+        };
+        if (uri is null) return null;
+        try
+        {
+            using var s = AssetLoader.Open(new Uri(uri));
+            return new Bitmap(s);
+        }
+        catch { return null; }
+    }
+}
+
+public partial class StabilityViewModel : ObservableObject, IDisposable
 {
     private static readonly IBrush Good = new SolidColorBrush(Color.Parse("#7BC4A8"));
     private static readonly IBrush Amber = new SolidColorBrush(Color.Parse("#E0A458"));
@@ -45,6 +93,7 @@ public partial class StabilityViewModel : ObservableObject
     private readonly IAppCrashService? _appCrashes;
     private readonly ISystemIncidentLogService? _systemIncidentLogs;
     private readonly INetworkWatchdogService? _networkWatchdog;
+    private readonly ICommunityFixesService? _communityFixes;
     private readonly DispatcherTimer _networkTimer = new() { Interval = TimeSpan.FromSeconds(10) };
     private StabilityReport? _report;
     private IReadOnlyList<AppCrashItem> _rawAppCrashes = Array.Empty<AppCrashItem>();
@@ -58,12 +107,26 @@ public partial class StabilityViewModel : ObservableObject
     public ObservableCollection<SystemEventLogRow> SystemEventLogs { get; } = new();
     public ObservableCollection<AppCrashRow> AppCrashes { get; } = new();
     public ObservableCollection<NetworkDropRow> NetworkDrops { get; } = new();
+    public ObservableCollection<CommunityFixCard> CommunityFixes { get; } = new();
+
+    public Action? RequestScrollToFixes { get; set; }
 
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private bool _hasError;
     [ObservableProperty] private bool _hasNoIncidents;
     [ObservableProperty] private bool _hasNoAppCrashes = true;
     [ObservableProperty] private bool _hasNoNetworkDrops = true;
+    [ObservableProperty] private string _fixesSearchQuery = "";
+    [ObservableProperty] private bool _isFixesLoading;
+    [ObservableProperty] private bool _hasNoFixes;
+    [ObservableProperty] private bool _isFixSubmitOpen;
+    [ObservableProperty] private bool _isFixSubmitting;
+    [ObservableProperty] private string _newFixEventId = "";
+    [ObservableProperty] private string _newFixProvider = "";
+    [ObservableProperty] private string _newFixTitle = "";
+    [ObservableProperty] private string _newFixSteps = "";
+    [ObservableProperty] private string _newFixAuthor = "";
+    [ObservableProperty] private string _fixesStatusText = "";
     [ObservableProperty] private string _networkStatusText = "";
     [ObservableProperty] private IBrush _networkStatusBrush = Grey;
     [ObservableProperty] private string _networkGatewayText = "";
@@ -79,18 +142,24 @@ public partial class StabilityViewModel : ObservableObject
         IEventLogService log,
         IAppCrashService? appCrashes = null,
         ISystemIncidentLogService? systemIncidentLogs = null,
-        INetworkWatchdogService? networkWatchdog = null)
+        INetworkWatchdogService? networkWatchdog = null,
+        ICommunityFixesService? communityFixes = null)
     {
         _log = log;
         _appCrashes = appCrashes;
         _systemIncidentLogs = systemIncidentLogs ?? log as ISystemIncidentLogService;
         _networkWatchdog = networkWatchdog;
+        _communityFixes = communityFixes;
         Localizer.Instance.PropertyChanged += OnLanguageChanged;
         if (_networkWatchdog is not null)
         {
             _networkTimer.Tick += async (_, _) => await ProbeNetworkAsync();
             _networkTimer.Start();
             _ = ProbeNetworkAsync();
+        }
+        if (_communityFixes is not null)
+        {
+            _ = SearchFixesAsync();
         }
     }
 
@@ -248,7 +317,8 @@ public partial class StabilityViewModel : ObservableObject
                 levelText,
                 brush,
                 ev.Provider,
-                msg));
+                msg,
+                ev.EventId));
         }
         HasNoIncidents = SystemEventLogs.Count == 0;
 
@@ -307,5 +377,134 @@ public partial class StabilityViewModel : ObservableObject
         if (d.TotalDays >= 1) return l.Format("DurationDH", (int)d.TotalDays, d.Hours);
         if (d.TotalHours >= 1) return l.Format("DurationHM", (int)d.TotalHours, d.Minutes);
         return l.Format("DurationM", Math.Max(0, (int)d.TotalMinutes));
+    }
+
+    [RelayCommand]
+    private async Task SearchFixesAsync()
+    {
+        if (_communityFixes is null) return;
+        IsFixesLoading = true;
+        HasNoFixes = false;
+        FixesStatusText = "";
+        try
+        {
+            var raw = (FixesSearchQuery ?? "").Trim();
+            int? eventId = int.TryParse(raw, out var parsed) ? parsed : null;
+            var items = await _communityFixes.FetchFixesAsync(eventId: eventId, query: eventId.HasValue ? null : raw);
+            foreach (var old in CommunityFixes) old.RoleIcon?.Dispose();
+            CommunityFixes.Clear();
+            foreach (var item in items) CommunityFixes.Add(new CommunityFixCard(item));
+            HasNoFixes = CommunityFixes.Count == 0;
+        }
+        finally
+        {
+            IsFixesLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenFixForIncidentAsync(SystemEventLogRow? row)
+    {
+        if (row is null) return;
+        FixesSearchQuery = row.EventId.ToString();
+        NewFixEventId = row.EventId.ToString();
+        NewFixProvider = row.Provider;
+        RequestScrollToFixes?.Invoke();
+        await SearchFixesAsync();
+    }
+
+    [RelayCommand]
+    private async Task OpenFixForCrashAsync(AppCrashRow? row)
+    {
+        if (row is null) return;
+        FixesSearchQuery = row.AppName;
+        NewFixEventId = "";
+        NewFixProvider = row.AppName;
+        RequestScrollToFixes?.Invoke();
+        await SearchFixesAsync();
+    }
+
+    [RelayCommand]
+    private void ToggleFixSubmit()
+    {
+        IsFixSubmitOpen = !IsFixSubmitOpen;
+        if (IsFixSubmitOpen) FixesStatusText = "";
+    }
+
+    [RelayCommand]
+    private async Task SubmitFixAsync()
+    {
+        if (_communityFixes is null || IsFixSubmitting) return;
+        var provider = (NewFixProvider ?? "").Trim();
+        var title = (NewFixTitle ?? "").Trim();
+        var steps = (NewFixSteps ?? "").Trim();
+        if (provider.Length < 2 || title.Length < 5 || steps.Length < 12)
+        {
+            FixesStatusText = Localizer.Instance["FixValidation"];
+            return;
+        }
+
+        int? eventId = int.TryParse((NewFixEventId ?? "").Trim(), out var parsed) ? parsed : null;
+        IsFixSubmitting = true;
+        FixesStatusText = "";
+        try
+        {
+            var res = await _communityFixes.SubmitFixAsync(eventId, provider, title, steps, NewFixAuthor);
+            if (!res.Ok)
+            {
+                FixesStatusText = res.Message;
+                return;
+            }
+
+            FixesStatusText = Localizer.Instance["FixPublished"];
+            NewFixTitle = "";
+            NewFixSteps = "";
+            IsFixSubmitOpen = false;
+            if (res.CreatedFix is not null)
+            {
+                CommunityFixes.Insert(0, new CommunityFixCard(res.CreatedFix));
+                HasNoFixes = false;
+            }
+            else
+            {
+                await SearchFixesAsync();
+            }
+        }
+        finally
+        {
+            IsFixSubmitting = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task UpvoteFixAsync(CommunityFixCard? card)
+    {
+        if (_communityFixes is null || card is null || card.IsVoted) return;
+        card.IsVoted = true;
+        card.Upvotes += 1;
+        var res = await _communityFixes.UpvoteFixAsync(card.Id);
+        if (res.Ok && res.Upvotes.HasValue)
+        {
+            card.Upvotes = res.Upvotes.Value;
+        }
+        else if (res.AlreadyVoted)
+        {
+            card.Upvotes = Math.Max(0, card.Upvotes - 1);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ReportFixAsync(CommunityFixCard? card)
+    {
+        if (_communityFixes is null || card is null) return;
+        var res = await _communityFixes.ReportFixAsync(card.Id, $"Reported from Stability ({card.Provider})");
+        FixesStatusText = res.Ok ? Localizer.Instance["FixReported"] : res.Message;
+    }
+
+    public void Dispose()
+    {
+        _networkTimer.Stop();
+        Localizer.Instance.PropertyChanged -= OnLanguageChanged;
+        foreach (var old in CommunityFixes) old.RoleIcon?.Dispose();
     }
 }

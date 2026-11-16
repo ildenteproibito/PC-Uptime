@@ -5,8 +5,17 @@
              x:Class="Uptime.Presentation.Views.WallpaperStudioView"
              x:DataType="vm:SettingsViewModel">
   <Grid Background="{DynamicResource BgBrush}">
-    <!-- Fullscreen Live Wallpaper Preview -->
+    <!-- Ambient Blurred Fill for Ultrawide Fit Preview -->
     <Image Source="{Binding StudioPreviewImage}" Stretch="UniformToFill"
+           Opacity="0.55"
+           RenderOptions.BitmapInterpolationMode="LowQuality"
+           IsVisible="{Binding IsStudioFitMode}">
+      <Image.Effect>
+        <BlurEffect Radius="36" />
+      </Image.Effect>
+    </Image>
+    <!-- Fullscreen Live Wallpaper Preview -->
+    <Image Source="{Binding StudioPreviewImage}" Stretch="{Binding StudioStretch}"
            RenderOptions.BitmapInterpolationMode="MediumQuality">
       <Image.Effect>
         <BlurEffect Radius="{Binding BackgroundBlur}" />
@@ -34,8 +43,18 @@
         <Border HorizontalAlignment="Left" Padding="14,8" CornerRadius="10"
                 Background="#CC0B0F15" BorderBrush="#33FFFFFF" BorderThickness="1"
                 IsVisible="{Binding IsPreviewingCommunityWallpaper}">
-          <TextBlock Text="{Binding PreviewingWallpaper.Title}" FontSize="12.5" FontWeight="SemiBold"
-                     Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <TextBlock Text="{Binding PreviewingWallpaper.Title}" FontSize="12.5" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+            <Border Padding="7,2" CornerRadius="999"
+                    Background="#247BC4A8" BorderBrush="#667BC4A8" BorderThickness="1"
+                    IsVisible="{Binding PreviewingWallpaper.IsUltrawide}">
+              <TextBlock Text="{Binding PreviewingWallpaper.AspectBadge}" FontSize="10.5" FontWeight="SemiBold"
+                         Foreground="{DynamicResource AccentBrush}" />
+            </Border>
+            <TextBlock Text="{Binding PreviewingWallpaper.Resolution}" FontSize="11.5"
+                       Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+          </StackPanel>
         </Border>
 
         <Button Grid.Column="1" Classes="ghost" Padding="16,8"
@@ -85,6 +104,9 @@
                     Command="{Binding ApplyCommunityWallpaperCommand}"
                     CommandParameter="{Binding PreviewingWallpaper}"
                     i18n:Localize.ContentKey="CommunityApply" />
+            <Button Classes="ghost" Padding="16,8" HorizontalAlignment="Stretch"
+                    Command="{Binding ToggleStudioStretchCommand}"
+                    i18n:Localize.ContentKey="WallpaperStudioStretchLabel" />
             <Button Classes="ghost" Padding="16,8" HorizontalAlignment="Stretch"
                     Command="{Binding ResetBackgroundEffectsCommand}"
                     i18n:Localize.ContentKey="WallpaperResetEffects" />

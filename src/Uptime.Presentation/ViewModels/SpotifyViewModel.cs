@@ -32,10 +32,7 @@ public partial class SpotifyViewModel : ObservableObject, IDisposable
     {
         _media = media;
         _media.TrackChanged += OnTrackChanged;
-        Localizer.Instance.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(Localizer.Language)) OnPropertyChanged(nameof(L));
-        };
+        Localizer.Instance.PropertyChanged += OnLanguageChanged;
 
         _secondTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _secondTimer.Tick += OnSecondTick;
@@ -169,11 +166,17 @@ public partial class SpotifyViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task ToggleLoop() => await _media.ToggleLoopAsync();
 
+    private void OnLanguageChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Localizer.Language)) OnPropertyChanged(nameof(L));
+    }
+
     public void Dispose()
     {
         _secondTimer.Stop();
         _secondTimer.Tick -= OnSecondTick;
         _media.TrackChanged -= OnTrackChanged;
+        Localizer.Instance.PropertyChanged -= OnLanguageChanged;
         CoverImage?.Dispose();
     }
 }

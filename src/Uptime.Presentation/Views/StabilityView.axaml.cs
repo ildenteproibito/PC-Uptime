@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Uptime.Core;
@@ -8,7 +9,26 @@ namespace Uptime.Presentation.Views;
 
 public partial class StabilityView : UserControl
 {
-    public StabilityView() => InitializeComponent();
+    public StabilityView()
+    {
+        InitializeComponent();
+        DataContextChanged += (_, _) =>
+        {
+            if (DataContext is StabilityViewModel vm)
+            {
+                vm.RequestScrollToFixes = () => CommunityFixesCard.BringIntoView();
+            }
+        };
+    }
+
+    private void OnFixSearchKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && DataContext is StabilityViewModel vm)
+        {
+            e.Handled = true;
+            vm.SearchFixesCommand.Execute(null);
+        }
+    }
     private async void OnExportJsonClick(object? sender, RoutedEventArgs e) => await ExportAsync("json");
     private async void OnExportCsvClick(object? sender, RoutedEventArgs e) => await ExportAsync("csv");
     private async Task ExportAsync(string format)

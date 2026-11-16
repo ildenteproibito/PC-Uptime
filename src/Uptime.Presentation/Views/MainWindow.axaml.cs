@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using Uptime.Core;
 
 namespace Uptime.Presentation.Views;
 
@@ -80,6 +81,7 @@ public partial class MainWindow : Window
         NavTabsPanel.SizeChanged += (_, _) => UpdateHeaderCentering();
         HeaderLeftPanel.SizeChanged += (_, _) => UpdateHeaderCentering();
         HeaderRightPanel.SizeChanged += (_, _) => UpdateHeaderCentering();
+        Localizer.Instance.LanguageChanged += (_, _) => Avalonia.Threading.Dispatcher.UIThread.Post(UpdateHeaderCentering, Avalonia.Threading.DispatcherPriority.Render);
         MascotLayer.SizeChanged += (_, _) =>
         {
             if (!_hasCustomMascotPosition) AnchorMascotBottomRight();
@@ -521,19 +523,32 @@ public partial class MainWindow : Window
         {
             Grid.SetColumn(NavTabsPanel, 1);
             Grid.SetColumnSpan(NavTabsPanel, 1);
+            NavTabsPanel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
             return;
         }
 
-        // Only mathematically center across the whole header if there is >= 24px clearance on both sides
-        const double padding = 18;
-        const double clearance = 24;
+        const double padding = 14;
+        const double clearance = 16;
         var navLeft = (w - navW) * 0.5;
         var navRight = (w + navW) * 0.5;
         bool fitsCentered = navLeft >= padding + leftW + clearance &&
                             navRight <= w - padding - rightW - clearance;
 
-        Grid.SetColumn(NavTabsPanel, fitsCentered ? 0 : 1);
-        Grid.SetColumnSpan(NavTabsPanel, fitsCentered ? 3 : 1);
+        if (fitsCentered)
+        {
+            Grid.SetColumn(NavTabsPanel, 0);
+            Grid.SetColumnSpan(NavTabsPanel, 3);
+            NavTabsPanel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+        }
+        else
+        {
+            Grid.SetColumn(NavTabsPanel, 1);
+            Grid.SetColumnSpan(NavTabsPanel, 1);
+            var col1Width = w - (leftW + rightW + padding * 2);
+            NavTabsPanel.HorizontalAlignment = navW > col1Width
+                ? Avalonia.Layout.HorizontalAlignment.Left
+                : Avalonia.Layout.HorizontalAlignment.Center;
+        }
     }
 
     private void OnWindowDragPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -565,5 +580,24 @@ public partial class MainWindow : Window
             Show();
             Activate();
         }
+    }
+
+    private void OnProfileBackdropPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is ViewModels.MainViewModel vm)
+            vm.Settings.CloseMyProfileCommand.Execute(null);
+        e.Handled = true;
+    }
+
+    private void OnAuthorBackdropPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is ViewModels.MainViewModel vm)
+            vm.Settings.CloseAuthorProfileCommand.Execute(null);
+        e.Handled = true;
+    }
+
+    private void OnOverlayCardPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        e.Handled = true;
     }
 }

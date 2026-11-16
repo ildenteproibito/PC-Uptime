@@ -13,9 +13,18 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BgBrush}">
   <Grid>
-    <!-- Custom User Wallpaper (if selected) -->
+    <!-- Ambient Blurred Fill behind Ultrawide Fit Wallpapers -->
     <Image Source="{Binding Settings.CustomBackgroundImage}" Stretch="UniformToFill"
+           Opacity="0.55"
            RenderOptions.BitmapInterpolationMode="LowQuality"
+           IsVisible="{Binding Settings.ShowAmbientBackgroundFill}">
+      <Image.Effect>
+        <BlurEffect Radius="36" />
+      </Image.Effect>
+    </Image>
+    <!-- Custom User Wallpaper (if selected) -->
+    <Image Source="{Binding Settings.CustomBackgroundImage}" Stretch="{Binding Settings.BackgroundStretch}"
+           RenderOptions.BitmapInterpolationMode="MediumQuality"
            IsVisible="{Binding Settings.ShowMainBackground}">
       <Image.Effect>
         <BlurEffect Radius="{Binding Settings.BackgroundBlur}" />
@@ -36,8 +45,8 @@
 
     <!-- Main Window Structure -->
     <Grid RowDefinitions="56,*" PointerPressed="OnWindowDragPointerPressed">
-    <Border Grid.Row="0" Padding="18,0" IsVisible="{Binding ShowChromeOverlay}">
-      <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+    <Border Grid.Row="0" Padding="14,0" IsVisible="{Binding ShowChromeOverlay}">
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
         <!-- Left: Logo & App Title -->
         <StackPanel x:Name="HeaderLeftPanel" Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Left">
           <Image Width="32" Height="32" Source="/Assets/uptime.png" Stretch="Uniform"
@@ -46,19 +55,67 @@
         </StackPanel>
 
         <!-- Center: Navigation Tabs (mathematically centered) -->
-        <StackPanel x:Name="NavTabsPanel" Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Top" HorizontalAlignment="Center">
+        <StackPanel x:Name="NavTabsPanel" Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Top" HorizontalAlignment="Center">
           <Button Classes="nav top-tab" Classes.on="{Binding IsMonitor}"
-                  Command="{Binding NavigateCommand}" CommandParameter="Monitor"
-                  i18n:Localize.ContentKey="NavMonitor" />
+                  Command="{Binding NavigateCommand}" CommandParameter="Monitor">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="{Binding $parent[Button].Foreground}"
+                      Data="M12,2 C6.5,2 2,6.5 2,12 C2,17.5 6.5,22 12,22 C17.5,22 22,17.5 22,12 C22,6.5 17.5,2 12,2 Z M12.5,7 H11 V13 L16.2,16.2 L17,14.9 L12.5,12.2 V7 Z" />
+              </Viewbox>
+              <TextBlock i18n:Localize.TextKey="NavMonitor" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
           <Button Classes="nav top-tab" Classes.on="{Binding IsStability}"
-                  Command="{Binding NavigateCommand}" CommandParameter="Stability"
-                  i18n:Localize.ContentKey="NavStability" />
+                  Command="{Binding NavigateCommand}" CommandParameter="Stability">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="{Binding $parent[Button].Foreground}"
+                      Data="M12,2 L4,5 V11.09 C4,16.14 7.41,20.85 12,22 C16.59,20.85 20,16.14 20,11.09 V5 L12,2 Z M10.5,15.5 L7,12 L8.41,10.59 L10.5,12.67 L15.59,7.59 L17,9 L10.5,15.5 Z" />
+              </Viewbox>
+              <TextBlock i18n:Localize.TextKey="NavStability" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
           <Button Classes="nav top-tab" Classes.on="{Binding IsOperations}"
-                  Command="{Binding NavigateCommand}" CommandParameter="Operations"
-                  i18n:Localize.ContentKey="NavOperations" />
+                  Command="{Binding NavigateCommand}" CommandParameter="Operations">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="{Binding $parent[Button].Foreground}"
+                      Data="M3,17 V19 H9 V17 H3 Z M3,5 V7 H13 V5 H3 Z M13,21 V19 H21 V17 H13 V15 H11 V21 H13 Z M7,9 V11 H3 V13 H7 V15 H9 V9 H7 Z M21,13 V11 H11 V13 H21 Z M15,9 H17 V7 H21 V5 H17 V3 H15 V9 Z" />
+              </Viewbox>
+              <TextBlock i18n:Localize.TextKey="NavOperations" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
           <Button Classes="nav top-tab" Classes.on="{Binding IsWallpapers}"
-                  Command="{Binding NavigateCommand}" CommandParameter="Wallpapers"
-                  i18n:Localize.ContentKey="NavWallpapers" />
+                  Command="{Binding NavigateCommand}" CommandParameter="Wallpapers">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="{Binding $parent[Button].Foreground}"
+                      Data="M21,19 V5 C21,3.9 20.1,3 19,3 H5 C3.9,3 3,3.9 3,5 V19 C3,20.1 3.9,21 5,21 H19 C20.1,21 21,20.1 21,19 Z M8.5,13.5 L11,16.51 L14.5,12 L19,18 H5 L8.5,13.5 Z" />
+              </Viewbox>
+              <TextBlock i18n:Localize.TextKey="NavWallpapers" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Classes="nav top-tab" Classes.on="{Binding IsFriends}"
+                  Command="{Binding NavigateCommand}" CommandParameter="Friends">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="{Binding $parent[Button].Foreground}"
+                      Data="M16,11 C17.66,11 18.99,9.66 18.99,8 C18.99,6.34 17.66,5 16,5 C14.34,5 13,6.34 13,8 C13,9.66 14.34,11 16,11 Z M8,11 C9.66,11 10.99,9.66 10.99,8 C10.99,6.34 9.66,5 8,5 C6.34,5 5,6.34 5,8 C5,9.66 6.34,11 8,11 Z M8,13 C5.67,13 1,14.17 1,16.5 V19 H15 V16.5 C15,14.17 10.33,13 8,13 Z M16,13 C15.71,13 15.38,13.02 15.03,13.05 C16.19,13.89 17,15.02 17,16.5 V19 H23 V16.5 C23,14.17 18.33,13 16,13 Z" />
+              </Viewbox>
+              <TextBlock i18n:Localize.TextKey="NavFriends" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Classes="nav top-tab" Classes.on="{Binding IsNews}"
+                  Command="{Binding NavigateCommand}" CommandParameter="News">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="{Binding $parent[Button].Foreground}"
+                      Data="M19,3 H5 C3.9,3 3,3.9 3,5 V19 C3,20.1 3.9,21 5,21 H19 C20.1,21 21,20.1 21,19 V5 C21,3.9 20.1,3 19,3 Z M19,19 H5 V5 H19 V19 Z M7,7 H17 V9 H7 V7 Z M7,11 H17 V13 H7 V11 Z M7,15 H13 V17 H7 V15 Z" />
+              </Viewbox>
+              <TextBlock i18n:Localize.TextKey="NavNews" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
         </StackPanel>
 
         <!-- Right: Language Switch, Settings and Window Controls -->
@@ -88,12 +145,37 @@
             </Grid>
           </Border>
           <Border Width="1" Height="20" Margin="2,0" Background="{DynamicResource LineBrush}" VerticalAlignment="Center" />
-          <Button Classes="nav top-tab" Padding="8,8,8,10" Classes.on="{Binding IsSettings}" Command="{Binding OpenSettingsCommand}"
+          <Button Classes="nav top-tab" Padding="6,8,6,10" Classes.on="{Binding IsSettings}" Command="{Binding OpenSettingsCommand}"
                   i18n:Localize.ContentKey="NavSettings" />
-          <Button Classes="nav top-tab" Padding="8,8,8,10" Classes.on="{Binding IsAssistant}" Command="{Binding OpenAssistantCommand}"
+          <Button Classes="nav top-tab" Padding="6,8,6,10" Classes.on="{Binding IsAssistant}" Command="{Binding OpenAssistantCommand}"
                   i18n:Localize.ContentKey="NavAssistant" />
-          <Button Classes="nav top-tab" Padding="8,8,8,10" Classes.on="{Binding IsAbout}" Command="{Binding OpenAboutCommand}"
+          <Button Classes="nav top-tab" Padding="6,8,6,10" Classes.on="{Binding IsAbout}" Command="{Binding OpenAboutCommand}"
                   i18n:Localize.ContentKey="NavAbout" />
+          <Button Padding="4" Margin="4,0,2,0" Background="Transparent" BorderThickness="0" CornerRadius="999"
+                  VerticalAlignment="Center" Cursor="Hand"
+                  Command="{Binding Settings.OpenMyProfileCommand}"
+                  ToolTip.Tip="Uptime Profile">
+            <Grid Width="28" Height="28">
+              <!-- Signed Out Avatar Icon -->
+              <Border Width="28" Height="28" CornerRadius="999" IsVisible="{Binding Settings.IsAccountSignedOut}"
+                      Background="#22FFFFFF" BorderBrush="#44FFFFFF" BorderThickness="1">
+                <Viewbox Width="15" Height="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Path Width="24" Height="24" Fill="{DynamicResource MutedBrush}"
+                        Data="M12,12 A4,4 0 1,0 12,4 A4,4 0 1,0 12,12 Z M4,20 C4,16.686 7.582,14 12,14 C16.418,14 20,16.686 20,20 Z" />
+                </Viewbox>
+              </Border>
+              <!-- Signed In Discord PFP -->
+              <Ellipse Width="28" Height="28" IsVisible="{Binding Settings.IsAccountSignedIn}"
+                       Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5">
+                <Ellipse.Fill>
+                  <ImageBrush Source="{Binding Settings.AccountAvatarBitmap}" Stretch="UniformToFill" />
+                </Ellipse.Fill>
+              </Ellipse>
+              <Ellipse Width="8" Height="8" Fill="#22C55E" Stroke="{DynamicResource SurfaceBrush}" StrokeThickness="1.5"
+                       IsVisible="{Binding Settings.IsAccountSignedIn}"
+                       HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+            </Grid>
+          </Button>
           <Border Width="1" Height="20" Margin="2,0" Background="{DynamicResource LineBrush}" VerticalAlignment="Center" />
           <StackPanel Orientation="Horizontal" Spacing="0">
             <Button Classes="window-control" i18n:Localize.TipKey="ToolMinimize" Click="OnMinimizeClick" i18n:Localize.AutomationNameKey="ToolMinimize">
@@ -127,6 +209,12 @@
       </Grid>
       <Grid IsVisible="{Binding IsWallpapers}">
         <v:WallpapersView DataContext="{Binding Settings}" />
+      </Grid>
+      <Grid IsVisible="{Binding IsFriends}">
+        <v:FriendsView DataContext="{Binding Settings}" />
+      </Grid>
+      <Grid IsVisible="{Binding IsNews}">
+        <v:NewsView DataContext="{Binding News}" />
       </Grid>
       <Grid IsVisible="{Binding IsSettings}">
         <v:SettingsView DataContext="{Binding Settings}" />
@@ -203,17 +291,17 @@
                            Foreground="{DynamicResource AccentBrush}" />
               </Border>
               <TextBlock Text="{Binding TutorialTitle}" FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
+                         Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap" />
             </StackPanel>
             <Border Grid.Column="2" VerticalAlignment="Top" Padding="9,4" CornerRadius="10"
                     Background="#1FFFFFFF" BorderBrush="{DynamicResource OutlineBrush}" BorderThickness="1">
               <TextBlock Text="{Binding TutorialStepCounter}" FontSize="12" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
+                         Foreground="{DynamicResource MutedBrush}" />
             </Border>
           </Grid>
 
           <TextBlock Text="{Binding TutorialBody}" FontSize="13.5" LineHeight="20"
-                     Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                     Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" />
 
           <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
             <Button Classes="ghost" i18n:Localize.ContentKey="TutSkip"
@@ -230,6 +318,607 @@
 
       <v:WallpaperStudioView DataContext="{Binding Settings}"
                              IsVisible="{Binding IsStudioOpen}" />
+
+      <!-- Full Uptime Profile Modal (opened by clicking PFP in top bar; click outside to close) -->
+      <Border Background="#BB070A0E" IsVisible="{Binding Settings.IsMyProfileOpen}"
+              PointerPressed="OnProfileBackdropPointerPressed">
+        <Border DataContext="{Binding Settings}" x:DataType="vm:SettingsViewModel"
+                PointerPressed="OnOverlayCardPointerPressed"
+                Width="640" MaxWidth="680" MaxHeight="640"
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                CornerRadius="18" Background="#F210151D" BorderBrush="#40FFFFFF" BorderThickness="1" ClipToBounds="True">
+          <ScrollViewer VerticalScrollBarVisibility="Hidden">
+            <StackPanel>
+              <!-- Signed Out State -->
+              <StackPanel Margin="26,24" Spacing="16" IsVisible="{Binding IsAccountSignedOut}">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock i18n:Localize.TextKey="ProfileTitle" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Width="28" Height="28" Padding="0" CornerRadius="8" Background="#16FFFFFF" BorderBrush="#28FFFFFF" BorderThickness="1"
+                          Cursor="Hand" Command="{Binding CloseMyProfileCommand}">
+                    <Viewbox Width="12" Height="12">
+                      <Path Width="24" Height="24" Fill="#E6EDF3"
+                            Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 L19,6.41 Z" />
+                    </Viewbox>
+                  </Button>
+                </Grid>
+                <TextBlock Classes="hint" i18n:Localize.TextKey="ProfileSignedOutDesc" TextWrapping="Wrap" />
+                <Button HorizontalAlignment="Left" Padding="18,10" CornerRadius="8" Background="#5865F2" BorderBrush="#7983F5" BorderThickness="1"
+                        Cursor="Hand" Command="{Binding LoginWithDiscordCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                  <TextBlock i18n:Localize.TextKey="ProfileSignInDiscord" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                </Button>
+                <TextBlock Text="{Binding AccountStatus}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
+                           IsVisible="{Binding AccountStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
+              </StackPanel>
+
+              <!-- Signed In State -->
+              <StackPanel IsVisible="{Binding IsAccountSignedIn}">
+                <!-- Real Discord Banner -->
+                <Border Height="124" Background="{Binding ProfileBannerBrush}" ClipToBounds="True">
+                  <Grid>
+                    <Image Source="{Binding AccountBannerBitmap}" IsVisible="{Binding HasAccountBanner}"
+                           Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           RenderOptions.BitmapInterpolationMode="HighQuality" />
+                    <Border VerticalAlignment="Bottom" Height="48">
+                      <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                          <GradientStop Offset="0" Color="#0010151D" />
+                          <GradientStop Offset="1" Color="#DD10151D" />
+                        </LinearGradientBrush>
+                      </Border.Background>
+                    </Border>
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="14,12">
+                      <Button Padding="10,5" CornerRadius="8" Background="#CC0B0F15" BorderBrush="#38FFFFFF" BorderThickness="1"
+                              Cursor="Hand"
+                              Command="{Binding RefreshAccountCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                          <Viewbox Width="12" Height="12">
+                            <Path Width="24" Height="24" Fill="#E6EDF3"
+                                  Data="M17.65,6.35 C16.2,4.9 14.21,4 12,4 C7.58,4 4.01,7.58 4.01,12 C4.01,16.42 7.58,20 12,20 C15.73,20 18.84,17.45 19.73,14 H17.65 C16.83,16.33 14.61,18 12,18 C8.69,18 6,15.31 6,12 C6,8.69 8.69,6 12,6 C13.66,6 15.14,6.69 16.22,7.78 L13,11 H20 V4 L17.65,6.35 Z" />
+                          </Viewbox>
+                          <TextBlock i18n:Localize.TextKey="ProfileRefresh" FontSize="11.5" FontWeight="Medium" Foreground="#E6EDF3" />
+                        </StackPanel>
+                      </Button>
+                      <Button Padding="10,5" CornerRadius="8" Background="#CC0B0F15" BorderBrush="#38FFFFFF" BorderThickness="1"
+                              Cursor="Hand"
+                              Command="{Binding LogoutAccountCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                          <Viewbox Width="12" Height="12">
+                            <Path Width="24" Height="24" Fill="#E6EDF3"
+                                  Data="M17,7 L15.59,8.41 L18.17,11 H8 V13 H18.17 L15.59,15.58 L17,17 L22,12 L17,7 Z M4,5 H12 V3 H4 C2.9,3 2,3.9 2,5 V19 C2,20.1 2.9,21 4,21 H12 V19 H4 V5 Z" />
+                          </Viewbox>
+                          <TextBlock i18n:Localize.TextKey="ProfileSignOut" FontSize="11.5" FontWeight="Medium" Foreground="#E6EDF3" />
+                        </StackPanel>
+                      </Button>
+                      <Button Width="28" Height="28" Padding="0" CornerRadius="8" Background="#CC0B0F15" BorderBrush="#38FFFFFF" BorderThickness="1"
+                              Cursor="Hand"
+                              Command="{Binding CloseMyProfileCommand}">
+                        <Viewbox Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                          <Path Width="24" Height="24" Fill="#E6EDF3"
+                                Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 L19,6.41 Z" />
+                        </Viewbox>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Border>
+
+                <!-- Avatar + Status Bubble + Identity + Badges + Bio + Connections + Showcase -->
+                <StackPanel Margin="24,-38,24,22" Spacing="16">
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Bottom">
+                    <Grid Width="78" Height="78">
+                      <Ellipse Width="78" Height="78" Stroke="#F210151D" StrokeThickness="3.5">
+                        <Ellipse.Fill>
+                          <ImageBrush Source="{Binding AccountAvatarBitmap}" Stretch="UniformToFill" />
+                        </Ellipse.Fill>
+                      </Ellipse>
+                      <Ellipse Width="16" Height="16" Fill="#22C55E" Stroke="#F210151D" StrokeThickness="2.5"
+                               HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="2" />
+                    </Grid>
+
+                    <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Bottom" Margin="0,0,0,2">
+                      <!-- Discord-style Custom Status Thought Bubble -->
+                      <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                        <Ellipse Width="5" Height="5" Fill="#E6141B24" Stroke="#38FFFFFF" StrokeThickness="1" VerticalAlignment="Bottom" Margin="0,0,0,3" />
+                        <Ellipse Width="9" Height="9" Fill="#E6141B24" Stroke="#38FFFFFF" StrokeThickness="1" VerticalAlignment="Bottom" Margin="0,0,2,5" />
+                        <Button Padding="11,5" CornerRadius="999" Cursor="Hand"
+                                Background="#E6141B24" BorderBrush="#34FFFFFF" BorderThickness="1"
+                                ToolTip.Tip="Edit custom status"
+                                Command="{Binding StartEditStatusCommand}">
+                          <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <Viewbox Width="11" Height="11" IsVisible="{Binding !HasAccountCustomStatus}">
+                              <Path Width="24" Height="24" Fill="#94A3B8"
+                                    Data="M19,13 H13 V19 H11 V13 H5 V11 H11 V5 H13 V11 H19 V13 Z" />
+                            </Viewbox>
+                            <TextBlock Text="{Binding AccountStatusBubbleText}" FontSize="11.5" FontWeight="Medium"
+                                       Foreground="#E6EDF3" TextTrimming="CharacterEllipsis" MaxWidth="360" />
+                          </StackPanel>
+                        </Button>
+                      </StackPanel>
+
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding AccountDisplayName}" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                        <TextBlock Text="{Binding AccountUsername}" FontSize="13" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                      </StackPanel>
+                      <ItemsControl ItemsSource="{Binding AccountBadges}">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="vm:ProfileBadgeCard">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,10,2" VerticalAlignment="Center">
+                              <Image Source="{Binding ImageIcon}" IsVisible="{Binding HasImageIcon}" Width="15" Height="15" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                              <Viewbox Width="15" Height="15" IsVisible="{Binding HasVectorIcon}">
+                                <Path Width="24" Height="24" Fill="{Binding TextBrush}" Data="{Binding VectorPath}" />
+                              </Viewbox>
+                              <Border CornerRadius="999" Padding="9,2" Background="{Binding BgBrush}" BorderBrush="{Binding BorderBrush}" BorderThickness="1">
+                                <TextBlock Text="{Binding Label}" FontSize="11" FontWeight="SemiBold" Foreground="{Binding TextBrush}" />
+                              </Border>
+                            </StackPanel>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </StackPanel>
+                  </Grid>
+
+                  <!-- Inline Custom Status Editor (shown only when status bubble clicked) -->
+                  <Border CornerRadius="10" Background="#141B24" BorderBrush="#347BC4A8" BorderThickness="1" Padding="12,10"
+                          IsVisible="{Binding IsEditingStatus}">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                      <TextBox Text="{Binding AccountCustomStatus, Mode=TwoWay}" MaxLength="60"
+                               CornerRadius="8" Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1"
+                               i18n:Localize.WatermarkKey="ProfileStatusHint" />
+                      <Button Grid.Column="1" Padding="10,6" CornerRadius="8" Cursor="Hand"
+                              Background="#18FFFFFF" BorderBrush="#2AFFFFFF" BorderThickness="1"
+                              Command="{Binding ClearCustomStatusCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                        <TextBlock i18n:Localize.TextKey="ProfileClear" FontSize="11.5" Foreground="#CBD5E1" />
+                      </Button>
+                      <Button Grid.Column="2" Padding="10,6" CornerRadius="8" Cursor="Hand"
+                              Background="#18FFFFFF" BorderBrush="#2AFFFFFF" BorderThickness="1"
+                              Command="{Binding CancelEditStatusCommand}">
+                        <TextBlock i18n:Localize.TextKey="ProfileCancel" FontSize="11.5" Foreground="#CBD5E1" />
+                      </Button>
+                      <Button Grid.Column="3" Padding="12,6" CornerRadius="8" Cursor="Hand"
+                              Background="#7BC4A8" BorderBrush="#9AD7BF" BorderThickness="1"
+                              Command="{Binding SaveCustomStatusCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                        <TextBlock i18n:Localize.TextKey="ProfileSave" FontSize="11.5" FontWeight="SemiBold" Foreground="#0B0F15" />
+                      </Button>
+                    </Grid>
+                  </Border>
+
+                  <!-- Bio Section (Read-Only with Clickable Links + Pencil Icon to Edit) -->
+                  <Border CornerRadius="12" Background="#141B24" BorderBrush="#24FFFFFF" BorderThickness="1" Padding="16,13">
+                    <StackPanel Spacing="8">
+                      <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock i18n:Localize.TextKey="ProfileBioLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                                   Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding BioCharCountText}" FontSize="11" Foreground="{DynamicResource MutedBrush}"
+                                     IsVisible="{Binding IsEditingBio}" VerticalAlignment="Center" />
+                          <Button Width="26" Height="26" Padding="0" CornerRadius="7" Cursor="Hand"
+                                  Background="#16FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1"
+                                  IsVisible="{Binding IsNotEditingBio}"
+                                  Command="{Binding StartEditBioCommand}">
+                            <Viewbox Width="13" Height="13" HorizontalAlignment="Center" VerticalAlignment="Center">
+                              <Path Width="24" Height="24" Fill="#CBD5E1"
+                                    Data="M3,17.25 V21 H6.75 L17.81,9.94 L14.06,6.19 L3,17.25 Z M20.71,7.04 C21.1,6.65 21.1,6.02 20.71,5.63 L18.37,3.29 C17.98,2.9 17.35,2.9 16.96,3.29 L15.13,5.12 L18.88,8.87 L20.71,7.04 Z" />
+                            </Viewbox>
+                          </Button>
+                        </StackPanel>
+                      </Grid>
+
+                      <!-- Read-Only Bio View -->
+                      <StackPanel IsVisible="{Binding IsNotEditingBio}">
+                        <TextBlock i18n:Localize.TextKey="ProfileNoBio" FontSize="12.5" Foreground="{DynamicResource MutedBrush}"
+                                   TextWrapping="Wrap" IsVisible="{Binding !HasAccountBio}" />
+                        <ItemsControl ItemsSource="{Binding AccountBioLines}" IsVisible="{Binding HasAccountBio}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BioLineItem">
+                              <ItemsControl ItemsSource="{Binding Tokens}" Margin="0,1">
+                                <ItemsControl.ItemsPanel>
+                                  <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                  <DataTemplate x:DataType="vm:BioTokenItem">
+                                    <Panel>
+                                      <TextBlock Text="{Binding Text}" FontSize="13" Foreground="#E6EDF3" IsVisible="{Binding IsPlain}" TextWrapping="Wrap" />
+                                      <Button Padding="0" Background="Transparent" BorderThickness="0" IsVisible="{Binding IsLink}"
+                                              ToolTip.Tip="{Binding Url}" Cursor="Hand"
+                                              Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.OpenExternalUrlCommand}"
+                                              CommandParameter="{Binding Url}">
+                                        <TextBlock Text="{Binding Text}" FontSize="13" Foreground="#79C0FF" TextDecorations="Underline" TextWrapping="Wrap" />
+                                      </Button>
+                                    </Panel>
+                                  </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+
+                      <!-- Edit Bio Mode (only when pencil clicked) -->
+                      <StackPanel Spacing="10" IsVisible="{Binding IsEditingBio}">
+                        <TextBox Text="{Binding AccountBio, Mode=TwoWay}" MaxLength="500"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="96" MaxHeight="160"
+                                 VerticalContentAlignment="Top" Padding="12,10" CornerRadius="9"
+                                 Background="#0D1117" BorderBrush="#407BC4A8" BorderThickness="1"
+                                 i18n:Localize.WatermarkKey="ProfileBioHint" />
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                          <Button Padding="12,6" CornerRadius="8" Cursor="Hand"
+                                  Background="#18FFFFFF" BorderBrush="#2AFFFFFF" BorderThickness="1"
+                                  Command="{Binding CancelEditBioCommand}">
+                            <TextBlock i18n:Localize.TextKey="ProfileCancel" FontSize="12" FontWeight="Medium" Foreground="#CBD5E1" />
+                          </Button>
+                          <Button Padding="14,6" CornerRadius="8" Cursor="Hand"
+                                  Background="#7BC4A8" BorderBrush="#9AD7BF" BorderThickness="1"
+                                  Command="{Binding SaveAccountBioCommand}" IsEnabled="{Binding !IsAccountBusy}">
+                            <TextBlock i18n:Localize.TextKey="ProfileSaveBio" FontSize="12" FontWeight="SemiBold" Foreground="#0B0F15" />
+                          </Button>
+                        </StackPanel>
+                      </StackPanel>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Verified Connected Accounts (Brand-Tinted Interactive Pills) -->
+                  <StackPanel Spacing="8" IsVisible="{Binding AccountConnections.Count}">
+                    <TextBlock i18n:Localize.TextKey="ProfileConnectedAccounts" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                               Foreground="{DynamicResource MutedBrush}" />
+                    <ItemsControl ItemsSource="{Binding AccountConnections}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ConnectedAccountCard">
+                          <Border Margin="0,0,8,8" CornerRadius="10" Opacity="{Binding CardOpacity}"
+                                  Background="{Binding BrandBgBrush}" BorderBrush="{Binding BrandBorderBrush}" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="11,7,8,7" VerticalAlignment="Center">
+                              <Button Padding="0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                      IsEnabled="{Binding HasUrl}" ToolTip.Tip="Open profile"
+                                      Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.OpenConnectionUrlCommand}"
+                                      CommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                  <Viewbox Width="15" Height="15" VerticalAlignment="Center">
+                                    <Path Width="24" Height="24" Fill="{Binding BrandBrush}" Data="{Binding IconPath}" />
+                                  </Viewbox>
+                                  <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                               TextTrimming="CharacterEllipsis" MaxWidth="135" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Platform}" FontSize="10.5" Foreground="{Binding BrandBrush}"
+                                               Opacity="0.88" VerticalAlignment="Center" />
+                                  </StackPanel>
+                                </StackPanel>
+                              </Button>
+                              <Border Width="1" Height="14" Background="#28FFFFFF" VerticalAlignment="Center" />
+                              <Button Width="22" Height="22" Padding="0" Background="Transparent" BorderThickness="0"
+                                      CornerRadius="6" Cursor="Hand" VerticalAlignment="Center" ToolTip.Tip="{Binding VisibilityTooltip}"
+                                      Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.ToggleConnectionVisibilityCommand}"
+                                      CommandParameter="{Binding}">
+                                <Viewbox Width="13" Height="13">
+                                  <Path Width="24" Height="24" Fill="#CBD5E1" Data="{Binding VisibilityIconPath}" />
+                                </Viewbox>
+                              </Button>
+                            </StackPanel>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+
+                  <!-- Wallpaper Showcase (16:9 Gallery Strip) -->
+                  <StackPanel Spacing="8" IsVisible="{Binding HasAccountShowcase}">
+                    <TextBlock Text="{Binding ShowcaseSectionTitle}" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                               Foreground="{DynamicResource MutedBrush}" />
+                    <ItemsControl ItemsSource="{Binding AccountShowcaseWallpapers}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                          <Button Padding="0" Margin="0,0,10,8" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                  ToolTip.Tip="Click to apply wallpaper"
+                                  Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.ApplyCommunityWallpaperCommand}"
+                                  CommandParameter="{Binding}">
+                            <Border Width="188" Height="106" CornerRadius="10" ClipToBounds="True"
+                                    Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                              <Grid>
+                                <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                       RenderOptions.BitmapInterpolationMode="HighQuality" />
+                                <Border VerticalAlignment="Bottom" Height="44">
+                                  <Border.Background>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                      <GradientStop Offset="0" Color="#000B0F15" />
+                                      <GradientStop Offset="1" Color="#E00B0F15" />
+                                    </LinearGradientBrush>
+                                  </Border.Background>
+                                </Border>
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Bottom" Margin="9,7">
+                                  <TextBlock Text="{Binding Item.Title}" FontSize="11.5" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                             TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                  <Border Grid.Column="1" CornerRadius="5" Padding="5,1" Background="#AA0B0F15" BorderBrush="#28FFFFFF" BorderThickness="1"
+                                          IsVisible="{Binding Item.Resolution, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <TextBlock Text="{Binding Item.Resolution}" FontSize="9.5" FontWeight="Medium" Foreground="#CBD5E1" />
+                                  </Border>
+                                </Grid>
+                              </Grid>
+                            </Border>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+
+                  <!-- Favorite Wallpapers Strip -->
+                  <StackPanel Spacing="8" IsVisible="{Binding HasAccountFavorites}">
+                    <TextBlock i18n:Localize.TextKey="ProfileFavoriteWallpapers" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                               Foreground="{DynamicResource MutedBrush}" />
+                    <ItemsControl ItemsSource="{Binding AccountFavoriteWallpapers}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                          <Button Padding="0" Margin="0,0,10,8" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                  ToolTip.Tip="Click to apply wallpaper"
+                                  Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.ApplyCommunityWallpaperCommand}"
+                                  CommandParameter="{Binding}">
+                            <Border Width="144" Height="82" CornerRadius="10" ClipToBounds="True"
+                                    Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                              <Grid>
+                                <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                       RenderOptions.BitmapInterpolationMode="HighQuality" />
+                                <Border VerticalAlignment="Bottom" Height="36">
+                                  <Border.Background>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                      <GradientStop Offset="0" Color="#000B0F15" />
+                                      <GradientStop Offset="1" Color="#E00B0F15" />
+                                    </LinearGradientBrush>
+                                  </Border.Background>
+                                </Border>
+                                <TextBlock Text="{Binding Item.Title}" FontSize="11" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                           VerticalAlignment="Bottom" Margin="8,6" TextTrimming="CharacterEllipsis" />
+                              </Grid>
+                            </Border>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+
+                  <!-- Footer Status + Understated Danger Action -->
+                  <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+                    <TextBlock Text="{Binding AccountStatus}" FontSize="12" Foreground="{DynamicResource AccentBrush}"
+                               VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Column="1" Padding="11,5" CornerRadius="8" Cursor="Hand"
+                            Background="#14EF4444" BorderBrush="#30EF4444" BorderThickness="1"
+                            Command="{Binding DeleteAccountCommand}">
+                      <TextBlock i18n:Localize.TextKey="ProfileDeleteCloud" FontSize="11.5" FontWeight="Medium" Foreground="#FCA5A5" />
+                    </Button>
+                  </Grid>
+                </StackPanel>
+              </StackPanel>
+            </StackPanel>
+          </ScrollViewer>
+        </Border>
+      </Border>
+
+      <!-- Author / Friend Mini-Profile Overlay (click outside to close) -->
+      <Border Background="#BB070A0E" IsVisible="{Binding Settings.IsAuthorProfileOpen}"
+              PointerPressed="OnAuthorBackdropPointerPressed">
+        <Border DataContext="{Binding Settings}" x:DataType="vm:SettingsViewModel"
+                PointerPressed="OnOverlayCardPointerPressed"
+                Width="440" MaxWidth="460" VerticalAlignment="Center" HorizontalAlignment="Center"
+                CornerRadius="16" Background="#F010151D" BorderBrush="#40FFFFFF" BorderThickness="1" ClipToBounds="True">
+          <StackPanel>
+            <Border Height="96" Background="{Binding AuthorProfileBannerBrush}" ClipToBounds="True">
+              <Grid>
+                <Image Source="{Binding AuthorProfileBannerBitmap}" IsVisible="{Binding HasAuthorProfileBanner}"
+                       Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       RenderOptions.BitmapInterpolationMode="HighQuality" />
+                <Border VerticalAlignment="Bottom" Height="38">
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                      <GradientStop Offset="0" Color="#0010151D" />
+                      <GradientStop Offset="1" Color="#DD10151D" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                </Border>
+                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12,10">
+                  <Button Padding="10,4" CornerRadius="8" Background="#CC0B0F15" BorderBrush="#38FFFFFF" BorderThickness="1"
+                          Cursor="Hand" IsVisible="{Binding IsAccountSignedIn}"
+                          Command="{Binding AddAuthorAsFriendCommand}" IsEnabled="{Binding !IsAuthorAlreadyFriend}">
+                    <Panel>
+                      <TextBlock i18n:Localize.TextKey="AuthorAddFriend" FontSize="11.5" FontWeight="SemiBold" Foreground="#7BC4A8"
+                                 IsVisible="{Binding !IsAuthorAlreadyFriend}" />
+                      <TextBlock i18n:Localize.TextKey="AuthorAlreadyFriend" FontSize="11.5" FontWeight="Medium" Foreground="#94A3B8"
+                                 IsVisible="{Binding IsAuthorAlreadyFriend}" />
+                    </Panel>
+                  </Button>
+                  <Button Width="28" Height="28" Padding="0" CornerRadius="8" Background="#CC0B0F15" BorderBrush="#38FFFFFF" BorderThickness="1"
+                          Cursor="Hand"
+                          Command="{Binding CloseAuthorProfileCommand}">
+                    <Viewbox Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <Path Width="24" Height="24" Fill="#E6EDF3"
+                            Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 L19,6.41 Z" />
+                    </Viewbox>
+                  </Button>
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <StackPanel Spacing="14" Margin="22,-28,22,22">
+              <TextBlock i18n:Localize.TextKey="AuthorLoading" FontSize="13" Foreground="{DynamicResource MutedBrush}"
+                         Margin="0,34,0,0" IsVisible="{Binding IsAuthorProfileLoading}" />
+              <TextBlock i18n:Localize.TextKey="AuthorNotFound" FontSize="13" Foreground="{DynamicResource MutedBrush}"
+                         Margin="0,34,0,0" TextWrapping="Wrap" IsVisible="{Binding AuthorProfileNotFound}" />
+
+              <StackPanel Spacing="12" IsVisible="{Binding !IsAuthorProfileLoading}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" IsVisible="{Binding !AuthorProfileNotFound}">
+                  <Ellipse Width="64" Height="64" Stroke="#F010151D" StrokeThickness="3">
+                    <Ellipse.Fill>
+                      <ImageBrush Source="{Binding AuthorProfileAvatar}" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                  </Ellipse>
+                  <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Bottom" Margin="0,0,0,2">
+                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center" IsVisible="{Binding HasAuthorProfileStatus}">
+                      <Ellipse Width="5" Height="5" Fill="#E6141B24" Stroke="#38FFFFFF" StrokeThickness="1" VerticalAlignment="Bottom" Margin="0,0,0,2" />
+                      <Ellipse Width="8" Height="8" Fill="#E6141B24" Stroke="#38FFFFFF" StrokeThickness="1" VerticalAlignment="Bottom" Margin="0,0,2,4" />
+                      <Border Padding="10,4" CornerRadius="999" Background="#E6141B24" BorderBrush="#34FFFFFF" BorderThickness="1">
+                        <TextBlock Text="{Binding AuthorProfileStatus}" FontSize="11" FontWeight="Medium" Foreground="#E6EDF3"
+                                   TextTrimming="CharacterEllipsis" MaxWidth="250" />
+                      </Border>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding AuthorProfileName}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                      <TextBlock Text="{Binding AuthorProfileUsername}" FontSize="12" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding AuthorProfileBadges}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProfileBadgeCard">
+                          <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,2,8,2" VerticalAlignment="Center">
+                            <Image Source="{Binding ImageIcon}" IsVisible="{Binding HasImageIcon}" Width="14" Height="14" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                            <Viewbox Width="14" Height="14" IsVisible="{Binding HasVectorIcon}">
+                              <Path Width="24" Height="24" Fill="{Binding TextBrush}" Data="{Binding VectorPath}" />
+                            </Viewbox>
+                            <Border CornerRadius="999" Padding="8,1" Background="{Binding BgBrush}" BorderBrush="{Binding BorderBrush}" BorderThickness="1">
+                              <TextBlock Text="{Binding Label}" FontSize="10.5" FontWeight="SemiBold" Foreground="{Binding TextBrush}" />
+                            </Border>
+                          </StackPanel>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </Grid>
+
+                <Border CornerRadius="12" Background="#141B24" BorderBrush="#24FFFFFF" BorderThickness="1" Padding="14,11"
+                        IsVisible="{Binding !AuthorProfileNotFound}">
+                  <StackPanel Spacing="6">
+                    <TextBlock i18n:Localize.TextKey="ProfileBioLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1" Foreground="{DynamicResource MutedBrush}" />
+                    <ItemsControl ItemsSource="{Binding AuthorProfileBioLines}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:BioLineItem">
+                          <ItemsControl ItemsSource="{Binding Tokens}" Margin="0,1">
+                            <ItemsControl.ItemsPanel>
+                              <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="vm:BioTokenItem">
+                                <Panel>
+                                  <TextBlock Text="{Binding Text}" FontSize="13" Foreground="#E6EDF3" IsVisible="{Binding IsPlain}" TextWrapping="Wrap" />
+                                  <Button Padding="0" Background="Transparent" BorderThickness="0" IsVisible="{Binding IsLink}"
+                                          ToolTip.Tip="{Binding Url}" Cursor="Hand"
+                                          Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.OpenExternalUrlCommand}"
+                                          CommandParameter="{Binding Url}">
+                                    <TextBlock Text="{Binding Text}" FontSize="13" Foreground="#79C0FF" TextDecorations="Underline" TextWrapping="Wrap" />
+                                  </Button>
+                                </Panel>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding AuthorProfileConnections}" IsVisible="{Binding AuthorProfileConnections.Count}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ConnectedAccountCard">
+                      <Button Margin="0,0,8,8" Padding="10,6" CornerRadius="10" Cursor="Hand"
+                              Background="{Binding BrandBgBrush}" BorderBrush="{Binding BrandBorderBrush}" BorderThickness="1"
+                              IsEnabled="{Binding HasUrl}"
+                              Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.OpenConnectionUrlCommand}"
+                              CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                          <Viewbox Width="14" Height="14">
+                            <Path Width="24" Height="24" Fill="{Binding BrandBrush}" Data="{Binding IconPath}" />
+                          </Viewbox>
+                          <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="SemiBold" Foreground="#F1F5F9" />
+                          <TextBlock Text="{Binding Platform}" FontSize="10" Foreground="{Binding BrandBrush}" Opacity="0.88" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <StackPanel Spacing="6" IsVisible="{Binding HasAuthorShowcase}">
+                  <TextBlock i18n:Localize.TextKey="ProfilePublishedWallpapers" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                             Foreground="{DynamicResource MutedBrush}" />
+                  <ItemsControl ItemsSource="{Binding AuthorShowcaseWallpapers}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                        <Button Padding="0" Margin="0,0,8,6" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.ApplyCommunityWallpaperCommand}"
+                                CommandParameter="{Binding}">
+                          <Border Width="124" Height="70" CornerRadius="8" ClipToBounds="True"
+                                  Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                            <Grid>
+                              <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                     RenderOptions.BitmapInterpolationMode="HighQuality" />
+                              <Border VerticalAlignment="Bottom" Height="28">
+                                <Border.Background>
+                                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#000B0F15" />
+                                    <GradientStop Offset="1" Color="#E00B0F15" />
+                                  </LinearGradientBrush>
+                                </Border.Background>
+                              </Border>
+                              <TextBlock Text="{Binding Item.Title}" FontSize="10.5" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                         TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom" Margin="6,4" />
+                            </Grid>
+                          </Border>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+
+                <StackPanel Spacing="6" IsVisible="{Binding HasAuthorFavorites}">
+                  <TextBlock i18n:Localize.TextKey="ProfileFavoriteWallpapers" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1"
+                             Foreground="{DynamicResource MutedBrush}" />
+                  <ItemsControl ItemsSource="{Binding AuthorFavoriteWallpapers}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:CommunityWallpaperCard">
+                        <Button Padding="0" Margin="0,0,8,6" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).Settings.ApplyCommunityWallpaperCommand}"
+                                CommandParameter="{Binding}">
+                          <Border Width="124" Height="70" CornerRadius="8" ClipToBounds="True"
+                                  Background="#0D1117" BorderBrush="#28FFFFFF" BorderThickness="1">
+                            <Grid>
+                              <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                     RenderOptions.BitmapInterpolationMode="HighQuality" />
+                              <Border VerticalAlignment="Bottom" Height="28">
+                                <Border.Background>
+                                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#000B0F15" />
+                                    <GradientStop Offset="1" Color="#E00B0F15" />
+                                  </LinearGradientBrush>
+                                </Border.Background>
+                              </Border>
+                              <TextBlock Text="{Binding Item.Title}" FontSize="10.5" FontWeight="SemiBold" Foreground="#F1F5F9"
+                                         TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom" Margin="6,4" />
+                            </Grid>
+                          </Border>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </StackPanel>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Border>
     </Grid>
   </Grid>
   </Grid>

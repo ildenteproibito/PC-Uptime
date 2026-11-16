@@ -345,4 +345,49 @@ public class BsodExplainerTests
         var session = new BootSession(start, null, SessionOutcome.InProgress);
         Assert.Equal(TimeSpan.Zero, session.DurationAt(start.AddMinutes(-10)));
     }
+
+    [Fact]
+    public void NewsArticle_DefaultsAndProperties_AreProperlyInitialized()
+    {
+        var article = new NewsArticle
+        {
+            Id = "test-id",
+            Title = "Nuova release",
+            Content = "Contenuto news",
+            Category = "UPDATE",
+            IsPinned = true,
+            AuthorId = "1233950558184800297",
+            AuthorName = "IL DENTE PROIBITO",
+        };
+
+        Assert.Equal("test-id", article.Id);
+        Assert.Equal("Nuova release", article.Title);
+        Assert.Equal("Contenuto news", article.Content);
+        Assert.Equal("UPDATE", article.Category);
+        Assert.True(article.IsPinned);
+        Assert.NotNull(article.Reactions);
+        Assert.NotNull(article.MyReactions);
+    }
+
+    [Fact]
+    public void NewsComment_PropertiesAndBadges_AreHandledCorrectly()
+    {
+        var comment = new NewsComment
+        {
+            Id = "c-1",
+            NewsId = "test-id",
+            DiscordId = "123",
+            Username = "TestUser",
+            DisplayName = "Tester",
+            Badges = new List<string> { "Beta Tester" },
+            Content = "Ottimo aggiornamento!",
+            CanDelete = true,
+        };
+
+        Assert.Equal("c-1", comment.Id);
+        Assert.Equal("test-id", comment.NewsId);
+        Assert.Single(comment.Badges);
+        Assert.Equal("Beta Tester", comment.Badges[0]);
+        Assert.True(comment.CanDelete);
+    }
 }

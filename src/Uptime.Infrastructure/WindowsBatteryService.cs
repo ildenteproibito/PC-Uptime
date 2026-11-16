@@ -374,6 +374,7 @@ public sealed class WindowsBatteryService : IBatteryService
 
         if (handle.IsInvalid)
         {
+            handle.Dispose();
             handle = CreateFile(
                 devicePath,
                 GENERIC_READ,

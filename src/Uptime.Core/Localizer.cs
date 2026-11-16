@@ -15,7 +15,7 @@ public sealed class Localizer : INotifyPropertyChanged
         CultureInfo.CurrentUICulture = culture;
     }
 
-    private string _language = "it";
+    private volatile string _language = "it";
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? LanguageChanged;
 
@@ -26,11 +26,13 @@ public sealed class Localizer : INotifyPropertyChanged
         get => _language;
         set
         {
-            if (!Strings.Tables.ContainsKey(value) || value == _language) return;
+            if (string.IsNullOrWhiteSpace(value) || !Strings.Tables.ContainsKey(value) || value == _language) return;
             _language = value;
-            var culture = Culture;
+            var culture = CultureInfo.GetCultureInfo(value);
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Language)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
             LanguageChanged?.Invoke(this, EventArgs.Empty);
@@ -43,14 +45,27 @@ public sealed class Localizer : INotifyPropertyChanged
     {
         get
         {
-            var table = Strings.Tables[_language];
+            var lang = _language;
+            var table = Strings.Tables[lang];
             if (!table.TryGetValue(key, out var value) && !Strings.Tables["en"].TryGetValue(key, out value))
                 return $"[{key}]";
-            return key.StartsWith("Lbl", StringComparison.Ordinal) ? value.ToUpper(Culture) : value;
+            return key.StartsWith("Lbl", StringComparison.Ordinal)
+                ? value.ToUpper(CultureInfo.GetCultureInfo(lang))
+                : value;
         }
     }
 
-    public string Format(string key, params object[] args) => string.Format(Culture, this[key], args);
+    public string Format(string key, params object[] args)
+    {
+        var lang = _language;
+        var table = Strings.Tables[lang];
+        if (!table.TryGetValue(key, out var value) && !Strings.Tables["en"].TryGetValue(key, out value))
+            return $"[{key}]";
+        var text = key.StartsWith("Lbl", StringComparison.Ordinal)
+            ? value.ToUpper(CultureInfo.GetCultureInfo(lang))
+            : value;
+        return string.Format(CultureInfo.GetCultureInfo(lang), text, args);
+    }
 
     public string Plural(int n, string baseKey) => $"{n} {this[n == 1 ? baseKey + "One" : baseKey + "Other"]}";
 

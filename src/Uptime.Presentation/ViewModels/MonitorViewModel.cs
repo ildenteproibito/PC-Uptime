@@ -382,6 +382,11 @@ public partial class MonitorViewModel : ObservableObject, IDisposable
             {
                 comment = l.Format("UppyWallNature", title);
             }
+            else if ((ctx.PixelWidth > 0 && ctx.PixelHeight > 0 && (double)ctx.PixelWidth / ctx.PixelHeight >= 2.05) ||
+                     (SettingsViewModel.TryParseResolution(ctx.Resolution, out var uw, out var uh) && (double)uw / uh >= 2.05))
+            {
+                comment = l.Format("UppyWallUltrawide", title);
+            }
             else if (ctx.PixelWidth >= 3840 || (ctx.Resolution?.Contains("3840") ?? false))
             {
                 comment = l.Format("UppyWall4K", title);

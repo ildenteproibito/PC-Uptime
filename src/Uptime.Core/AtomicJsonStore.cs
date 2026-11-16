@@ -18,6 +18,7 @@ public sealed class AtomicJsonStore<T> where T : class
 
     public AtomicJsonStore(string path, JsonSerializerOptions? options = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
         _path = path;
         _options = options ?? new JsonSerializerOptions { WriteIndented = true };
     }

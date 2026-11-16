@@ -284,7 +284,7 @@
       </Grid>
     </ScrollViewer>
 
-    <Border Grid.Row="1" Padding="28,0" Background="#A60B0F15" BorderBrush="#24FFFFFF" BorderThickness="0,1,0,0">
+    <Border Grid.Row="1" Padding="28,0">
       <Grid>
         <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center" IsVisible="{Binding IsConfirming}">
           <TextBlock Text="{Binding ConfirmText}" FontSize="14" VerticalAlignment="Center" />
@@ -293,7 +293,6 @@
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding ShowFooterInfo}">
           <TextBlock FontSize="13" Foreground="{DynamicResource AmberBrush}" Text="{Binding StatusMessage}" />
-          <TextBlock FontSize="13" Foreground="{DynamicResource DimBrush}" i18n:Localize.TextKey="FooterNoTelemetry" />
         </StackPanel>
       </Grid>
     </Border>
