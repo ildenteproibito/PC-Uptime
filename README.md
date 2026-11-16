@@ -26,8 +26,8 @@
     <td align="center" width="33%"><a href="docs/screenshots/uptime-ai.png"><img src="docs/screenshots/uptime-ai.png" alt="Uptime AI assistant view" width="100%"></a><br><sub>Uptime AI</sub></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><a href="docs/screenshots/friends.jpg"><img src="docs/screenshots/friends.jpg" alt="Uptime Friends view showing Discord profiles, wallpaper showcase, and notes" width="100%"></a><br><sub>Friends</sub></td>
-    <td align="center" width="33%"><a href="docs/screenshots/news.jpg"><img src="docs/screenshots/news.jpg" alt="Uptime News view showing official announcements, reactions, and discussion" width="100%"></a><br><sub>News</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/friends.png"><img src="docs/screenshots/friends.png" alt="Uptime Friends view showing Discord profiles, wallpaper showcase, and notes" width="100%"></a><br><sub>Friends</sub></td>
+    <td align="center" width="33%"><a href="docs/screenshots/news.png"><img src="docs/screenshots/news.png" alt="Uptime News view showing official announcements, reactions, and discussion" width="100%"></a><br><sub>News</sub></td>
     <td align="center" width="33%"><a href="docs/screenshots/about.png"><img src="docs/screenshots/about.png" alt="Uptime About view showing changelog and team credits" width="100%"></a><br><sub>About &amp; Team Credits</sub></td>
   </tr>
 </table>
