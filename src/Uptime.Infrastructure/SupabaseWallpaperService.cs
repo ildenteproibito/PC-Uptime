@@ -29,7 +29,11 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
             {
                 using var doc = JsonDocument.Parse(File.ReadAllText(cfgPath));
                 if (doc.RootElement.TryGetProperty("apiUrl", out var a) && a.GetString() is { Length: > 0 } aStr)
-                    return aStr.Trim().TrimEnd('/');
+                {
+                    var trimmed = aStr.Trim().TrimEnd('/');
+                    if (Uri.TryCreate(trimmed, UriKind.Absolute, out var u) && u.Scheme == Uri.UriSchemeHttps)
+                        return trimmed;
+                }
             }
         }
         catch
@@ -190,7 +194,11 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
         var tempDir = Path.Combine(Path.GetTempPath(), "UptimeCommunityWallpapers");
         Directory.CreateDirectory(tempDir);
 
-        var ext = Path.GetExtension(new Uri(item.ImageUrl).AbsolutePath);
+        if (!Uri.TryCreate(item.ImageUrl, UriKind.Absolute, out var imgUri) ||
+            (imgUri.Scheme != Uri.UriSchemeHttps && imgUri.Scheme != Uri.UriSchemeHttp))
+            throw new InvalidOperationException("Invalid wallpaper URL.");
+
+        var ext = Path.GetExtension(imgUri.AbsolutePath);
         if (string.IsNullOrWhiteSpace(ext)) ext = ".png";
 
         var safeId = string.Concat(item.Id.Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c));
@@ -275,7 +283,22 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
         try
         {
             if (!File.Exists(TokensFilePath)) return new();
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(TokensFilePath)) ?? new();
+            var bytes = File.ReadAllBytes(TokensFilePath);
+            if (bytes.Length == 0) return new();
+
+            string json;
+            try
+            {
+                var unprotected = System.Security.Cryptography.ProtectedData.Unprotect(
+                    bytes, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                json = Encoding.UTF8.GetString(unprotected);
+            }
+            catch
+            {
+                // Fallback for legacy plaintext wallpaper_tokens.json
+                json = Encoding.UTF8.GetString(bytes);
+            }
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new();
         }
         catch
         {
@@ -285,6 +308,17 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
 
     private static readonly object TokensLock = new();
 
+    private static void WriteTokensFile(Dictionary<string, string> map)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(TokensFilePath)!);
+        var raw = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(map));
+        var encrypted = System.Security.Cryptography.ProtectedData.Protect(
+            raw, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+        var tmp = TokensFilePath + ".tmp";
+        File.WriteAllBytes(tmp, encrypted);
+        File.Move(tmp, TokensFilePath, overwrite: true);
+    }
+
     private static void SaveDeleteToken(string id, string token)
     {
         lock (TokensLock)
@@ -293,8 +327,7 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
             {
                 var map = GetSavedDeleteTokens();
                 map[id] = token;
-                Directory.CreateDirectory(Path.GetDirectoryName(TokensFilePath)!);
-                File.WriteAllText(TokensFilePath, JsonSerializer.Serialize(map));
+                WriteTokensFile(map);
             }
             catch { }
         }
@@ -308,7 +341,7 @@ public sealed class SupabaseWallpaperService : ICommunityWallpaperService
             {
                 var map = GetSavedDeleteTokens();
                 if (map.Remove(id))
-                    File.WriteAllText(TokensFilePath, JsonSerializer.Serialize(map));
+                    WriteTokensFile(map);
             }
             catch { }
         }

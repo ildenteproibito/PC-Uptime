@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $releaseExe = Join-Path $root 'artifacts\Uptime-Release\Uptime.exe'
-$releaseSvg = Join-Path $root 'artifacts\Uptime-Release\Assets\favicon.svg'
+$releaseSvg = Join-Path $root 'src\Uptime.Presentation\Assets\favicon.svg'
 $installerProj = Join-Path $root 'src\Uptime.Installer\Uptime.Installer.csproj'
 $payloadDir = Join-Path $root 'src\Uptime.Installer\Payload'
 $outDir = Join-Path $root 'artifacts\Uptime-Installer'
@@ -37,7 +37,7 @@ try {
     }
 
     if (Test-Path $outDir) { Remove-Item $outDir -Recurse -Force }
-    dotnet publish $installerProj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o $outDir
+    dotnet publish $installerProj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o $outDir
     if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed with exit code $LASTEXITCODE" }
 
     Get-ChildItem -Path $outDir -Filter '*.pdb' -File | Remove-Item -Force

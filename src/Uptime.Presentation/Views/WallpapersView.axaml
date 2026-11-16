@@ -59,6 +59,21 @@
                    TextWrapping="Wrap" />
       </Border>
 
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Classes="ghost" Padding="12,6"
+                Command="{Binding SetCommunityFilterAllCommand}"
+                Classes.accent="{Binding IsFilterAll}"
+                i18n:Localize.ContentKey="WallpaperFilterAll" />
+        <Button Classes="ghost" Padding="12,6"
+                Command="{Binding SetCommunityFilterUltrawideCommand}"
+                Classes.accent="{Binding IsFilterUltrawide}"
+                i18n:Localize.ContentKey="WallpaperFilterUltrawide" />
+        <Button Classes="ghost" Padding="12,6"
+                Command="{Binding SetCommunityFilterFavoritesCommand}"
+                Classes.accent="{Binding IsFilterFavorites}"
+                Content="Favorites" />
+      </StackPanel>
+
       <!-- Community gallery list with 16:9 image previews -->
       <ItemsControl ItemsSource="{Binding CommunityWallpapers}" HorizontalAlignment="Stretch">
         <ItemsControl.ItemsPanel>
@@ -72,15 +87,41 @@
                     Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource OutlineBrush}" BorderThickness="1">
               <StackPanel>
                 <Border Height="137" CornerRadius="11,11,0,0" Background="#0D1014" ClipToBounds="True">
-                  <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
-                         RenderOptions.BitmapInterpolationMode="MediumQuality" />
+                  <Grid>
+                    <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                           RenderOptions.BitmapInterpolationMode="MediumQuality" />
+                    <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8"
+                            Padding="7,2" CornerRadius="999"
+                            Background="#CC0B0F15" BorderBrush="#667BC4A8" BorderThickness="1"
+                            IsVisible="{Binding IsUltrawide}">
+                      <TextBlock Text="{Binding AspectBadge}" FontSize="10" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                    </Border>
+                    <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8"
+                            Width="28" Height="28" Padding="0" CornerRadius="999"
+                            Background="#B80B0F15" BorderBrush="#44FFFFFF" BorderThickness="1"
+                            ToolTip.Tip="Favorite"
+                            Command="{Binding $parent[v:WallpapersView].((vm:SettingsViewModel)DataContext).ToggleFavoriteWallpaperCommand}"
+                            CommandParameter="{Binding}">
+                      <Viewbox Width="14" Height="14">
+                        <Path Width="24" Height="24" Fill="{Binding FavoriteColor}"
+                              Data="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+                      </Viewbox>
+                    </Button>
+                  </Grid>
                 </Border>
                 <StackPanel Margin="12" Spacing="8">
                   <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"
                              TextTrimming="CharacterEllipsis" MaxLines="1" />
                   <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Author}" FontSize="11.5" Foreground="{DynamicResource MutedBrush}"
-                               TextTrimming="CharacterEllipsis" MaxLines="1" MaxWidth="128" VerticalAlignment="Center" />
+                    <Button Padding="0" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"
+                            ToolTip.Tip="View author profile"
+                            Command="{Binding $parent[v:WallpapersView].((vm:SettingsViewModel)DataContext).OpenAuthorProfileCommand}"
+                            CommandParameter="{Binding}">
+                      <TextBlock Text="{Binding Author}" FontSize="11.5" Foreground="{DynamicResource MutedBrush}"
+                                 TextDecorations="Underline"
+                                 TextTrimming="CharacterEllipsis" MaxLines="1" MaxWidth="128" VerticalAlignment="Center" />
+                    </Button>
                     <Image Source="{Binding RoleIcon}" IsVisible="{Binding HasRoleIcon}"
                            Width="13" Height="13" VerticalAlignment="Center"
                            ToolTip.Tip="{Binding RoleTooltip}"

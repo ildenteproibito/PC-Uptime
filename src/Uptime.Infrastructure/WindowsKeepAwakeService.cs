@@ -87,6 +87,8 @@ public sealed class WindowsKeepAwakeService : IKeepAwakeService, IDisposable
     {
         SetAwake(false);
         _queue.CompleteAdding();
+        try { _worker?.Join(500); } catch { }
+        _queue.Dispose();
     }
 
     public bool IsProcessRunning(string processName)

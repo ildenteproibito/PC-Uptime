@@ -10,7 +10,7 @@ namespace Uptime.Presentation.ViewModels;
 
 public sealed record StartupAppRow(string Name, string Command, string ImpactText, IBrush ImpactBrush, string Location);
 
-public partial class OperationsViewModel : ObservableObject
+public partial class OperationsViewModel : ObservableObject, IDisposable
 {
     private enum Pending { None, Restart, Shutdown, Uefi }
 
@@ -613,5 +613,12 @@ public partial class OperationsViewModel : ObservableObject
         {
             IsTrimmingMemory = false;
         }
+    }
+
+    public void Dispose()
+    {
+        _tick.Stop();
+        _autopilotTick.Stop();
+        Localizer.Instance.PropertyChanged -= OnLanguageChanged;
     }
 }

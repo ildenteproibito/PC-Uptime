@@ -29,8 +29,8 @@ public static partial class EventLogLocalizer
     {
         var msg = (rawMessage ?? string.Empty).Trim();
 
-        // Service Control Manager (7000-7034)
-        if (eventId is 7000 or 7001 or 7009 or 7011 or 7022 or 7023 or 7024 or 7026 or 7031 or 7032 or 7034)
+        // Service Control Manager (7000, 7001, 7009, 7023, 7031, 7034)
+        if (eventId is 7000 or 7001 or 7009 or 7023 or 7031 or 7034)
         {
             var translatedScm = TryTranslateScm(eventId, msg, lang);
             if (!string.IsNullOrEmpty(translatedScm))
@@ -52,7 +52,7 @@ public static partial class EventLogLocalizer
                 "ru" => "Обнаружено неожиданное завершение работы системы.",
                 _ => "The previous system shutdown was unexpected."
             },
-            1001 when provider.Contains("BugCheck", StringComparison.OrdinalIgnoreCase) => lang switch
+            1001 when (provider ?? "").Contains("BugCheck", StringComparison.OrdinalIgnoreCase) => lang switch
             {
                 "it" => "Il computer è stato riavviato in seguito a un controllo di bug (schermata blu / BSOD).",
                 "ru" => "Компьютер был перезагружен после критической ошибки (BSOD).",
@@ -127,6 +127,7 @@ public static partial class EventLogLocalizer
         {
             var m = Scm7023EnRegex().Match(msg);
             if (!m.Success) m = Scm7023ItRegex().Match(msg);
+            if (!m.Success) m = Scm7023RuRegex().Match(msg);
             if (m.Success)
             {
                 var svc = m.Groups["svc"].Value.Trim();
@@ -144,6 +145,7 @@ public static partial class EventLogLocalizer
         {
             var m = ScmUnexpectedEnRegex().Match(msg);
             if (!m.Success) m = ScmUnexpectedItRegex().Match(msg);
+            if (!m.Success) m = ScmUnexpectedRuRegex().Match(msg);
             if (m.Success)
             {
                 var svc = m.Groups["svc"].Value.Trim();
@@ -160,6 +162,7 @@ public static partial class EventLogLocalizer
         {
             var m = Scm7001EnRegex().Match(msg);
             if (!m.Success) m = Scm7001ItRegex().Match(msg);
+            if (!m.Success) m = Scm7001RuRegex().Match(msg);
             if (m.Success)
             {
                 var svc = m.Groups["svc"].Value.Trim();
@@ -268,15 +271,24 @@ public static partial class EventLogLocalizer
     [GeneratedRegex(@"^Il servizio (?<svc>.+?) è terminato con il seguente errore:\s*(?<reason>.+)$", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
     private static partial Regex Scm7023ItRegex();
 
+    [GeneratedRegex(@"^Служба ""?(?<svc>.+?)""? была завершена из-за следующей ошибки:\s*(?<reason>.+)$", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
+    private static partial Regex Scm7023RuRegex();
+
     [GeneratedRegex(@"^The (?<svc>.+?) service terminated unexpectedly", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
     private static partial Regex ScmUnexpectedEnRegex();
 
     [GeneratedRegex(@"^Il servizio (?<svc>.+?) è terminato in modo imprevisto", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
     private static partial Regex ScmUnexpectedItRegex();
 
+    [GeneratedRegex(@"^Служба ""?(?<svc>.+?)""? неожиданно завершена", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
+    private static partial Regex ScmUnexpectedRuRegex();
+
     [GeneratedRegex(@"^The (?<svc>.+?) service depends on the (?<dep>.+?) service which failed to start because of the following error:\s*(?<reason>.+)$", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
     private static partial Regex Scm7001EnRegex();
 
     [GeneratedRegex(@"^Il servizio (?<svc>.+?) dipende dal servizio (?<dep>.+?) che non è riuscito ad avviarsi a causa del seguente errore:\s*(?<reason>.+)$", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
     private static partial Regex Scm7001ItRegex();
+
+    [GeneratedRegex(@"^Служба ""?(?<svc>.+?)""? зависит от службы ""?(?<dep>.+?)""?, которую не удалось запустить из-за следующей ошибки:\s*(?<reason>.+)$", RegexOptions.Singleline | RegexOptions.IgnoreCase)]
+    private static partial Regex Scm7001RuRegex();
 }

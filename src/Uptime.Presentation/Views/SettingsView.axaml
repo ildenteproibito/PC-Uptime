@@ -141,6 +141,16 @@
               </Grid>
             </Grid>
           </Border>
+          <Border Classes="row" Padding="0,4">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+              <StackPanel>
+                <TextBlock Classes="title" i18n:Localize.TextKey="PrefGlassContainers" />
+                <TextBlock Classes="hint" i18n:Localize.TextKey="PrefGlassContainersDesc" TextWrapping="Wrap" />
+              </StackPanel>
+              <ToggleSwitch Grid.Column="1" i18n:Localize.OnKey="StateOn" i18n:Localize.OffKey="StateOff"
+                            IsChecked="{Binding ShowGlassContainers}" />
+            </Grid>
+          </Border>
         </StackPanel>
       </Border>
 

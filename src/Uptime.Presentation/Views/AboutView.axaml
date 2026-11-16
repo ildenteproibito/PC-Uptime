@@ -4,6 +4,23 @@
              xmlns:vm="using:Uptime.Presentation.ViewModels"
              x:DataType="vm:MainViewModel"
              x:Class="Uptime.Presentation.Views.AboutView">
+  <UserControl.Resources>
+    <DataTemplate x:Key="AboutConnectionChipTemplate" x:DataType="vm:ConnectedAccountCard">
+      <Button Margin="0,2,8,2" Padding="10,5" CornerRadius="10" Cursor="Hand"
+              Background="{Binding BrandBgBrush}" BorderBrush="{Binding BrandBorderBrush}" BorderThickness="1"
+              IsEnabled="{Binding HasUrl}"
+              Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).Settings.OpenConnectionUrlCommand}"
+              CommandParameter="{Binding}">
+        <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+          <Viewbox Width="13" Height="13">
+            <Path Width="24" Height="24" Fill="{Binding BrandBrush}" Data="{Binding IconPath}" />
+          </Viewbox>
+          <TextBlock Text="{Binding Name}" FontSize="11.5" FontWeight="SemiBold" Foreground="#F1F5F9" />
+          <TextBlock Text="{Binding Platform}" FontSize="9.5" Foreground="{Binding BrandBrush}" Opacity="0.88" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+    </DataTemplate>
+  </UserControl.Resources>
   <ScrollViewer VerticalScrollBarVisibility="Hidden">
     <StackPanel Margin="56,36" Spacing="20" MaxWidth="860" HorizontalAlignment="Center">
       <!-- 1. Project & Version Banner -->
@@ -15,7 +32,7 @@
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
               <TextBlock Text="Uptime" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
               <Border CornerRadius="999" Padding="10,2" Background="#247BC4A8" BorderBrush="#667BC4A8" BorderThickness="1" VerticalAlignment="Center">
-                <TextBlock x:Name="VersionBadgeText" Text="v2.0.0" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                <TextBlock x:Name="VersionBadgeText" Text="{Binding AboutVersionBadge}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
               </Border>
             </StackPanel>
             <TextBlock Classes="hint" i18n:Localize.TextKey="AboutProjectTagline" TextWrapping="Wrap" />
@@ -48,6 +65,19 @@
             <TextBlock i18n:Localize.TextKey="ChangelogExperienceBody" Foreground="#F3F4F6" FontSize="13.5" TextWrapping="Wrap" LineHeight="24" />
           </StackPanel>
 
+          <ItemsControl ItemsSource="{Binding LiveChangelogAdded}" IsVisible="{Binding HasLiveChangelogAdded}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:LiveChangelogEntry">
+                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2">
+                  <Border CornerRadius="999" Padding="8,1" Background="#247BC4A8" BorderBrush="#667BC4A8" BorderThickness="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Category}" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                  </Border>
+                  <TextBlock Text="{Binding Text}" Foreground="#F3F4F6" FontSize="13.5" TextWrapping="Wrap" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
           <Border Height="1" Background="#24FFFFFF" Margin="0,4" />
           <TextBlock Classes="lbl" i18n:Localize.TextKey="LblRemoved" Foreground="#F87171" />
           <TextBlock i18n:Localize.TextKey="AboutRemovedFull"
@@ -55,6 +85,15 @@
                      FontSize="13.5"
                      TextWrapping="Wrap"
                      LineHeight="24" />
+          <ItemsControl ItemsSource="{Binding LiveChangelogRemoved}" IsVisible="{Binding HasLiveChangelogRemoved}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:LiveChangelogEntry">
+                <TextBlock Foreground="#FCA5A5" FontSize="13.5" TextWrapping="Wrap" LineHeight="24">
+                  <Run Text="• " /><Run Text="{Binding Text}" />
+                </TextBlock>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
         </StackPanel>
       </Border>
 
@@ -99,7 +138,7 @@
       </Border>
 
       <!-- Moderator 1: ShadowEddyx12 -->
-      <Border Classes="glass-card" Padding="18">
+      <Border Classes="glass-card" Padding="18" IsVisible="{Binding IsShadowVisible}">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Ellipse Width="72" Height="72"
                    Stroke="{DynamicResource OutlineBrush}" StrokeThickness="1.5"
@@ -117,12 +156,18 @@
               </Border>
             </StackPanel>
             <TextBlock Classes="hint" i18n:Localize.TextKey="AboutModShadowDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+            <ItemsControl ItemsSource="{Binding ShadowConnections}" IsVisible="{Binding HasShadowConnections}"
+                          ItemTemplate="{StaticResource AboutConnectionChipTemplate}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            </ItemsControl>
           </StackPanel>
         </Grid>
       </Border>
 
       <!-- Moderator 2: Luke -->
-      <Border Classes="glass-card" Padding="18">
+      <Border Classes="glass-card" Padding="18" IsVisible="{Binding IsLukeVisible}">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Ellipse Width="72" Height="72"
                    Stroke="{DynamicResource OutlineBrush}" StrokeThickness="1.5"
@@ -140,6 +185,12 @@
               </Border>
             </StackPanel>
             <TextBlock Classes="hint" i18n:Localize.TextKey="AboutModLukeDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+            <ItemsControl ItemsSource="{Binding LukeConnections}" IsVisible="{Binding HasLukeConnections}"
+                          ItemTemplate="{StaticResource AboutConnectionChipTemplate}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            </ItemsControl>
           </StackPanel>
         </Grid>
       </Border>
@@ -177,6 +228,12 @@
                     </Border>
                   </StackPanel>
                   <TextBlock Classes="hint" Text="{Binding Description}" TextWrapping="Wrap" HorizontalAlignment="Left" />
+                  <ItemsControl ItemsSource="{Binding Connections}" IsVisible="{Binding HasConnections}"
+                                ItemTemplate="{StaticResource AboutConnectionChipTemplate}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                  </ItemsControl>
                 </StackPanel>
               </Grid>
             </Border>
@@ -185,7 +242,7 @@
       </ItemsControl>
 
       <!-- Developer (Android & iOS): Koi -->
-      <Border Classes="glass-card" Padding="18">
+      <Border Classes="glass-card" Padding="18" IsVisible="{Binding IsKoiVisible}">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="18" VerticalAlignment="Center">
           <Border Width="72" Height="72" CornerRadius="999"
                   Background="#1FA855F7" BorderBrush="#88A855F7" BorderThickness="1.5"
@@ -214,6 +271,12 @@
               </Border>
             </StackPanel>
             <TextBlock Classes="hint" i18n:Localize.TextKey="AboutMobileDevDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+            <ItemsControl ItemsSource="{Binding MobileDevConnections}" IsVisible="{Binding HasMobileDevConnections}"
+                          ItemTemplate="{StaticResource AboutConnectionChipTemplate}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            </ItemsControl>
           </StackPanel>
         </Grid>
       </Border>
@@ -237,6 +300,12 @@
               </Border>
             </StackPanel>
             <TextBlock Classes="hint" i18n:Localize.TextKey="AboutOwnerDesc" TextWrapping="Wrap" HorizontalAlignment="Left" />
+            <ItemsControl ItemsSource="{Binding OwnerConnections}" IsVisible="{Binding HasOwnerConnections}"
+                          ItemTemplate="{StaticResource AboutConnectionChipTemplate}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            </ItemsControl>
           </StackPanel>
         </Grid>
       </Border>

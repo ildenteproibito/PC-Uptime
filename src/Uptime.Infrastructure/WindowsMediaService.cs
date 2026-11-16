@@ -62,9 +62,12 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
     private async Task UpdateSessionAndTrackAsync()
     {
         if (_disposed || _manager == null) return;
-        await _gate.WaitAsync();
+        var entered = false;
         try
         {
+            await _gate.WaitAsync();
+            entered = true;
+            if (_disposed || _manager == null) return;
             var sessions = _manager.GetSessions();
             var spotifySessions = sessions.Where(IsSpotifySession).ToList();
             var targetSession = spotifySessions.FirstOrDefault(s => s.GetPlaybackInfo()?.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
@@ -93,13 +96,20 @@ public sealed class WindowsMediaService : ISpotifyMediaService, IDisposable
 
             await FetchPropertiesAsync();
         }
+        catch (ObjectDisposedException)
+        {
+            // Disposed during update
+        }
         catch (Exception ex)
         {
             Debug.WriteLine($"UpdateSessionAndTrack error: {ex.Message}");
         }
         finally
         {
-            _gate.Release();
+            if (entered && !_disposed)
+            {
+                try { _gate.Release(); } catch (ObjectDisposedException) { }
+            }
         }
     }
 

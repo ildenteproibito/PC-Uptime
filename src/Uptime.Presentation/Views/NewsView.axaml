@@ -1,0 +1,530 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i18n="using:Uptime.Presentation.Localization"
+             xmlns:vm="using:Uptime.Presentation.ViewModels"
+             x:Class="Uptime.Presentation.Views.NewsView"
+             x:DataType="vm:NewsViewModel">
+  <Panel Margin="56,36">
+    <!-- Main 2-Column Layout: Left Feed (~360px), Right Reader & Discussion -->
+    <Grid ColumnDefinitions="380,*" ColumnSpacing="24">
+
+      <!-- ================================================================= -->
+      <!-- LEFT COLUMN: Official News Feed & Categories                      -->
+      <!-- ================================================================= -->
+      <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*" RowSpacing="14">
+
+        <!-- Feed Header -->
+        <Border Grid.Row="0" Classes="glass-card" Padding="18,16">
+          <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+              <!-- Feed Vector Icon -->
+              <Border Grid.Column="0" Width="34" Height="34" CornerRadius="10" Background="#1A7BC4A8" BorderBrush="#387BC4A8" BorderThickness="1">
+                <Viewbox Width="17" Height="17" HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Path Width="24" Height="24" Fill="#7BC4A8"
+                        Data="M19,3 H5 C3.9,3 3,3.9 3,5 V19 C3,20.1 3.9,21 5,21 H19 C20.1,21 21,20.1 21,19 V5 C21,3.9 20.1,3 19,3 Z M19,19 H5 V5 H19 V19 Z M7,7 H17 V9 H7 V7 Z M7,11 H17 V13 H7 V11 Z M7,15 H13 V17 H7 V15 Z" />
+                </Viewbox>
+              </Border>
+
+              <!-- Feed Titles -->
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                <TextBlock Classes="lbl" i18n:Localize.TextKey="NewsFeedTitle" Margin="0" />
+                <TextBlock Classes="hint" i18n:Localize.TextKey="NewsFeedDesc" TextWrapping="Wrap" FontSize="11" />
+              </StackPanel>
+
+              <!-- Actions (Refresh + Owner Admin Button) -->
+              <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <Button Width="30" Height="30" CornerRadius="8" Cursor="Hand"
+                        Background="#12161D" BorderBrush="#25FFFFFF" BorderThickness="1"
+                        Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                        Command="{Binding LoadNewsCommand}" ToolTip.Tip="Aggiorna Feed">
+                  <TextBlock Text="↻" FontSize="14" Foreground="{DynamicResource MutedBrush}" />
+                </Button>
+
+                <!-- Dedicated Owner Admin Button: ONLY visible if IsOwner is true -->
+                <Button Height="30" Padding="10,0" CornerRadius="8" Cursor="Hand"
+                        Background="#20FBBF24" BorderBrush="#50FBBF24" BorderThickness="1"
+                        VerticalContentAlignment="Center"
+                        Command="{Binding OpenAdminPanelCommand}"
+                        IsVisible="{Binding IsOwner}"
+                        ToolTip.Tip="Pannello Autore (Riservato)">
+                  <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                    <TextBlock Text="+" FontSize="13" FontWeight="Bold" Foreground="#FBBF24" />
+                    <TextBlock i18n:Localize.TextKey="NewsWriteButton" FontSize="11.5" FontWeight="SemiBold" Foreground="#FBBF24" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+            </Grid>
+
+            <!-- Category Filter Pills -->
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Classes="filter-pill" Padding="11,5" CornerRadius="6" Cursor="Hand"
+                        Background="{Binding CategoryFilter, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Command="{Binding SetCategoryFilterCommand}" CommandParameter="ALL">
+                  <TextBlock i18n:Localize.TextKey="NewsCategoryAll" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextBrush}" />
+                </Button>
+                <Button Classes="filter-pill" Padding="11,5" CornerRadius="6" Cursor="Hand"
+                        Background="#141820" BorderBrush="#1C2227" BorderThickness="1"
+                        Command="{Binding SetCategoryFilterCommand}" CommandParameter="UPDATE">
+                  <TextBlock i18n:Localize.TextKey="NewsCategoryUpdates" FontSize="11" FontWeight="Medium" Foreground="#7BC4A8" />
+                </Button>
+                <Button Classes="filter-pill" Padding="11,5" CornerRadius="6" Cursor="Hand"
+                        Background="#141820" BorderBrush="#1C2227" BorderThickness="1"
+                        Command="{Binding SetCategoryFilterCommand}" CommandParameter="ANNOUNCEMENT">
+                  <TextBlock i18n:Localize.TextKey="NewsCategoryAnnouncements" FontSize="11" FontWeight="Medium" Foreground="#FBBF24" />
+                </Button>
+                <Button Classes="filter-pill" Padding="11,5" CornerRadius="6" Cursor="Hand"
+                        Background="#141820" BorderBrush="#1C2227" BorderThickness="1"
+                        Command="{Binding SetCategoryFilterCommand}" CommandParameter="COMMUNITY">
+                  <TextBlock i18n:Localize.TextKey="NewsCategoryCommunity" FontSize="11" FontWeight="Medium" Foreground="#818CF8" />
+                </Button>
+                <Button Classes="filter-pill" Padding="11,5" CornerRadius="6" Cursor="Hand"
+                        Background="#141820" BorderBrush="#1C2227" BorderThickness="1"
+                        Command="{Binding SetCategoryFilterCommand}" CommandParameter="HOTFIX">
+                  <TextBlock i18n:Localize.TextKey="NewsCategoryHotfixes" FontSize="11" FontWeight="Medium" Foreground="#E8845A" />
+                </Button>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+        </Border>
+
+        <!-- News Feed Cards List -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Hidden">
+          <StackPanel Spacing="10">
+            <!-- Empty Feed State -->
+            <Border Classes="glass-card" Padding="24" IsVisible="{Binding ShowEmptyFeedState}">
+              <StackPanel Spacing="10" HorizontalAlignment="Center">
+                <Border Width="38" Height="38" CornerRadius="11" Background="#167BC4A8" BorderBrush="#347BC4A8" BorderThickness="1" HorizontalAlignment="Center">
+                  <Viewbox Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="24" Height="24" Fill="#7BC4A8"
+                          Data="M19,3 H5 C3.9,3 3,3.9 3,5 V19 C3,20.1 3.9,21 5,21 H19 C20.1,21 21,20.1 21,19 V5 C21,3.9 20.1,3 19,3 Z M19,19 H5 V5 H19 V19 Z M7,7 H17 V9 H7 V7 Z M7,11 H17 V13 H7 V11 Z M7,15 H13 V17 H7 V15 Z" />
+                  </Viewbox>
+                </Border>
+                <TextBlock i18n:Localize.TextKey="NewsEmptyFeed" Classes="hint" HorizontalAlignment="Center" TextAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+            <!-- Cards -->
+            <ItemsControl ItemsSource="{Binding FilteredArticles}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:NewsArticleItemViewModel">
+                  <Button Margin="0,0,0,8" Padding="0" HorizontalAlignment="Stretch" Cursor="Hand"
+                          Background="Transparent" BorderThickness="0"
+                          Command="{Binding $parent[UserControl].((vm:NewsViewModel)DataContext).SelectArticleCommand}"
+                          CommandParameter="{Binding}">
+                    <Border CornerRadius="10" Padding="14,12"
+                            Background="{Binding IsSelected, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            BorderBrush="{DynamicResource GlassCardBorderBrush}"
+                            BorderThickness="1">
+                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                          <!-- Top Metadata: Category Pill + Pinned Badge + Date -->
+                          <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                            <!-- Category Badge -->
+                            <Border Grid.Column="0" CornerRadius="4" Padding="6,2"
+                                    Background="#1A7BC4A8" BorderBrush="#337BC4A8" BorderThickness="1">
+                              <TextBlock Text="{Binding Category}" FontSize="9.5" FontWeight="Bold" LetterSpacing="0.8" Foreground="#7BC4A8" />
+                            </Border>
+
+                            <!-- Pinned Badge -->
+                            <Border Grid.Column="1" CornerRadius="4" Padding="6,2"
+                                    Background="#24FBBF24" BorderBrush="#40FBBF24" BorderThickness="1"
+                                    IsVisible="{Binding IsPinned}">
+                              <TextBlock i18n:Localize.TextKey="NewsPinnedBadge" FontSize="9.5" FontWeight="Bold" LetterSpacing="0.8" Foreground="#FBBF24" />
+                            </Border>
+
+                            <!-- Relative Date -->
+                            <TextBlock Grid.Column="3" Text="{Binding FormattedDate}" FontSize="11" Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+                          </Grid>
+
+                          <!-- Title -->
+                          <TextBlock Grid.Row="1" Text="{Binding Title}" FontSize="13.5" FontWeight="SemiBold"
+                                     Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap" MaxLines="2" />
+
+                          <!-- Bottom Strip: Author & Comments Count -->
+                          <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="6" VerticalAlignment="Center">
+                            <TextBlock Grid.Column="0" Text="{Binding AuthorName}" FontSize="11" Foreground="{DynamicResource MutedBrush}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                              <Path Width="11" Height="11" Stretch="Uniform" Fill="{DynamicResource MutedBrush}" VerticalAlignment="Center"
+                                    Data="M20,2 H4 C2.9,2 2,2.9 2,4 V22 L6,18 H20 C21.1,18 22,17.1 22,16 V4 C22,2.9 21.1,2 20,2 Z" />
+                              <TextBlock Text="{Binding CommentsCount}" FontSize="11" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                          </Grid>
+                        </Grid>
+
+                        <!-- Optional News Thumbnail Card -->
+                        <Border Grid.Column="1" Width="54" Height="54" CornerRadius="8" ClipToBounds="True"
+                                Background="#0D1117" BorderBrush="#25FFFFFF" BorderThickness="1"
+                                VerticalAlignment="Center" IsVisible="{Binding HasCoverImage}">
+                          <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                 RenderOptions.BitmapInterpolationMode="MediumQuality" />
+                        </Border>
+                      </Grid>
+                    </Border>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+
+      <!-- ================================================================= -->
+      <!-- RIGHT COLUMN: Selected Article Reader & Community Discussion     -->
+      <!-- ================================================================= -->
+      <Grid Grid.Column="1">
+        <!-- Prompt when nothing is selected -->
+        <Border Classes="glass-card" Padding="40" HorizontalAlignment="Center" VerticalAlignment="Center"
+                IsVisible="{Binding !HasSelectedArticle}">
+          <StackPanel Spacing="12" HorizontalAlignment="Center">
+            <Border Width="42" Height="42" CornerRadius="12" Background="#167BC4A8" BorderBrush="#347BC4A8" BorderThickness="1" HorizontalAlignment="Center">
+              <Viewbox Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Path Width="24" Height="24" Fill="#7BC4A8"
+                      Data="M20,11 H7.83 L13.42,5.41 L12,4 L4,12 L12,20 L13.41,18.59 L7.83,13 H20 V11 Z" />
+              </Viewbox>
+            </Border>
+            <TextBlock i18n:Localize.TextKey="NewsSelectPrompt" Classes="hint" FontSize="13" TextAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Reader & Discussion when article is selected -->
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" IsVisible="{Binding HasSelectedArticle}">
+          <StackPanel Spacing="18" Margin="0,0,12,24">
+
+            <!-- Article Reader Glass Card -->
+            <Border Classes="glass-card" Padding="28,24">
+              <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="16">
+
+                <!-- Hero Cover Image Banner (if article has cover image) -->
+                <Border Grid.Row="0" CornerRadius="10" ClipToBounds="True" MaxHeight="220" Margin="0,0,0,4"
+                        Background="#0B0E14" BorderBrush="#30FFFFFF" BorderThickness="1"
+                        IsVisible="{Binding SelectedArticle.HasCoverImage}">
+                  <Grid>
+                    <Image Source="{Binding SelectedArticle.Thumbnail}" Stretch="UniformToFill"
+                           RenderOptions.BitmapInterpolationMode="HighQuality" />
+                    <Border VerticalAlignment="Bottom" Height="50">
+                      <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                          <GradientStop Offset="0" Color="#00000000" />
+                          <GradientStop Offset="1" Color="#B00B0E14" />
+                        </LinearGradientBrush>
+                      </Border.Background>
+                    </Border>
+                  </Grid>
+                </Border>
+
+                <!-- Article Metadata Header -->
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+                  <Border Grid.Column="0" CornerRadius="5" Padding="8,3"
+                          Background="#1A7BC4A8" BorderBrush="#387BC4A8" BorderThickness="1">
+                    <TextBlock Text="{Binding SelectedArticle.Category}" FontSize="10.5" FontWeight="Bold" LetterSpacing="0.8" Foreground="#7BC4A8" />
+                  </Border>
+
+                  <Border Grid.Column="1" CornerRadius="5" Padding="8,3"
+                          Background="#24FBBF24" BorderBrush="#45FBBF24" BorderThickness="1"
+                          IsVisible="{Binding SelectedArticle.IsPinned}">
+                    <TextBlock i18n:Localize.TextKey="NewsPinnedBadge" FontSize="10.5" FontWeight="Bold" LetterSpacing="0.8" Foreground="#FBBF24" />
+                  </Border>
+
+                  <TextBlock Grid.Column="2" Text="{Binding SelectedArticle.FormattedFullDate}" FontSize="12"
+                             Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+
+                  <!-- Owner-only delete article button -->
+                  <Button Grid.Column="3" Padding="10,4" CornerRadius="6" Cursor="Hand"
+                          Background="#1AE8845A" BorderBrush="#40E8845A" BorderThickness="1"
+                          Command="{Binding DeleteCurrentNewsCommand}"
+                          IsVisible="{Binding IsOwner}">
+                    <TextBlock i18n:Localize.TextKey="NewsDeletePost" FontSize="11" Foreground="#E8845A" />
+                  </Button>
+                </Grid>
+
+                <!-- Article Title -->
+                <TextBlock Grid.Row="2" Text="{Binding SelectedArticle.Title}"
+                           FontSize="22" FontWeight="Bold" Foreground="#FFFFFF" TextWrapping="Wrap" />
+
+                <!-- Author Row -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                  <Border Width="30" Height="30" CornerRadius="15" Background="#20FBBF24" BorderBrush="#45FBBF24" BorderThickness="1">
+                    <Path Width="14" Height="14" Stretch="Uniform" Fill="#FBBF24" HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Data="M5,16 L3,5 L8.5,10 L12,4 L15.5,10 L21,5 L19,16 H5 Z M19,19 C19,19.6 18.6,20 18,20 H6 C5.4,20 5,19.6 5,19 V18 H19 V19 Z" />
+                  </Border>
+                  <StackPanel Spacing="1" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding SelectedArticle.AuthorName}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                      <!-- Verified Owner Badge -->
+                      <Border CornerRadius="4" Padding="6,1.5" Background="#28FBBF24" BorderBrush="#55FBBF24" BorderThickness="1">
+                        <TextBlock Text="Owner" FontSize="10" FontWeight="Bold" Foreground="#FBBF24" />
+                      </Border>
+                    </StackPanel>
+                  </StackPanel>
+                </StackPanel>
+
+                <!-- Article Content Body -->
+                <Border Grid.Row="4" Padding="0,8,0,8" BorderThickness="0">
+                  <TextBlock Text="{Binding SelectedArticle.Content}"
+                             TextWrapping="Wrap" FontSize="14" LineHeight="24"
+                             Foreground="#D0D6DE" MaxWidth="820" HorizontalAlignment="Left" />
+                </Border>
+
+                <!-- ======================================================= -->
+                <!-- Interactive Reaction Bar                                -->
+                <!-- ======================================================= -->
+                <StackPanel Grid.Row="5" Spacing="10" Margin="0,10,0,0">
+                  <TextBlock i18n:Localize.TextKey="NewsReactionsLabel"
+                             FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1.1" Foreground="{DynamicResource MutedBrush}" />
+
+                  <ItemsControl ItemsSource="{Binding ReactionBar}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:ReactionChipViewModel">
+                        <Button Margin="0,0,8,8" Padding="12,6" CornerRadius="8" Cursor="Hand"
+                                Background="{Binding HasUserReacted, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                BorderBrush="{DynamicResource GlassCardBorderBrush}"
+                                BorderThickness="1"
+                                Command="{Binding ToggleCommand}">
+                          <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Emoji}" FontSize="15" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Count}" FontSize="12.5" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <TextBlock i18n:Localize.TextKey="NewsSignInToComment"
+                             Classes="hint" FontSize="11.5"
+                             IsVisible="{Binding !IsAccountSignedIn}" />
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <!-- ========================================================= -->
+            <!-- Community Comments Section                                -->
+            <!-- ========================================================= -->
+            <Border Classes="glass-card" Padding="28,24">
+              <StackPanel Spacing="16">
+                <!-- Section Header -->
+                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                  <TextBlock Grid.Column="0" i18n:Localize.TextKey="NewsCommentsLabel"
+                             FontSize="11" FontWeight="SemiBold" LetterSpacing="1.1" Foreground="{DynamicResource MutedBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding Comments.Count, StringFormat='{}{0}'}"
+                             FontSize="11.5" FontWeight="SemiBold" Foreground="#7BC4A8" />
+                </Grid>
+
+                <!-- Comment Composer (Only when Signed In) -->
+                <StackPanel Spacing="8" IsVisible="{Binding IsAccountSignedIn}">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <TextBox Grid.Column="0" Text="{Binding NewCommentText, Mode=TwoWay}"
+                             i18n:Localize.WatermarkKey="NewsCommentPlaceholder"
+                             MaxLength="400" CornerRadius="8"
+                             Background="#0D1117" BorderBrush="#25FFFFFF" BorderThickness="1"
+                             Foreground="{DynamicResource TextBrush}" FontSize="12.5"
+                             Padding="12,9" />
+
+                    <Button Grid.Column="1" Padding="18,9" CornerRadius="8" Cursor="Hand"
+                            Background="#1A7BC4A8" BorderBrush="#387BC4A8" BorderThickness="1"
+                            Command="{Binding SendCommentCommand}"
+                            IsEnabled="{Binding !IsSendingComment}">
+                      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock i18n:Localize.TextKey="NewsCommentSend" FontSize="12" FontWeight="SemiBold" Foreground="#7BC4A8" />
+                        <TextBlock Text="➔" FontSize="11" Foreground="#7BC4A8" />
+                      </StackPanel>
+                    </Button>
+                  </Grid>
+
+                  <TextBlock Text="{Binding CommentStatus}" FontSize="11" Foreground="#E8845A"
+                             IsVisible="{Binding CommentStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+
+                <!-- Comment Composer Prompt (When Signed Out) -->
+                <Border Padding="16,12" CornerRadius="8" Background="#12161E" BorderBrush="#20FFFFFF" BorderThickness="1"
+                        IsVisible="{Binding !IsAccountSignedIn}">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                    <TextBlock Grid.Column="0" i18n:Localize.TextKey="NewsSignInToComment"
+                               Classes="hint" FontSize="12" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Padding="14,6" CornerRadius="6" Cursor="Hand"
+                            Background="#5865F2" BorderBrush="#7983F5" BorderThickness="1"
+                            Command="{Binding Settings.LoginWithDiscordCommand}">
+                      <TextBlock i18n:Localize.TextKey="ProfileSignInDiscord" FontSize="11" FontWeight="SemiBold" Foreground="#FFFFFF" />
+                    </Button>
+                  </Grid>
+                </Border>
+
+                <!-- Comments List -->
+                <StackPanel Spacing="10">
+                  <TextBlock i18n:Localize.TextKey="NewsNoComments" Classes="hint" FontSize="12"
+                             IsVisible="{Binding !Comments.Count}" Margin="0,8" />
+
+                  <ItemsControl ItemsSource="{Binding Comments}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:NewsCommentItemViewModel">
+                        <Border CornerRadius="8" Padding="14,10" Margin="0,0,0,6"
+                                Background="#0E1218" BorderBrush="#1C2227" BorderThickness="1">
+                          <Grid RowDefinitions="Auto,Auto" RowSpacing="6">
+                            <!-- Comment Author Header -->
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+                              <!-- Avatar Placeholder -->
+                              <Border Grid.Column="0" Width="22" Height="22" CornerRadius="11" Background="#20FFFFFF">
+                                <Path Width="11" Height="11" Stretch="Uniform" Fill="#CBD5E1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M12,12 C14.21,12 16,10.21 16,8 C16,5.79 14.21,4 12,4 C9.79,4 8,5.79 8,8 C8,10.21 9.79,12 12,12 Z M12,14 C9.33,14 4,15.34 4,18 V20 H20 V18 C20,15.34 14.67,14 12,14 Z" />
+                              </Border>
+
+                              <!-- Display Name & Username -->
+                              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayName}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                                <TextBlock Text="{Binding Username}" FontSize="11" Foreground="{DynamicResource DimBrush}" />
+                              </StackPanel>
+
+                              <!-- Timestamp -->
+                              <TextBlock Grid.Column="2" Text="{Binding FormattedDate}" FontSize="10.5" Foreground="{DynamicResource DimBrush}" VerticalAlignment="Center" />
+
+                              <!-- Delete Comment Button (Only if allowed) -->
+                              <Button Grid.Column="3" Width="20" Height="20" Padding="0" CornerRadius="4" Cursor="Hand"
+                                      Background="Transparent" BorderThickness="0"
+                                      Command="{Binding DeleteCommand}"
+                                      IsVisible="{Binding CanDelete}"
+                                      ToolTip.Tip="Elimina commento">
+                                <TextBlock Text="✕" FontSize="10" Foreground="#E8845A" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                              </Button>
+                            </Grid>
+
+                            <!-- Comment Content Text -->
+                            <TextBlock Grid.Row="1" Text="{Binding Content}" FontSize="12.5" LineHeight="19"
+                                       Foreground="#CCD3DC" TextWrapping="Wrap" />
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Grid>
+
+    <!-- =================================================================== -->
+    <!-- DEDICATED OWNER-ONLY PUBLISHING OVERLAY / MODAL                    -->
+    <!-- Only rendered / active when IsAdminOpen && IsOwner                 -->
+    <!-- =================================================================== -->
+    <Border Background="#B805070A" IsVisible="{Binding IsAdminOpen}"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <Border Classes="glass-card" Padding="28" Width="600" HorizontalAlignment="Center" VerticalAlignment="Center"
+              Background="#111419" BorderBrush="#38FFFFFF" BorderThickness="1">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="14">
+          <!-- Modal Header -->
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel Grid.Column="0" Spacing="2">
+              <TextBlock i18n:Localize.TextKey="NewsAdminTitle" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" />
+              <TextBlock Text="Pubblica un annuncio ufficiale nel feed di Uptime" Classes="hint" FontSize="11" />
+            </StackPanel>
+
+            <Button Grid.Column="1" Width="28" Height="28" Padding="0" CornerRadius="6" Cursor="Hand"
+                    Background="#1F242D" BorderThickness="0"
+                    Command="{Binding CloseAdminPanelCommand}">
+              <TextBlock Text="✕" FontSize="12" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+          </Grid>
+
+          <!-- Title Input -->
+          <StackPanel Grid.Row="1" Spacing="6">
+            <TextBlock Text="TITOLO NOTIZIA" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1" Foreground="{DynamicResource MutedBrush}" />
+            <TextBox Text="{Binding AdminTitle, Mode=TwoWay}"
+                     i18n:Localize.WatermarkKey="NewsAdminTitlePlaceholder"
+                     CornerRadius="8" Background="#0C0F14" BorderBrush="#25FFFFFF" BorderThickness="1"
+                     Padding="12,9" FontSize="13" Foreground="{DynamicResource TextBrush}" />
+          </StackPanel>
+
+          <!-- Category & Pin Row -->
+          <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="16" VerticalAlignment="Center">
+            <StackPanel Grid.Column="0" Spacing="6">
+              <TextBlock i18n:Localize.TextKey="NewsAdminCategoryLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1" Foreground="{DynamicResource MutedBrush}" />
+              <TextBox Text="{Binding AdminCategory, Mode=TwoWay}" CornerRadius="8"
+                       Background="#0C0F14" BorderBrush="#25FFFFFF" BorderThickness="1"
+                       Padding="12,8" FontSize="12" Foreground="{DynamicResource TextBrush}"
+                       Watermark="UPDATE, ANNOUNCEMENT, HOTFIX..." />
+            </StackPanel>
+
+            <CheckBox Grid.Column="1" IsChecked="{Binding AdminIsPinned, Mode=TwoWay}" VerticalAlignment="Bottom" Margin="0,0,0,4">
+              <TextBlock i18n:Localize.TextKey="NewsAdminPinLabel" FontSize="11.5" Foreground="{DynamicResource TextBrush}" />
+            </CheckBox>
+          </Grid>
+
+          <!-- Cover Image / Thumbnail Row -->
+          <StackPanel Grid.Row="3" Spacing="6">
+            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+              <TextBlock Text="THUMBNAIL / IMMAGINE COPERTINA (OPZIONALE)" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1" Foreground="{DynamicResource MutedBrush}" />
+              <Button Grid.Column="1" Padding="10,4" CornerRadius="6" Cursor="Hand"
+                      Background="#18202A" BorderBrush="#35FFFFFF" BorderThickness="1"
+                      Click="OnPickCoverImageClicked">
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <Path Width="12" Height="12" Stretch="Uniform" Fill="{DynamicResource TextBrush}" VerticalAlignment="Center"
+                        Data="M10,4 H4 C2.9,4 2,4.9 2,6 V18 C2,19.1 2.9,20 4,20 H20 C21.1,20 22,19.1 22,18 V8 C22,6.9 21.1,6 20,6 H12 L10,4 Z" />
+                  <TextBlock Text="Scegli da file..." FontSize="11" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+              <TextBox Text="{Binding AdminCoverImageUrl, Mode=TwoWay}"
+                       Watermark="https://... o incolla URL dell'immagine"
+                       CornerRadius="8" Background="#0C0F14" BorderBrush="#25FFFFFF" BorderThickness="1"
+                       Padding="12,8" FontSize="12" Foreground="{DynamicResource TextBrush}" />
+              <Border Grid.Column="1" Width="52" Height="36" CornerRadius="6" Background="#0C0F14"
+                      BorderBrush="#35FFFFFF" BorderThickness="1" ClipToBounds="True"
+                      IsVisible="{Binding AdminCoverImagePreview, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <Image Source="{Binding AdminCoverImagePreview}" Stretch="UniformToFill"
+                       RenderOptions.BitmapInterpolationMode="MediumQuality" />
+              </Border>
+            </Grid>
+          </StackPanel>
+
+          <!-- Content Body Input -->
+          <StackPanel Grid.Row="4" Spacing="6">
+            <TextBlock Text="CONTENUTO NOTIZIA" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1" Foreground="{DynamicResource MutedBrush}" />
+            <TextBox Text="{Binding AdminContent, Mode=TwoWay}"
+                     i18n:Localize.WatermarkKey="NewsAdminContentPlaceholder"
+                     AcceptsReturn="True" TextWrapping="Wrap"
+                     Height="140" CornerRadius="8" Background="#0C0F14" BorderBrush="#25FFFFFF" BorderThickness="1"
+                     Padding="12,10" FontSize="12.5" Foreground="{DynamicResource TextBrush}" />
+          </StackPanel>
+
+          <!-- Master Admin Key (Security Layer) -->
+          <StackPanel Grid.Row="5" Spacing="6">
+            <TextBlock i18n:Localize.TextKey="NewsAdminKeyLabel" FontSize="10.5" FontWeight="SemiBold" LetterSpacing="1" Foreground="{DynamicResource MutedBrush}" />
+            <TextBox Text="{Binding AdminKey, Mode=TwoWay}" PasswordChar="•"
+                     i18n:Localize.WatermarkKey="NewsAdminKeyPlaceholder"
+                     CornerRadius="8" Background="#0C0F14" BorderBrush="#25FFFFFF" BorderThickness="1"
+                     Padding="12,8" FontSize="12" Foreground="{DynamicResource TextBrush}" />
+          </StackPanel>
+
+          <!-- Status / Error Feedback -->
+          <TextBlock Grid.Row="6" Text="{Binding AdminStatus}" FontSize="11.5" Foreground="#E8845A"
+                     IsVisible="{Binding AdminStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+          <!-- Modal Action Buttons -->
+          <Grid Grid.Row="7" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Margin="0,6,0,0">
+            <Button Grid.Column="1" Padding="18,9" CornerRadius="8" Cursor="Hand"
+                    Background="#191D24" BorderBrush="#25FFFFFF" BorderThickness="1"
+                    Command="{Binding CloseAdminPanelCommand}">
+              <TextBlock i18n:Localize.TextKey="NewsAdminCancelButton" FontSize="12" Foreground="{DynamicResource TextBrush}" />
+            </Button>
+
+            <Button Grid.Column="2" Padding="22,9" CornerRadius="8" Cursor="Hand"
+                    Background="#20FBBF24" BorderBrush="#60FBBF24" BorderThickness="1"
+                    Command="{Binding PublishNewsCommand}"
+                    IsEnabled="{Binding !IsAdminBusy}">
+              <TextBlock i18n:Localize.TextKey="NewsAdminPublishButton" FontSize="12" FontWeight="SemiBold" Foreground="#FBBF24" />
+            </Button>
+          </Grid>
+        </Grid>
+      </Border>
+    </Border>
+
+  </Panel>
+</UserControl>

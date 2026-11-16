@@ -36,12 +36,13 @@ public partial class MainViewModel : ObservableObject
     public OperationsViewModel Operations { get; }
     public SettingsViewModel Settings { get; }
     public AssistantViewModel Assistant { get; }
+    public NewsViewModel News { get; }
     public SpotifyViewModel? Spotify { get; }
 
     [ObservableProperty] private bool _isWidgetVisible;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsMonitor), nameof(IsStability), nameof(IsOperations), nameof(IsWallpapers), nameof(IsSettings), nameof(IsAbout), nameof(IsAssistant))]
+    [NotifyPropertyChangedFor(nameof(IsMonitor), nameof(IsStability), nameof(IsOperations), nameof(IsWallpapers), nameof(IsFriends), nameof(IsNews), nameof(IsSettings), nameof(IsAbout), nameof(IsAssistant))]
     private string _page = "Monitor";
 
     private static readonly (string Page, string TitleKey, string BodyKey, string BubbleKey)[] TutorialSteps =
@@ -72,6 +73,8 @@ public partial class MainViewModel : ObservableObject
     public bool IsStability => Page == "Stability";
     public bool IsOperations => Page == "Operations";
     public bool IsWallpapers => Page == "Wallpapers";
+    public bool IsFriends => Page == "Friends";
+    public bool IsNews => Page == "News";
     public bool IsSettings => Page == "Settings";
     public bool IsAbout => Page == "About";
     public bool IsAssistant => Page == "Assistant";
@@ -111,28 +114,22 @@ public partial class MainViewModel : ObservableObject
         _idle = idle;
         _battery = battery;
 
-        L.PropertyChanged += (_, e) =>
+        L.PropertyChanged += OnLanguageChanged;
+        Settings = new SettingsViewModel(communityWallpapers, new Uptime.Infrastructure.DiscordAuthService());
+        Settings.GetAboutMemberNames = () => new[]
         {
-            if (e.PropertyName == nameof(Localizer.Language))
-            {
-                OnPropertyChanged(nameof(IsItalian));
-                OnPropertyChanged(nameof(IsEnglish));
-                OnPropertyChanged(nameof(IsRussian));
-                OnPropertyChanged(nameof(LanguageIndicatorOffset));
-                OnPropertyChanged(nameof(L));
-                OnPropertyChanged(nameof(TutorialTitle));
-                OnPropertyChanged(nameof(TutorialBody));
-                OnPropertyChanged(nameof(TutorialPrimaryButtonText));
-                RefreshDiscordRpcStatusText();
-                TriggerImmediateDiscordRpcUpdate();
-            }
-        };
-        Settings = new SettingsViewModel(communityWallpapers);
+            "IL DENTE PROIBITO", "ildenteproibito",
+            "ShadowEddyx12", "shadow_eddyx",
+            "Luke", "lukinok9668",
+            "Koi", "vibecodegod",
+            MobileDevName
+        }.Concat(BetaTesters.Select(b => b.Name));
         Spotify = mediaService != null ? new SpotifyViewModel(mediaService) : null;
         Monitor = new MonitorViewModel(uptime, idle, Settings, Spotify, keepAwake);
-        Stability = new StabilityViewModel(eventLog, appCrashes, networkWatchdog: networkWatchdog);
+        Stability = new StabilityViewModel(eventLog, appCrashes, networkWatchdog: networkWatchdog, communityFixes: new Uptime.Infrastructure.CommunityFixesService());
         Operations = new OperationsViewModel(power, startup, battery, sleepBlocker, startupApps, keepAwake, powerPlan, workspaceRestore, idle, Settings, memory);
         Assistant = new AssistantViewModel(uptime, idle, battery, Operations);
+        News = new NewsViewModel(new Uptime.Infrastructure.NewsService(), Settings);
 
         Monitor.RequestIdleWindowOpen = OpenIdleWindow;
         Monitor.RequestIdleWindowClose = CloseIdleWindow;
@@ -629,15 +626,38 @@ public partial class MainViewModel : ObservableObject
 
     public void DisposeDiscordRpc() => _discordRpc.Dispose();
 
+    private void OnLanguageChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Localizer.Language))
+        {
+            OnPropertyChanged(nameof(IsItalian));
+            OnPropertyChanged(nameof(IsEnglish));
+            OnPropertyChanged(nameof(IsRussian));
+            OnPropertyChanged(nameof(LanguageIndicatorOffset));
+            OnPropertyChanged(nameof(L));
+            OnPropertyChanged(nameof(TutorialTitle));
+            OnPropertyChanged(nameof(TutorialBody));
+            OnPropertyChanged(nameof(TutorialPrimaryButtonText));
+            RefreshDiscordRpcStatusText();
+            TriggerImmediateDiscordRpcUpdate();
+        }
+    }
+
     public void Dispose()
     {
         _bridgeTimer.Stop();
+        L.PropertyChanged -= OnLanguageChanged;
         if (Spotify is not null)
         {
             Spotify.PropertyChanged -= OnSpotifyPropertyChanged;
             Spotify.Dispose();
         }
         Monitor.Dispose();
+        Settings.Dispose();
+        Operations.Dispose();
+        Stability.Dispose();
+        _mobileDevAvatar?.Dispose();
+        foreach (var old in BetaTesters) old.AvatarBitmap?.Dispose();
         _discordRpc.Dispose();
     }
 
@@ -649,15 +669,53 @@ public partial class MainViewModel : ObservableObject
     public Bitmap? MobileDevAvatar { get => _mobileDevAvatar; private set => SetProperty(ref _mobileDevAvatar, value); }
     public ObservableCollection<BetaTesterCard> BetaTesters { get; } = new();
     public bool HasBetaTesters => BetaTesters.Count > 0;
+    public ObservableCollection<ConnectedAccountCard> OwnerConnections { get; } = new();
+    public ObservableCollection<ConnectedAccountCard> ShadowConnections { get; } = new();
+    public ObservableCollection<ConnectedAccountCard> LukeConnections { get; } = new();
+    public ObservableCollection<ConnectedAccountCard> MobileDevConnections { get; } = new();
+    public bool HasOwnerConnections => OwnerConnections.Count > 0;
+    public bool HasShadowConnections => ShadowConnections.Count > 0;
+    public bool HasLukeConnections => LukeConnections.Count > 0;
+    public bool HasMobileDevConnections => MobileDevConnections.Count > 0;
+
+    [ObservableProperty] private string _aboutVersionBadge = "v2.0.0";
+    public ObservableCollection<LiveChangelogEntry> LiveChangelogAdded { get; } = new();
+    public ObservableCollection<LiveChangelogEntry> LiveChangelogRemoved { get; } = new();
+    public bool HasLiveChangelogAdded => LiveChangelogAdded.Count > 0;
+    public bool HasLiveChangelogRemoved => LiveChangelogRemoved.Count > 0;
+
+    [ObservableProperty] private bool _isShadowVisible = true;
+    [ObservableProperty] private bool _isLukeVisible = true;
+    [ObservableProperty] private bool _isKoiVisible = true;
 
     private async Task LoadBetaTestersAsync()
     {
+        _ = LoadChangelogAsync();
         if (_loadingBetaTesters) return;
         _loadingBetaTesters = true;
         try
         {
             var json = await BetaTestersHttp.GetStringAsync("https://uptime-pc.vercel.app/api/beta-testers");
             using var doc = JsonDocument.Parse(json);
+
+            var excludedSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (doc.RootElement.TryGetProperty("excludedIds", out var exclArr) &&
+                exclArr.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var ex in exclArr.EnumerateArray())
+                {
+                    var exVal = ex.GetString();
+                    if (!string.IsNullOrWhiteSpace(exVal))
+                        excludedSet.Add(exVal);
+                }
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                IsShadowVisible = !excludedSet.Contains("static_shadow");
+                IsLukeVisible = !excludedSet.Contains("static_luke");
+                IsKoiVisible = !excludedSet.Contains("static_koi");
+            });
 
             if (doc.RootElement.TryGetProperty("developers", out var devArr) &&
                 devArr.ValueKind == JsonValueKind.Array)
@@ -674,8 +732,43 @@ public partial class MainViewModel : ObservableObject
                     {
                         _ = LoadMobileDevAvatarAsync(devAvatarUrl);
                     }
+                    var devConns = ParseConnectedAccounts(dev, "connections");
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        MobileDevConnections.Clear();
+                        foreach (var c in devConns) MobileDevConnections.Add(c);
+                        OnPropertyChanged(nameof(HasMobileDevConnections));
+                    });
                     break;
                 }
+            }
+
+            if (doc.RootElement.TryGetProperty("staticConnections", out var scEl) && scEl.ValueKind == JsonValueKind.Object)
+            {
+                var ownerConns = ParseConnectedAccounts(scEl, "owner");
+                var shadowConns = ParseConnectedAccounts(scEl, "shadow");
+                var lukeConns = ParseConnectedAccounts(scEl, "luke");
+                var koiConns = ParseConnectedAccounts(scEl, "koi");
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    OwnerConnections.Clear();
+                    foreach (var c in ownerConns) OwnerConnections.Add(c);
+                    OnPropertyChanged(nameof(HasOwnerConnections));
+
+                    ShadowConnections.Clear();
+                    foreach (var c in shadowConns) ShadowConnections.Add(c);
+                    OnPropertyChanged(nameof(HasShadowConnections));
+
+                    LukeConnections.Clear();
+                    foreach (var c in lukeConns) LukeConnections.Add(c);
+                    OnPropertyChanged(nameof(HasLukeConnections));
+
+                    if (MobileDevConnections.Count == 0 && koiConns.Count > 0)
+                    {
+                        foreach (var c in koiConns) MobileDevConnections.Add(c);
+                        OnPropertyChanged(nameof(HasMobileDevConnections));
+                    }
+                });
             }
 
             if (!doc.RootElement.TryGetProperty("testers", out var arr) || arr.ValueKind != JsonValueKind.Array)
@@ -690,17 +783,25 @@ public partial class MainViewModel : ObservableObject
                 var isMod = item.TryGetProperty("isModerator", out var mEl) && mEl.ValueKind == JsonValueKind.True;
                 if (string.IsNullOrWhiteSpace(name)) continue;
 
-                parsed.Add(new BetaTesterCard
+                var card = new BetaTesterCard
                 {
                     Name = name,
                     AvatarUrl = avatarUrl ?? "",
                     IsModerator = isMod,
                     Description = string.IsNullOrWhiteSpace(desc) ? "Official Uptime Beta Tester" : desc
-                });
+                };
+                foreach (var c in ParseConnectedAccounts(item, "connections"))
+                    card.Connections.Add(c);
+                parsed.Add(card);
             }
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
+                foreach (var old in BetaTesters)
+                {
+                    old.AvatarBitmap?.Dispose();
+                    old.AvatarBitmap = null;
+                }
                 BetaTesters.Clear();
                 foreach (var t in parsed) BetaTesters.Add(t);
                 OnPropertyChanged(nameof(HasBetaTesters));
@@ -737,6 +838,101 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    private bool _loadingChangelog;
+
+    private async Task LoadChangelogAsync()
+    {
+        if (_loadingChangelog) return;
+        _loadingChangelog = true;
+        try
+        {
+            var json = await BetaTestersHttp.GetStringAsync("https://uptime-pc.vercel.app/api/changelog");
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            var version = root.TryGetProperty("version", out var vEl) ? vEl.GetString() : null;
+            var addedList = new List<LiveChangelogEntry>();
+            if (root.TryGetProperty("addedItems", out var aArr) && aArr.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in aArr.EnumerateArray())
+                {
+                    var text = item.TryGetProperty("text", out var tEl) ? tEl.GetString() : null;
+                    var cat = item.TryGetProperty("category", out var cEl) ? cEl.GetString() : null;
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        addedList.Add(new LiveChangelogEntry
+                        {
+                            Category = string.IsNullOrWhiteSpace(cat) ? "General" : cat.Trim(),
+                            Text = text.Trim()
+                        });
+                    }
+                }
+            }
+
+            var removedList = new List<LiveChangelogEntry>();
+            if (root.TryGetProperty("removedItems", out var rArr) && rArr.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in rArr.EnumerateArray())
+                {
+                    var text = item.TryGetProperty("text", out var tEl) ? tEl.GetString() : null;
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        removedList.Add(new LiveChangelogEntry
+                        {
+                            Category = "Removed",
+                            Text = text.Trim()
+                        });
+                    }
+                }
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (!string.IsNullOrWhiteSpace(version))
+                    AboutVersionBadge = version.Trim();
+
+                LiveChangelogAdded.Clear();
+                foreach (var x in addedList) LiveChangelogAdded.Add(x);
+                OnPropertyChanged(nameof(HasLiveChangelogAdded));
+
+                LiveChangelogRemoved.Clear();
+                foreach (var x in removedList) LiveChangelogRemoved.Add(x);
+                OnPropertyChanged(nameof(HasLiveChangelogRemoved));
+            });
+        }
+        catch
+        {
+            // Best-effort network load
+        }
+        finally
+        {
+            _loadingChangelog = false;
+        }
+    }
+
+    private static List<ConnectedAccountCard> ParseConnectedAccounts(JsonElement parent, string propertyName)
+    {
+        var list = new List<ConnectedAccountCard>();
+        if (!parent.TryGetProperty(propertyName, out var arr) || arr.ValueKind != JsonValueKind.Array)
+            return list;
+        foreach (var c in arr.EnumerateArray())
+        {
+            var type = c.TryGetProperty("type", out var tEl) ? tEl.GetString() ?? "" : "";
+            var name = c.TryGetProperty("name", out var nEl) ? nEl.GetString() ?? "" : "";
+            if (string.IsNullOrWhiteSpace(type) || string.IsNullOrWhiteSpace(name)) continue;
+            list.Add(new ConnectedAccountCard(new ConnectedAccount
+            {
+                Type = type,
+                Platform = c.TryGetProperty("platform", out var pEl) ? pEl.GetString() ?? type : type,
+                Id = c.TryGetProperty("id", out var iEl) ? iEl.GetString() ?? "" : "",
+                Name = name,
+                Url = c.TryGetProperty("url", out var uEl) ? uEl.GetString() ?? "" : "",
+                Verified = c.TryGetProperty("verified", out var vEl) && vEl.ValueKind == JsonValueKind.True
+            }));
+        }
+        return list;
+    }
+
     private async Task LoadMobileDevAvatarAsync(string url)
     {
         try
@@ -744,7 +940,12 @@ public partial class MainViewModel : ObservableObject
             var bytes = await BetaTestersHttp.GetByteArrayAsync(url);
             using var ms = new MemoryStream(bytes);
             var bmp = await Task.Run(() => Bitmap.DecodeToWidth(ms, 144));
-            await Dispatcher.UIThread.InvokeAsync(() => MobileDevAvatar = bmp);
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var prev = MobileDevAvatar;
+                MobileDevAvatar = bmp;
+                if (!ReferenceEquals(prev, bmp)) prev?.Dispose();
+            });
         }
         catch
         {
@@ -754,11 +955,20 @@ public partial class MainViewModel : ObservableObject
 }
 
 [System.Reflection.Obfuscation(Exclude = true, ApplyToMembers = true)]
+public sealed class LiveChangelogEntry
+{
+    public string Category { get; init; } = "";
+    public string Text { get; init; } = "";
+}
+
+[System.Reflection.Obfuscation(Exclude = true, ApplyToMembers = true)]
 public partial class BetaTesterCard : ObservableObject
 {
     public string Name { get; init; } = "";
     public string AvatarUrl { get; init; } = "";
     public bool IsModerator { get; init; }
     public string Description { get; init; } = "";
+    public ObservableCollection<ConnectedAccountCard> Connections { get; } = new();
+    public bool HasConnections => Connections.Count > 0;
     [ObservableProperty] private Bitmap? _avatarBitmap;
 }

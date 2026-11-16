@@ -77,8 +77,6 @@
     <Border Grid.Row="1" Padding="28,0">
       <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
         <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" IsVisible="{Binding IsUiVisible}">
-          <Button Classes="ghost" i18n:Localize.ContentKey="ActionCopy" Click="OnCopyClick" />
-          <Button Classes="ghost" i18n:Localize.ContentKey="ActionBadge" Click="OnBadgeClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="ActionHud" Click="OnHudClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="ActionStandBy" Click="OnStandByClick" />
           <Button Classes="ghost" i18n:Localize.ContentKey="NavSettings" Click="OnSettingsClick" />

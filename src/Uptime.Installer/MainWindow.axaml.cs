@@ -148,48 +148,64 @@ public partial class MainWindow : Window
 
     private async void OnBrowseClick(object? sender, RoutedEventArgs e)
     {
-        var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        try
         {
-            Title = T("PickFolder"),
-            AllowMultiple = false
-        });
-        if (folders is { Count: > 0 } && folders[0].TryGetLocalPath() is { Length: > 0 } chosen)
+            var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = T("PickFolder"),
+                AllowMultiple = false
+            });
+            if (folders is { Count: > 0 } && folders[0].TryGetLocalPath() is { Length: > 0 } chosen)
+            {
+                InstallPathBox.Text = chosen.EndsWith("Uptime", StringComparison.OrdinalIgnoreCase)
+                    ? chosen
+                    : Path.Combine(chosen, "Uptime");
+            }
+        }
+        catch (Exception ex)
         {
-            InstallPathBox.Text = chosen.EndsWith("Uptime", StringComparison.OrdinalIgnoreCase)
-                ? chosen
-                : Path.Combine(chosen, "Uptime");
+            ErrorText.Text = ex.Message;
+            ErrorText.IsVisible = true;
         }
     }
 
     private async void OnPrimaryClick(object? sender, RoutedEventArgs e)
     {
-        if (_stage == Stage.Options)
+        try
         {
-            await RunInstallAsync();
-        }
-        else if (_stage == Stage.UninstallConfirm)
-        {
-            await RunUninstallAsync();
-        }
-        else if (_stage == Stage.Done)
-        {
-            if (LaunchAfterToggle.IsChecked == true)
+            if (_stage == Stage.Options)
             {
-                var exe = Path.Combine(_installedDir, AppExeName);
-                if (File.Exists(exe))
-                {
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo { FileName = exe, UseShellExecute = true });
-                    }
-                    catch { }
-                }
+                await RunInstallAsync();
             }
-            Close();
+            else if (_stage == Stage.UninstallConfirm)
+            {
+                await RunUninstallAsync();
+            }
+            else if (_stage == Stage.Done)
+            {
+                if (LaunchAfterToggle.IsChecked == true)
+                {
+                    var exe = Path.Combine(_installedDir, AppExeName);
+                    if (File.Exists(exe))
+                    {
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo { FileName = exe, UseShellExecute = true });
+                        }
+                        catch { }
+                    }
+                }
+                Close();
+            }
+            else if (_stage == Stage.Uninstalled)
+            {
+                Close();
+            }
         }
-        else if (_stage == Stage.Uninstalled)
+        catch (Exception ex)
         {
-            Close();
+            ErrorText.Text = ex.Message;
+            ErrorText.IsVisible = true;
         }
     }
 
@@ -207,7 +223,12 @@ public partial class MainWindow : Window
     {
         ErrorText.IsVisible = false;
         var targetDir = (InstallPathBox.Text ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(targetDir)) return;
+        if (string.IsNullOrWhiteSpace(targetDir))
+        {
+            ErrorText.Text = T("PickFolder");
+            ErrorText.IsVisible = true;
+            return;
+        }
 
         var createDesktop = DesktopToggle.IsChecked == true;
         var createStartMenu = StartMenuToggle.IsChecked == true;
@@ -396,18 +417,26 @@ public partial class MainWindow : Window
                     if (runningInsideTarget)
                     {
                         var pid = Environment.ProcessId;
+                        var escapedSelf = selfPath.Replace("'", "''");
                         var escapedDir = Path.TrimEndingDirectorySeparator(_installedDir).Replace("'", "''");
                         Process.Start(new ProcessStartInfo
                         {
                             FileName = "powershell.exe",
-                            Arguments = $"-NoProfile -WindowStyle Hidden -Command \"Wait-Process -Id {pid} -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 300; Remove-Item -LiteralPath '{escapedDir}' -Recurse -Force -ErrorAction SilentlyContinue\"",
+                            Arguments = $"-NoProfile -WindowStyle Hidden -Command \"Wait-Process -Id {pid} -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 300; Remove-Item -LiteralPath '{escapedSelf}' -Force -ErrorAction SilentlyContinue; if ((Get-ChildItem -LiteralPath '{escapedDir}' -Force -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {{ Remove-Item -LiteralPath '{escapedDir}' -Force -ErrorAction SilentlyContinue }}\"",
                             CreateNoWindow = true,
                             UseShellExecute = false
                         });
                     }
                     else
                     {
-                        try { Directory.Delete(_installedDir, true); } catch { }
+                        var uninstallerExe = Path.Combine(_installedDir, "UptimeSetup.exe");
+                        try { if (File.Exists(uninstallerExe)) File.Delete(uninstallerExe); } catch { }
+                        try
+                        {
+                            if (Directory.GetFileSystemEntries(_installedDir).Length == 0)
+                                Directory.Delete(_installedDir, false);
+                        }
+                        catch { }
                     }
                 }
             });
